@@ -38,9 +38,11 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
     radius="xl"
     size="md"
     limit={10}
+    variant="default"
     itemComponent={AutoCompleteItem}
     data={data}
     error={error}
+    sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={load}
     onItemSubmit={(e) => { setSelected(e); if (onChange) onChange(e) }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
