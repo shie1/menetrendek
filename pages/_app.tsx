@@ -5,6 +5,7 @@ import { useHotkeys, useLocalStorage, useColorScheme } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { IconSun, IconMoonStars } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
+import { NotificationsProvider } from '@mantine/notifications';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
@@ -17,27 +18,29 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (<>
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider withNormalizeCSS withGlobalStyles theme={{ colorScheme }} >
-        <Container my='sm'>
-          <Center sx={{height: '97vh'}}>
-            <Box sx={{ width: 500 }}>
-              <Card radius="lg" shadow='lg' sx={{minHeight: '97vh'}}>
-                <Group position='apart' mb='md'>
-                  <Title>Menetrendek</Title>
-                  <Group position="center">
-                    <Switch
-                      checked={colorScheme === 'dark'}
-                      onChange={() => toggleColorScheme()}
-                      size="lg"
-                      onLabel={<IconSun color={theme.white} size={20} stroke={1.5} />}
-                      offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
-                    />
+        <NotificationsProvider>
+          <Container my='sm'>
+            <Center sx={{ height: '97vh' }}>
+              <Box sx={{ width: 500 }}>
+                <Card radius="lg" shadow='xl' sx={{ minHeight: '97vh' }}>
+                  <Group position='apart' mb='md'>
+                    <Title>Menetrendek</Title>
+                    <Group position="center">
+                      <Switch
+                        checked={colorScheme === 'dark'}
+                        onChange={() => toggleColorScheme()}
+                        size="lg"
+                        onLabel={<IconSun color={theme.white} size={20} stroke={1.5} />}
+                        offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
+                      />
+                    </Group>
                   </Group>
-                </Group>
-                <Component {...pageProps} />
-              </Card>
-            </Box>
-          </Center>
-        </Container>
+                  <Component {...pageProps} />
+                </Card>
+              </Box>
+            </Center>
+          </Container>
+        </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
   </>)

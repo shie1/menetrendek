@@ -8,7 +8,7 @@ interface ItemProps extends SelectItemProps {
   type: "megallo" | "telepules";
 }
 
-const StopInput = ({ variant, onChange }: { variant: "from" | "to", onChange?: Function }) => {
+const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onChange?: Function, error?: string }) => {
   const [data, setData] = useState<Array<any>>([])
   const [selected, setSelected] = useState<any>(null)
 
@@ -26,7 +26,7 @@ const StopInput = ({ variant, onChange }: { variant: "from" | "to", onChange?: F
   );
 
   const load = (e: string) => {
-    setSelected(null)
+    setSelected(null); if (onChange) onChange(null)
     if (!e.length) { setData([]); return }
     apiCall("GET", "/api/autocomplete", { 'q': e }).then(resp => {
       setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.settlement_id, type: item.type })))
@@ -40,8 +40,9 @@ const StopInput = ({ variant, onChange }: { variant: "from" | "to", onChange?: F
     limit={10}
     itemComponent={AutoCompleteItem}
     data={data}
+    error={error}
     onChange={load}
-    onItemSubmit={(e) => setSelected(e)}
+    onItemSubmit={(e) => { setSelected(e); if (onChange) onChange(e) }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
     rightSectionWidth={42}
   />)
