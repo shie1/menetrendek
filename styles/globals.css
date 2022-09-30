@@ -24,3 +24,15 @@ a {
     background: black;
   }
 }
+
+body{
+  background: none !important;
+}
+
+html{
+  min-height: 100vh;
+  background: url("/img/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: bottom;
+}
