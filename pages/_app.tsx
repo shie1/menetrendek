@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { IconSun, IconMoonStars } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
+import Link from 'next/link';
+import { interactive } from '../components/styles';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
@@ -17,14 +19,21 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (<>
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
-      <MantineProvider withNormalizeCSS withGlobalStyles theme={{ colorScheme }} >
+      <MantineProvider withNormalizeCSS withGlobalStyles theme={{
+        colorScheme, colors: {
+          'prettyblue': ['#6eb6ff', '#7dbdff', '#8bc5ff', '#9accff', '#a8d3ff', '#b7dbff', '#c5e2ff', '#d4e9ff', '#e2f0ff', '#f1f8ff']
+        },
+        primaryColor: 'prettyblue',
+        primaryShade: 0,
+        fontFamily: 'Sora, sans-serif',
+      }} >
         <NotificationsProvider>
           <Container my='sm'>
-            <Center sx={{ height: '97vh' }}>
+            <Center sx={{ minHeight: '97vh' }}>
               <Box sx={{ width: 500 }}>
                 <Card radius="lg" shadow='xl' sx={{ minHeight: '97vh' }}>
                   <Group position='apart' mb='md'>
-                    <Title>Menetrendek</Title>
+                    <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
                     <Group position="center">
                       <Switch
                         checked={colorScheme === 'dark'}
