@@ -1,14 +1,26 @@
-import { Accordion, Avatar, Center, Divider, Grid, Group, LoadingOverlay, Skeleton, Stack, Text } from "@mantine/core";
-import { IconAlertTriangle } from "@tabler/icons";
+import { Accordion, Avatar, Center, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline } from "@mantine/core";
+import { IconAlertTriangle, IconWalk, IconBus, IconCheck } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 
+const ActionBullet = ({ muvelet }: { muvelet: string }) => {
+    const size = 16
+    switch (muvelet) {
+        case 'átszállás':
+            return <IconWalk size={size} />
+        case 'leszállás':
+            return <IconCheck size={size} />
+        default:
+            return <IconBus size={size} />
+    }
+}
+
 const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
-    const [data, setData] = useState()
-    const [open, setOpen] = useState(false)
+    const [data, setData] = useState<any>()
+    const [open, setOpen] = useState<boolean>(false)
 
     useEffect(() => {
         if (currOp != val) { setOpen(false) }
@@ -47,8 +59,22 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
             </Stack>
         </Accordion.Control>
         <Accordion.Panel>
-            <Skeleton visible={!data} sx={{ width: '100%' }} height={200} radius="lg">
-                {JSON.stringify(data)}
+            <Skeleton p="sm" visible={!data} sx={{ width: '100%', minHeight: 100 }} radius="lg">
+                {!data ? <></> :
+                    <Timeline active={99}>
+                        {Object.keys(data.results).map((i: any) => {
+                            const dataItem = data.results[i]
+                            return <Timeline.Item title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+                                <Group align="center">
+                                    <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
+                                    {!dataItem.jaratinfo ? <></> : !dataItem.jaratinfo.FromBay ? <></> :
+                                        <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>
+                                    }
+                                </Group>
+                                <Space h="md" />
+                            </Timeline.Item>
+                        })}
+                    </Timeline>}
             </Skeleton>
         </Accordion.Panel>
     </Accordion.Item>)
