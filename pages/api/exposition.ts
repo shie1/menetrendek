@@ -7,5 +7,5 @@ export default async function handler(
     res: NextApiResponse<any>
 ) {
     const rb = JSON.parse(req.body)
-    res.status(200).json(await exposition(rb["runs"], rb["nativeData"]))
+    res.status(200).json(await exposition(rb["runs"], rb["nativeData"], rb["datestring"]))
 }

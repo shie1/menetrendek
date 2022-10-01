@@ -1,4 +1,4 @@
-import { Accordion, Avatar, Center, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline } from "@mantine/core";
+import { Accordion, Avatar, Center, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline, useMantineTheme } from "@mantine/core";
 import { IconAlertTriangle, IconWalk, IconBus, IconCheck } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -21,6 +21,8 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
 }
 
 const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
+    const router = useRouter()
+    const theme = useMantineTheme()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
 
@@ -36,7 +38,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
             } else {
                 set(val)
             }
-            if (!data) { apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData }).then((e) => { setData(e); if (open) set(val) }) }
+            if (!data) { apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then((e) => { setData(e); if (open) set(val) }) }
         }}>
             <Stack spacing={0}>
                 <Grid>
@@ -52,7 +54,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                     </Grid.Col>
                 </Grid>
                 <Divider size="lg" my={6} />
-                <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color="yellow" /> : <></>}</Text>
+                <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={theme.colorScheme === "dark" ? "#ffc400" : "#8c6c00"} /> : <></>}</Text>
                 <Group position="center" spacing='sm'>
                     <Text size="sm">{item.osszido}</Text>
                     <Text size="sm">{currency.format(item.totalFare)}</Text>
@@ -68,13 +70,12 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                             const dataItem = data.results[i]
                             return <Timeline.Item title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                                 <Stack spacing={0}>
+                                    <Group align="center">
+                                        <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
+                                        {!dataItem.jaratinfo ? <></> :
+                                            !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>}
+                                    </Group>
                                     {!dataItem.jaratinfo ? <></> : <>
-                                        <Group align="center">
-                                            <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
-                                            {!dataItem.jaratinfo.FromBay ? <></> :
-                                                <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>
-                                            }
-                                        </Group>
                                         {!dataItem.jaratinfo.fare ? <></> :
                                             <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
                                         {!dataItem.jaratinfo.travelTime ? <></> :
@@ -82,8 +83,8 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                                     </>}
                                     {!dataItem.TimeForChange ? <></> :
                                         <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}
+                                    {dataItem.muvelet !== "leszállás" ? <Space h="md" /> : <></>}
                                 </Stack>
-                                <Space h="md" />
                             </Timeline.Item>
                         })}
                     </Timeline>}

@@ -61,12 +61,12 @@ export const routes = async (date: Date, from: number, to: number) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const exposition = async (fieldvalue: any, nativeData: any) => {
+export const exposition = async (fieldvalue: any, nativeData: any, datestring: string) => {
     const body = {
         "debug": 0,
         "type": "",
         "query": "jarat_kifejtes_text_jsonC",
-        "datum": "2022-10-01",
+        "datum": datestring,
         "lang": "hu",
         "fieldvalue": fieldvalue,
         "nativeData": nativeData
