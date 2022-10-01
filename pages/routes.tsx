@@ -6,6 +6,8 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 
+const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 })
+
 const ActionBullet = ({ muvelet }: { muvelet: string }) => {
     const size = 16
     switch (muvelet) {
@@ -34,7 +36,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
             } else {
                 set(val)
             }
-            if (!data) { apiCall("POST", "/api/exposition", { runs: item.kifejtes_postjson.runs, nativeData: item.nativeData }).then((e) => { setData(e); if (open) set(val) }) }
+            if (!data) { apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData }).then((e) => { setData(e); if (open) set(val) }) }
         }}>
             <Stack spacing={0}>
                 <Grid>
@@ -53,7 +55,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                 <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color="yellow" /> : <></>}</Text>
                 <Group position="center" spacing='sm'>
                     <Text size="sm">{item.osszido}</Text>
-                    <Text size="sm">{new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0 }).format(item.totalFare)}</Text>
+                    <Text size="sm">{currency.format(item.totalFare)}</Text>
                     <Text size="sm">{item.ossztav}</Text>
                 </Group>
             </Stack>
@@ -65,12 +67,22 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                         {Object.keys(data.results).map((i: any) => {
                             const dataItem = data.results[i]
                             return <Timeline.Item title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
-                                <Group align="center">
-                                    <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
-                                    {!dataItem.jaratinfo ? <></> : !dataItem.jaratinfo.FromBay ? <></> :
-                                        <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>
-                                    }
-                                </Group>
+                                <Stack spacing={0}>
+                                    {!dataItem.jaratinfo ? <></> : <>
+                                        <Group align="center">
+                                            <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
+                                            {!dataItem.jaratinfo.FromBay ? <></> :
+                                                <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>
+                                            }
+                                        </Group>
+                                        {!dataItem.jaratinfo.fare ? <></> :
+                                            <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
+                                        {!dataItem.jaratinfo.travelTime ? <></> :
+                                            <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
+                                    </>}
+                                    {!dataItem.TimeForChange ? <></> :
+                                        <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}
+                                </Stack>
                                 <Space h="md" />
                             </Timeline.Item>
                         })}
