@@ -1,13 +1,14 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ColorScheme, ColorSchemeProvider, MantineProvider, Box, Card, Center, Container, Group, Title, Switch } from '@mantine/core'
+import { ColorScheme, ColorSchemeProvider, MantineProvider, Box, Card, Center, Container, Group, Title, Switch, Affix, Text, ActionIcon, Space } from '@mantine/core'
 import { useHotkeys, useLocalStorage, useColorScheme } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
-import { IconSun, IconMoonStars } from '@tabler/icons';
+import { IconSun, IconMoonStars, IconBrandYoutube, IconGlobe, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
@@ -29,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Container my='sm'>
             <Center sx={{ minHeight: '97vh' }}>
               <Box sx={{ width: 500 }}>
-                <Card radius="lg" shadow='xl' sx={{ minHeight: '97vh' }}>
+                <Card radius="lg" shadow='xl' sx={{ minHeight: '97vh', position: 'relative' }}>
                   <Group position='apart' mb='md'>
                     <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
                     <Group position="center">
@@ -43,6 +44,16 @@ function MyApp({ Component, pageProps }: AppProps) {
                     </Group>
                   </Group>
                   <Component {...pageProps} />
+                  <Space h="sm" />
+                  <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
+                    <ActionIcon onClick={()=>window.open("https://shie1bi.hu", "_blank")}>
+                      <IconWorld size={16} />
+                    </ActionIcon>
+                    <Text size="sm">Shie1bi, {(new Date()).getFullYear()}</Text>
+                    <ActionIcon onClick={()=>window.open("https://youtube.com/shie1bi", "_blank")}>
+                      <IconBrandYoutube size={16} />
+                    </ActionIcon>
+                  </Group>
                 </Card>
               </Box>
             </Center>

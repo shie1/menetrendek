@@ -1,5 +1,5 @@
-import { Accordion, Avatar, Center, Collapse, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline, useMantineTheme } from "@mantine/core";
-import { IconAlertTriangle, IconWalk, IconBus, IconCheck } from "@tabler/icons";
+import { Accordion, Avatar, Center, Collapse, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
+import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -30,8 +30,8 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
         if (currOp != val) { setOpen(false) }
     }, [currOp])
 
-    return (<Accordion.Item className="dimmed" mb="md" value={val} sx={{ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' }}>
-        <Accordion.Control disabled={open && !data} onClick={() => {
+    return (<Accordion.Item mb="md" value={val} sx={{ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' }}>
+        <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
                 set(0)
@@ -82,10 +82,24 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                                             !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>}
                                     </Group>
                                     {!dataItem.jaratinfo ? <></> : <>
-                                        {!dataItem.jaratinfo.fare ? <></> :
-                                            <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
-                                        {!dataItem.jaratinfo.travelTime ? <></> :
-                                            <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
+                                        <Group spacing={10}>
+                                            {!dataItem.jaratinfo.fare ? <></> :
+                                                <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
+                                            {!dataItem.jaratinfo.travelTime ? <></> :
+                                                <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
+                                            {!dataItem.jaratszam ? <></> :
+                                                <Text size="sm">{dataItem.jaratszam}</Text>}
+                                        </Group>
+                                        {!dataItem.vegallomasok ? <></> :
+                                            <Text size="sm">{dataItem.vegallomasok}</Text>}
+                                        {!dataItem.jaratinfo.kozlekedik ? <></> :
+                                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
+                                        <Space h={2} />
+                                        {!dataItem.jaratinfo.wifi ? <></> :
+                                            <ThemeIcon variant="light" radius="xl">
+                                                <IconWifi size={20} />
+                                            </ThemeIcon>
+                                        }
                                     </>}
                                     {!dataItem.TimeForChange ? <></> :
                                         <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}

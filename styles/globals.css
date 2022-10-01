@@ -36,3 +36,8 @@ html{
   background-size: cover;
   background-position: center;
 }
+
+.mantine-Accordion-chevron{
+  position: absolute;
+  display: none;
+}
