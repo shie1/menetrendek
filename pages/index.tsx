@@ -25,7 +25,7 @@ const Home: NextPage = () => {
       <StopInput onChange={setTo} variant='to' />
       <Grid sx={{ width: '100%' }}>
         <Grid.Col span="auto">
-          <DatePicker sx={{ input: { border: '1px solid #7c838a' } }} radius='xl' onChange={setDate} value={date} />
+          <DatePicker clearable={false} sx={{ input: { border: '1px solid #7c838a' } }} radius='xl' onChange={setDate} value={date} />
         </Grid.Col>
         <Grid.Col span="content">
           <TimeInput sx={{ '& .mantine-Input-input.mantine-TimeInput-input': { border: '1px solid #7c838a !important' } }} radius='xl' onChange={setTime} value={time} />
@@ -40,7 +40,7 @@ const Home: NextPage = () => {
         </Grid.Col>
       </Grid>
       <Button onClick={() => {
-        if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }) }
+        if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }); return }
         router.push(`/routes?f=${from.id}&t=${to.id}&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
     </Stack>

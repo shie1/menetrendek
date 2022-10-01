@@ -20,11 +20,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (<>
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider withNormalizeCSS withGlobalStyles theme={{
-        colorScheme, colors: {
-          'prettyblue': ['#6eb6ff', '#7dbdff', '#8bc5ff', '#9accff', '#a8d3ff', '#b7dbff', '#c5e2ff', '#d4e9ff', '#e2f0ff', '#f1f8ff']
-        },
-        primaryColor: 'prettyblue',
-        primaryShade: 0,
+        colorScheme: colorScheme,
+        primaryColor: 'grape',
+        primaryShade: 8,
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
