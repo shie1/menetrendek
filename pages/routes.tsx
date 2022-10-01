@@ -1,4 +1,4 @@
-import { Accordion, Avatar, Center, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline, useMantineTheme } from "@mantine/core";
+import { Accordion, Avatar, Center, Collapse, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, Timeline, useMantineTheme } from "@mantine/core";
 import { IconAlertTriangle, IconWalk, IconBus, IconCheck } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -63,8 +63,14 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
             </Stack>
         </Accordion.Control>
         <Accordion.Panel>
-            <Skeleton p="sm" visible={!data} sx={{ width: '100%', minHeight: 100 }} radius="lg">
-                {!data ? <></> :
+            <Skeleton p="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
+                {!data ? <Timeline>
+                    {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((i: any) => {
+                        return <Timeline.Item title="Lorem" key={i}>
+                            <Space h={50} />
+                        </Timeline.Item>
+                    })}
+                </Timeline> :
                     <Timeline active={99}>
                         {Object.keys(data.results).map((i: any) => {
                             const dataItem = data.results[i]
