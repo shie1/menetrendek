@@ -1,5 +1,5 @@
 import { Avatar, Box, Center, Divider, Grid, Group, MantineProvider, Paper, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core";
-import { IconWalk, IconCheck, IconBus, IconWifi, IconAlertTriangle } from "@tabler/icons";
+import { IconWalk, IconCheck, IconBus, IconWifi, IconAlertTriangle, IconLink } from "@tabler/icons";
 import type { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
@@ -55,7 +55,7 @@ const Render: NextPage = () => {
         fontFamily: 'Sora, sans-serif',
     }}>
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
-            <Box id="renderBox" p="md" sx={{ zIndex: 90, background: '#25262B' }}>
+            <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', zoom: 5 }}>
                 <Paper p="sm" radius="lg">
                     <Grid>
                         <Grid.Col sx={{ position: 'relative' }} span="auto">
@@ -115,6 +115,10 @@ const Render: NextPage = () => {
                     </Timeline>
                     {details ? <div id="done" /> : <></>}
                 </Paper>
+                <Group position="right" spacing={2}>
+                    <IconLink size={12} />
+                    <Text my={6} size={10}>menetrendek.shie1bi.hu</Text>
+                </Group>
             </Box>
         </Center>
     </MantineProvider>)
