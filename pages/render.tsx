@@ -55,7 +55,7 @@ const Render: NextPage = () => {
         fontFamily: 'Sora, sans-serif',
     }}>
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
-            <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', zoom: 5 }}>
+            <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B' }}>
                 <Paper p="sm" radius="lg">
                     <Grid>
                         <Grid.Col sx={{ position: 'relative' }} span="auto">
