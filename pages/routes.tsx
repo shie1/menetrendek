@@ -110,18 +110,6 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                             </Timeline.Item>)
                         })}
                     </Timeline>
-                        <Group position="right">
-                            <CopyButton value={`https://menetrendek.shie1bi.hu${router.asPath.replace(/\#(.*)/g, '')}#j${val}`}>
-                                {({ copied, copy }) => (
-                                    <ActionIcon onClick={() => {
-                                        copy()
-                                        showNotification({ id: `copied-${val}`, title: 'Vágolapra másolva!', message: 'A megosztási URL másolva lett a vágolapra!', icon: <IconClipboard /> })
-                                    }} sx={{ marginTop: '-5%' }} variant="transparent" radius="xl">
-                                        <IconShare />
-                                    </ActionIcon>
-                                )}
-                            </CopyButton>
-                        </Group>
                     </>}
             </Skeleton>
         </Accordion.Panel>
