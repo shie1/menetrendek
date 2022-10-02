@@ -15,5 +15,5 @@ export default async function handler(
     })
     await page.goto(`https://menetrendek.shie1bi.hu/render?${(new URLSearchParams(req.query as any)).toString()}`);
     await page.waitForSelector("#done");
-    Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'jpeg', quality: 95, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)
+    Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'jpeg', quality: 90, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)
 }
