@@ -32,7 +32,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
         if (currOp != val) { setOpen(false) }
     }, [currOp])
 
-    return (<a id={`j${val}`}><Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' })}>
+    return (<Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' })}>
         <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
@@ -113,7 +113,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                     </>}
             </Skeleton>
         </Accordion.Panel>
-    </Accordion.Item></a>)
+    </Accordion.Item>)
 }
 
 const Routes: NextPage = () => {
