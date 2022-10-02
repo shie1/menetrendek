@@ -26,7 +26,7 @@ const Document: NextPage = () => {
             <link rel='icon' type="image/x-icon" href='/favicon.ico' />
             <meta name="twitter:card" content="summary_large_image" />
             <link rel="manifest" href="/api/manifest.webmanifest" />
-            <meta name="theme-color" content={theme.colors[theme.primaryColor][theme.primaryShade as any]} />
+            <meta name="theme-color" content="#9C36B5" />
             <link rel='canonical' href={appUrl} />
 
             <meta name="title" content={appName} />
