@@ -1,12 +1,22 @@
 import { Accordion, ActionIcon, Avatar, Center, Collapse, CopyButton, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
 import { useHash } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard } from "@tabler/icons";
+import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard, IconDownload } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
+
+const downloadURI = (uri: string, name: string) => {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    link.remove();
+}
 
 const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
@@ -110,6 +120,11 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                             </Timeline.Item>)
                         })}
                     </Timeline>
+                        <Group mt={'-8%'} position="right">
+                            <ActionIcon onClick={() => downloadURI(`https://menetrendek.shie1bi.hu/api/render?${router.asPath.split('?')[1]}&i=${val}`, `screenshot-${Date.now()}`)}>
+                                <IconDownload />
+                            </ActionIcon>
+                        </Group>
                     </>}
             </Skeleton>
         </Accordion.Panel>
