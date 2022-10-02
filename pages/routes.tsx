@@ -22,7 +22,7 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
     }
 }
 
-const Route = ({ item, set, val, currOp, hash }: { item: any, set: any, val: any, currOp: any, hash: string }) => {
+const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
     const router = useRouter()
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
@@ -32,7 +32,7 @@ const Route = ({ item, set, val, currOp, hash }: { item: any, set: any, val: any
         if (currOp != val) { setOpen(false) }
     }, [currOp])
 
-    return (<a id={`j${val}`}><Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', border: hash === `#j${val}` ? `1px solid ${theme.colors[theme.primaryColor][Number(theme.primaryShade)]}` : '' })}>
+    return (<a id={`j${val}`}><Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' })}>
         <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
@@ -134,13 +134,6 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<any>(null)
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
-    const [hash, setHash] = useHash()
-
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            document.querySelector(`a${hash}`)?.scrollIntoView({ behavior: 'smooth' })
-        }
-    }, [results, hash])
 
     useEffect(() => {
         setLoading(true)
@@ -168,7 +161,7 @@ const Routes: NextPage = () => {
             {results ?
                 Object.keys(results.results.talalatok).map(key => {
                     const item = results.results.talalatok[key]
-                    return (<Route hash={hash} set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
+                    return (<Route set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
                 }
                 ) : <></>}
         </Accordion>
