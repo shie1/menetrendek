@@ -76,13 +76,20 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
         </Accordion.Control>
         <Accordion.Panel>
             <Skeleton p="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
-                {!data ? <Timeline>
+                {!data ? <><Timeline>
                     {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((i: any) => {
                         return <Timeline.Item title="Lorem" key={i}>
                             <Space h={50} />
                         </Timeline.Item>
                     })}
-                </Timeline> :
+                </Timeline>
+                    <Group mt={'-8%'} position="right">
+                        <ActionIcon>
+                            <IconDownload />
+                        </ActionIcon>
+                    </Group>
+                </>
+                    :
                     <><Timeline active={99}>
                         {Object.keys(data.results).map((i: any) => {
                             const dataItem = data.results[i]
