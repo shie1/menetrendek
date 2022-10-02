@@ -23,6 +23,7 @@ const Render: NextPage = () => {
     const [results, setResults] = useState<any>()
     const [details, setDetails] = useState<any>()
     const [query, setQuery] = useState<any>()
+    const [zoom, setZoom] = useState(1)
     const router = useRouter()
 
     useEffect(() => {
@@ -48,6 +49,12 @@ const Render: NextPage = () => {
         }
     }, [results])
 
+    useEffect(()=>{
+        if(typeof window !== 'undefined'){
+            setZoom(Math.min(window.innerHeight, window.innerWidth) / 800)
+        }
+    },[])
+
     return (<MantineProvider withGlobalStyles withNormalizeCSS theme={{
         colorScheme: 'dark',
         primaryColor: 'grape',
@@ -55,7 +62,7 @@ const Render: NextPage = () => {
         fontFamily: 'Sora, sans-serif',
     }}>
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
-            <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B' }}>
+            <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', zoom: zoom }}>
                 <Paper p="sm" radius="lg">
                     <Grid>
                         <Grid.Col sx={{ position: 'relative' }} span="auto">
