@@ -27,10 +27,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
-          <Container my='sm'>
-            <Center sx={{ minHeight: '97vh' }}>
-              <Box sx={{ width: 500 }}>
-                <Card radius="lg" shadow='xl' sx={{ minHeight: '97vh', position: 'relative' }}>
+          <Container sx={{ height: '100vh' }}>
+            <Center sx={{height: '100%'}}>
+              <Box py='sm' sx={{ width: 500, height: '100%' }}>
+                <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
                   <Group position='apart' mb='md'>
                     <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
                     <Group position="center">
@@ -46,11 +46,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <Component {...pageProps} />
                   <Space h="sm" />
                   <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
-                    <ActionIcon onClick={()=>window.open("https://shie1bi.hu", "_blank")}>
+                    <ActionIcon onClick={() => window.open("https://shie1bi.hu", "_blank")}>
                       <IconWorld size={16} />
                     </ActionIcon>
                     <Text size="sm">Shie1bi, {(new Date()).getFullYear()}</Text>
-                    <ActionIcon onClick={()=>window.open("https://youtube.com/shie1bi", "_blank")}>
+                    <ActionIcon onClick={() => window.open("https://youtube.com/shie1bi", "_blank")}>
                       <IconBrandYoutube size={16} />
                     </ActionIcon>
                   </Group>
