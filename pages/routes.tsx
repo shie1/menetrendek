@@ -74,7 +74,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                     <Timeline active={99}>
                         {Object.keys(data.results).map((i: any) => {
                             const dataItem = data.results[i]
-                            return <Timeline.Item title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+                            return <Timeline.Item key={i} title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                                 <Stack spacing={0}>
                                     <Group align="center">
                                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
