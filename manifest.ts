@@ -11,7 +11,7 @@ const manifest = {
     "description": pkg.description,
     "theme_color": "#9C36B5",
     "background_color": "#25262B",
-    "display": "minimal-ui",
+    "display": "standalone",
     "orientation": "portrait",
     "scope": "/",
     "id": "/",
