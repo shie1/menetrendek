@@ -1,5 +1,7 @@
-import { Accordion, Avatar, Center, Collapse, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
-import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi } from "@tabler/icons";
+import { Accordion, ActionIcon, Avatar, Center, Collapse, CopyButton, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
+import { useHash } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -20,7 +22,7 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
     }
 }
 
-const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
+const Route = ({ item, set, val, currOp, hash }: { item: any, set: any, val: any, currOp: any, hash: string }) => {
     const router = useRouter()
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
@@ -30,7 +32,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
         if (currOp != val) { setOpen(false) }
     }, [currOp])
 
-    return (<Accordion.Item mb="md" value={val} sx={{ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' }}>
+    return (<a id={`j${val}`}><Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', border: hash === `#j${val}` ? `1px solid ${theme.colors[theme.primaryColor][Number(theme.primaryShade)]}` : '' })}>
         <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
@@ -71,10 +73,10 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                         </Timeline.Item>
                     })}
                 </Timeline> :
-                    <Timeline active={99}>
+                    <><Timeline active={99}>
                         {Object.keys(data.results).map((i: any) => {
                             const dataItem = data.results[i]
-                            return <Timeline.Item key={i} title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+                            return (<Timeline.Item key={i} title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                                 <Stack spacing={0}>
                                     <Group align="center">
                                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
@@ -105,12 +107,25 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                                         <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}
                                     {dataItem.muvelet !== "leszállás" ? <Space h="md" /> : <></>}
                                 </Stack>
-                            </Timeline.Item>
+                            </Timeline.Item>)
                         })}
-                    </Timeline>}
+                    </Timeline>
+                        <Group position="right">
+                            <CopyButton value={`https://menetrendek.shie1bi.hu${router.asPath.replace(/\#(.*)/g, '')}#j${val}`}>
+                                {({ copied, copy }) => (
+                                    <ActionIcon onClick={() => {
+                                        copy()
+                                        showNotification({ id: `copied-${val}`, title: 'Vágolapra másolva!', message: 'A megosztási URL másolva lett a vágolapra!', icon: <IconClipboard /> })
+                                    }} sx={{ marginTop: '-5%' }} variant="transparent" radius="xl">
+                                        <IconShare />
+                                    </ActionIcon>
+                                )}
+                            </CopyButton>
+                        </Group>
+                    </>}
             </Skeleton>
         </Accordion.Panel>
-    </Accordion.Item>)
+    </Accordion.Item></a>)
 }
 
 const Routes: NextPage = () => {
@@ -119,6 +134,13 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<any>(null)
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
+    const [hash, setHash] = useHash()
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.querySelector(`a${hash}`)?.scrollIntoView({ behavior: 'smooth' })
+        }
+    }, [results, hash])
 
     useEffect(() => {
         setLoading(true)
@@ -146,7 +168,7 @@ const Routes: NextPage = () => {
             {results ?
                 Object.keys(results.results.talalatok).map(key => {
                     const item = results.results.talalatok[key]
-                    return (<Route set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
+                    return (<Route hash={hash} set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
                 }
                 ) : <></>}
         </Accordion>
