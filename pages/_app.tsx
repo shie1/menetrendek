@@ -1,18 +1,30 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { ColorScheme, ColorSchemeProvider, MantineProvider, Box, Card, Center, Container, Group, Title, Switch, Affix, Text, ActionIcon, Space } from '@mantine/core'
-import { useHotkeys, useLocalStorage, useColorScheme } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
-import { IconSun, IconMoonStars, IconBrandYoutube, IconGlobe, IconWorld } from '@tabler/icons';
+import {
+  ColorScheme,
+  ColorSchemeProvider,
+  MantineProvider,
+  Box,
+  Card,
+  Center,
+  Container,
+  Group,
+  Title,
+  Switch,
+  Text,
+  ActionIcon,
+  Space,
+} from '@mantine/core';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
-import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: useColorScheme() })
+  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
@@ -27,8 +39,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
+          <div className='bg' />
           <Container sx={{ height: '100vh' }}>
-            <Center sx={{height: '100%'}}>
+            <Center sx={{ height: '100%' }}>
               <Box py='sm' sx={{ width: 500, height: '100%' }}>
                 <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
                   <Group position='apart' mb='md'>

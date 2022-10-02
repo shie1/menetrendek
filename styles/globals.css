@@ -19,25 +19,32 @@ a {
   html {
     color-scheme: dark;
   }
+
   body {
     color: white;
     background: black;
   }
 }
 
-body{
+body {
   background: none !important;
 }
 
-html{
-  min-height: 100vh;
+.bg {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
   background: url("/img/bg.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
+  background-attachment: scroll;
+  z-index: -1;
 }
 
-.mantine-Accordion-chevron{
+.mantine-Accordion-chevron {
   position: absolute;
   display: none;
 }
