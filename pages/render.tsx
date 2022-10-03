@@ -64,11 +64,11 @@ const Render: NextPage = () => {
                             {!results?.nativeData[0].FromBay ? <></> :
                                 <Avatar variant="outline" m={10} radius="xl" size={26} sx={{ position: 'absolute', top: 0, left: 0 }}>{results.nativeData[0].FromBay}</Avatar>}
                             <Text align="center" size="xl">{results?.indulasi_ido}</Text>
-                            <Text align="center" size="sm">{results?.departureCity} - {results?.departureStation}</Text>
+                            <Text align="center" size="sm">{results?.departureCity}, {results?.departureStation}</Text>
                         </Grid.Col>
                         <Grid.Col span="auto">
                             <Text align="center" size="xl">{results?.erkezesi_ido}</Text>
-                            <Text align="center" size="sm">{results?.arrivalCity} - {results?.arrivalStation}</Text>
+                            <Text align="center" size="sm">{results?.arrivalCity}, {results?.arrivalStation}</Text>
                         </Grid.Col>
                     </Grid>
                     <Divider size="lg" my='sm' />

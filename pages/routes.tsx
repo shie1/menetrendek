@@ -1,7 +1,7 @@
 import { Accordion, ActionIcon, Avatar, Center, Collapse, CopyButton, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
 import { useHash } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard, IconDownload } from "@tabler/icons";
+import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard, IconDownload, IconInfoCircle, IconX } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -58,11 +58,11 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                         {!item.nativeData[0].FromBay ? <></> :
                             <Avatar variant="outline" m={10} radius="xl" size={26} sx={{ position: 'absolute', top: 0, left: 0 }}>{item.nativeData[0].FromBay}</Avatar>}
                         <Text align="center" size="xl">{item.indulasi_ido}</Text>
-                        <Text align="center" size="sm">{item.departureCity} - {item.departureStation}</Text>
+                        <Text align="center" size="sm">{item.departureCity}, {item.departureStation}</Text>
                     </Grid.Col>
                     <Grid.Col span="auto">
                         <Text align="center" size="xl">{item.erkezesi_ido}</Text>
-                        <Text align="center" size="sm">{item.arrivalCity} - {item.arrivalStation}</Text>
+                        <Text align="center" size="sm">{item.arrivalCity}, {item.arrivalStation}</Text>
                     </Grid.Col>
                 </Grid>
                 <Divider size="lg" my={6} />
@@ -83,7 +83,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                         </Timeline.Item>
                     })}
                 </Timeline>
-                    <Group mt={'-8%'} position="right">
+                    <Group position="right">
                         <ActionIcon>
                             <IconDownload />
                         </ActionIcon>
@@ -101,6 +101,11 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                                             !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>}
                                     </Group>
                                     {!dataItem.jaratinfo ? <></> : <>
+                                        <Group position="right">
+                                            <ActionIcon sx={{ position: 'absolute' }} onClick={() => router.push(`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}&d=${router.query['d']}`)}>
+                                                <IconInfoCircle />
+                                            </ActionIcon>
+                                        </Group>
                                         <Group spacing={10}>
                                             {!dataItem.jaratinfo.fare ? <></> :
                                                 <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
@@ -127,7 +132,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                             </Timeline.Item>)
                         })}
                     </Timeline>
-                        <Group mt={'-8%'} position="right">
+                        <Group position="right">
                             <ActionIcon onClick={() => downloadURI(`https://menetrendek.shie1bi.hu/api/render?${router.asPath.split('?')[1]}&i=${val}`, `screenshot-${Date.now()}`)}>
                                 <IconDownload />
                             </ActionIcon>
@@ -147,20 +152,22 @@ const Routes: NextPage = () => {
 
     useEffect(() => {
         setLoading(true)
-        setQuery({
-            from: Number(router.query['f'] as string),
-            sFrom: Number(router.query['sf'] as string),
-            to: Number(router.query['t'] as string),
-            sTo: Number(router.query['st'] as string),
-            hours: Number(router.query['h'] as string),
-            minutes: Number(router.query['m'] as string),
-            date: router.query['d'] as string
-        })
+        if (router.query['f']) {
+            setQuery({
+                from: Number(router.query['f'] as string),
+                sFrom: Number(router.query['sf'] as string),
+                to: Number(router.query['t'] as string),
+                sTo: Number(router.query['st'] as string),
+                hours: Number(router.query['h'] as string),
+                minutes: Number(router.query['m'] as string),
+                date: router.query['d'] as string
+            })
+        }
     }, [router])
 
     useEffect(() => {
         if (query) {
-            apiCall("POST", "/api/routes", query).then(resp => { if (resp.status === 'success') { setResults(resp); setLoading(false) } })
+            apiCall("POST", "/api/routes", query).then(resp => { if (resp.status === 'success') { setResults(resp); setLoading(false) } else { router.push('/'); showNotification({ title: 'Nincs járat!', message: 'Nem találtunk egy jártatot sem a keresés alapján!', color: 'red', icon: <IconX /> }) } })
         }
     }, [query])
 

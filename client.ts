@@ -73,3 +73,14 @@ export const exposition = async (fieldvalue: any, nativeData: any, datestring: s
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
+
+export const runs = async (id: number, datestring: string, sls: number, els: number) => {
+    const body = {
+        "query": "runDecriptionC",
+        "run_id": id,
+        "sls_id": sls, // dep,
+        "els_id": els, // arr
+        "datum": datestring
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
