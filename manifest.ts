@@ -17,30 +17,35 @@ const manifest = {
     "id": "/",
     "icons": [
         {
-            "src": "/favicon-16x16.png",
-            "sizes": "16x16",
+            "src": "/api/img/logo.png?s=48",
+            "sizes": "48x48",
             "type": "image/png"
         },
         {
-            "src": "/favicon-32x32.png",
-            "sizes": "32x32",
+            "src": "/api/img/logo.png?s=72",
+            "sizes": "72x72",
             "type": "image/png"
         },
         {
-            "src": "/apple-touch-icon.png",
-            "sizes": "180x180",
+            "src": "/api/img/logo.png?s=96",
+            "sizes": "96x96",
             "type": "image/png"
         },
         {
-            "src": "/android-chrome-192x192.png",
+            "src": "/api/img/logo.png?s=144",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "/api/img/logo.png?s=168",
+            "sizes": "168x168",
+            "type": "image/png"
+        },
+        {
+            "src": "/api/img/logo.png?s=192",
             "sizes": "192x192",
             "type": "image/png"
-        },
-        {
-            "src": "/android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        },
+        }
     ],
     "start_url": "/",
     "lang": "hu-HU",
