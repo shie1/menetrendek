@@ -28,11 +28,13 @@ const Render: NextPage = () => {
     useEffect(() => {
         setQuery({
             from: Number(router.query['f'] as string),
+            sFrom: Number(router.query['sf'] as string),
             to: Number(router.query['t'] as string),
+            sTo: Number(router.query['st'] as string),
             hours: Number(router.query['h'] as string),
             minutes: Number(router.query['m'] as string),
-            date: router.query['d'] as string,
             index: Number(router.query['i'] as string),
+            date: router.query['d'] as string
         })
     }, [router])
 
@@ -62,11 +64,11 @@ const Render: NextPage = () => {
                             {!results?.nativeData[0].FromBay ? <></> :
                                 <Avatar variant="outline" m={10} radius="xl" size={26} sx={{ position: 'absolute', top: 0, left: 0 }}>{results.nativeData[0].FromBay}</Avatar>}
                             <Text align="center" size="xl">{results?.indulasi_ido}</Text>
-                            <Text align="center" size="sm">{results?.indulasi_hely}</Text>
+                            <Text align="center" size="sm">{results?.departureCity} - {results?.departureStation}</Text>
                         </Grid.Col>
                         <Grid.Col span="auto">
                             <Text align="center" size="xl">{results?.erkezesi_ido}</Text>
-                            <Text align="center" size="sm">{results?.erkezesi_hely}</Text>
+                            <Text align="center" size="sm">{results?.arrivalCity} - {results?.arrivalStation}</Text>
                         </Grid.Col>
                     </Grid>
                     <Divider size="lg" my='sm' />

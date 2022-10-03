@@ -29,7 +29,7 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
     setSelected(null); if (onChange) onChange(null)
     if (!e.length) { setData([]); return }
     apiCall("GET", "/api/autocomplete", { 'q': e }).then(resp => {
-      setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.settlement_id, type: item.type })))
+      setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, type: item.type })))
     })
   }
 

@@ -46,7 +46,7 @@ const Home: NextPage = () => {
       </Grid>
       <Button onClick={() => {
         if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }); return }
-        router.push(`/routes?f=${from.id}&t=${to.id}&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}&d=${dateString(date)}`)
+        router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
       <Divider size="md" />
     </Stack>

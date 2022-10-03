@@ -25,19 +25,19 @@ export const autocomplete = async (input: string) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const routes = async (date: Date, from: number, to: number) => {
+export const routes = async (date: Date, from: number, sFrom: number, to: number, sTo: number) => {
     const body = {
         "func": "getRoutes",
         "params": {
             "datum": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
             "ext_settings": "block",
-            "honnan_ls_id": 0,
-            "honnan_settlement_id": from,
+            "honnan_ls_id": from,
+            "honnan_settlement_id": sFrom,
             "honnan_site_code": "",
             "hour": date.getHours(),
             "min": date.getMinutes(),
-            "hova_ls_id": 0,
-            "hova_settlement_id": to,
+            "hova_ls_id": to,
+            "hova_settlement_id": sTo,
             "hova_site_code": "",
             "maxatszallas": "5",
             "maxwalk": 1000,
