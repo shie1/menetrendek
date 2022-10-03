@@ -22,9 +22,6 @@ const Home: NextPage = () => {
   const [time, setTime] = useState<any>(new Date())
 
   return (<>
-    <Head>
-      <title>Menetrendek</title>
-    </Head>
     <Stack spacing='md'>
       <StopInput onChange={setFrom} variant='from' />
       <StopInput onChange={setTo} variant='to' />

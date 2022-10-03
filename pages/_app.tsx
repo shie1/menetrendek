@@ -21,6 +21,7 @@ import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
+import Head from 'next/head';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
@@ -31,6 +32,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   useHotkeys([['ctrl+J', () => toggleColorScheme()]])
 
   return (<>
+    <Head>
+      <title>Menetrendek</title>
+    </Head>
     <ColorSchemeProvider colorScheme={colorScheme} toggleColorScheme={toggleColorScheme}>
       <MantineProvider withNormalizeCSS withGlobalStyles theme={{
         colorScheme: colorScheme,

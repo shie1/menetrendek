@@ -172,9 +172,6 @@ const Routes: NextPage = () => {
     }, [query])
 
     return (<>
-        <Head>
-            <title>Menetrendek</title>
-        </Head>
         <LoadingOverlay visible={loading} />
         <Accordion value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
             {results ?
