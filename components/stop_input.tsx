@@ -8,6 +8,8 @@ interface ItemProps extends SelectItemProps {
   type: "megallo" | "telepules";
 }
 
+const r = /[^a-zA-Z0-9áéíöőüű ]/g
+
 const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onChange?: Function, error?: string }) => {
   const [data, setData] = useState<Array<any>>([])
   const [selected, setSelected] = useState<any>(null)
@@ -41,6 +43,11 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
     variant="default"
     itemComponent={AutoCompleteItem}
     data={data}
+    filter={(value, item) => {
+      const a = value.toLowerCase().replace(r, '')
+      const b = item.value.toLowerCase().replace(r, '').substring(0, a.length)
+      return a.startsWith(b)
+    }}
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={load}

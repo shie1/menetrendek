@@ -4036,6 +4036,11 @@ sourcemap-codec@^1.4.8:
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
+string-comparison@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/string-comparison/-/string-comparison-1.1.0.tgz#579c43554721d68db5a7819bd78b261559af3ed4"
+  integrity sha512-9its9Hn37UNw6HlHFH0CGaTkkCWSCFtI3J5qLbuJqKAfbgEc0Ix+rFWfky47TcLlr5GvTSAqbGzHzQndZ7QaSQ==
+
 string.prototype.matchall@^4.0.6, string.prototype.matchall@^4.0.7:
   version "4.0.7"
   resolved "https://registry.yarnpkg.com/string.prototype.matchall/-/string.prototype.matchall-4.0.7.tgz#8e6ecb0d8a1fb1fda470d81acecb2dba057a481d"
