@@ -33,7 +33,7 @@ const Runs: NextPage = () => {
         <LoadingOverlay visible={loading} />
         <Stack my="md" spacing='sm'>
             <Stack mb='sm' spacing={0} justify="center" align="center">
-                <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/` : <></>}{runs?.results.jaratszam}</Text>
+                <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
                 <Text size="xl">{runs?.results.kozlekedteti}</Text>
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
             </Stack>
