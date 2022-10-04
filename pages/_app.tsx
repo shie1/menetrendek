@@ -15,7 +15,7 @@ import {
   ActionIcon,
   Space,
 } from '@mantine/core';
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
@@ -45,7 +45,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       }} >
         <NotificationsProvider>
           <div className='bg' />
-          <Container sx={{ height: '100vh' }}>
+          <Container tabIndex={-1} sx={{ height: '100vh' }}>
             <Center sx={{ height: '100%' }}>
               <Box py='sm' sx={{ width: 500, height: '100%' }}>
                 <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
