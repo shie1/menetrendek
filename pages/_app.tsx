@@ -22,6 +22,7 @@ import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
+import { createContext } from 'react';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()

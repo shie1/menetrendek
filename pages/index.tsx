@@ -1,4 +1,4 @@
-import { ActionIcon, Button, createStyles, Divider, Grid, Group, Paper, Stack, Text } from '@mantine/core';
+import { ActionIcon, Box, Button, createStyles, Divider, Grid, Group, Paper, Select, Stack, Text } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { showNotification } from '@mantine/notifications';
 import { IconArrowForwardUp, IconCircle, IconClock, IconX, IconBus, IconArrowBarRight, IconArrowBarToRight } from '@tabler/icons';
@@ -11,10 +11,30 @@ import Head from 'next/head';
 import { useLocalStorage } from '@mantine/hooks';
 import { interactive } from '../components/styles';
 
-const stopsMaxLength = 5
+const useStyles = createStyles((theme) => ({
+  root: {
+    position: 'relative',
+  },
+
+  input: {
+    height: 'auto',
+    paddingTop: 18,
+  },
+
+  label: {
+    position: 'absolute',
+    pointerEvents: 'none',
+    fontSize: theme.fontSizes.xs,
+    paddingLeft: theme.spacing.sm,
+    paddingTop: theme.spacing.sm / 2,
+    zIndex: 1,
+  },
+}));
 
 const Home: NextPage = () => {
   const router = useRouter()
+  const { classes, theme } = useStyles()
+  const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
   const [from, setFrom] = useState<any>()
   const [to, setTo] = useState<any>()
@@ -46,6 +66,16 @@ const Home: NextPage = () => {
         router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
       <Divider size="md" />
+      <Box style={{ margin: '0 auto' }}>
+        <Select
+          data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
+          value={discount.toString()}
+          onChange={(e) => setDiscount(Number(e))}
+          label="Kedvezmény típusa"
+          radius='lg'
+          classNames={classes}
+        />
+      </Box>
     </Stack>
   </>)
 }

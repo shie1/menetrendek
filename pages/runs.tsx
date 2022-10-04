@@ -59,7 +59,7 @@ const Runs: NextPage = () => {
                             const item = runs.results.kifejtes_sor[i]
                             return (<tr key={i}>
                                 <td>{i.padStart(2, '0')}</td>
-                                <td style={{fontSize: '2vmin'}}>{item.departureCity}, {item.departureStation}</td>
+                                <td style={{ fontSize: '2vmin' }}>{item.departureCity}, {item.departureStation}</td>
                                 <td>{item.erkezik}</td>
                                 <td>{item.indul}</td>
                                 <td>{item.varhato_erkezik}</td>

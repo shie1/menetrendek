@@ -1,12 +1,16 @@
 import { Accordion, ActionIcon, Avatar, Center, Collapse, CopyButton, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
-import { useHash } from "@mantine/hooks";
+import { useHash, useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard, IconDownload, IconInfoCircle, IconX } from "@tabler/icons";
 import type { NextPage } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { apiCall } from "../components/api";
+
+const calcDisc = (fee: number, discount: number) => {
+    return Math.abs(fee - ((fee / discount) * 100))
+}
 
 const downloadURI = (uri: string, name: string) => {
     var link = document.createElement("a");
@@ -37,6 +41,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
+    const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
 
     useEffect(() => {
         if (currOp != val) { setOpen(false) }
@@ -69,7 +74,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                 <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={theme.colorScheme === "dark" ? "#ffc400" : "#8c6c00"} /> : <></>}</Text>
                 <Group position="center" spacing='sm'>
                     <Text size="sm">{item.osszido}</Text>
-                    <Text size="sm">{currency.format(item.totalFare)}</Text>
+                    <Text size="sm">{currency.format(calcDisc(item.totalFare, discount))}</Text>
                     <Text size="sm">{item.ossztav}</Text>
                 </Group>
             </Stack>
@@ -108,7 +113,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                                         </Group>
                                         <Group spacing={10}>
                                             {!dataItem.jaratinfo.fare ? <></> :
-                                                <Text size="sm">{currency.format(dataItem.jaratinfo.fare)}</Text>}
+                                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, discount))}</Text>}
                                             {!dataItem.jaratinfo.travelTime ? <></> :
                                                 <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
                                             {!dataItem.jaratszam ? <></> :
