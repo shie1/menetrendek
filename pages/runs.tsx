@@ -33,7 +33,7 @@ const Runs: NextPage = () => {
         <LoadingOverlay visible={loading} />
         <Stack my="md" spacing='sm'>
             <Stack mb='sm' spacing={0} justify="center" align="center">
-                <Text size={30} mb={-10}>{runs?.results.mezo}/{runs?.results.jaratszam}</Text>
+                <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/` : <></>}{runs?.results.jaratszam}</Text>
                 <Text size="xl">{runs?.results.kozlekedteti}</Text>
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
             </Stack>
@@ -59,7 +59,7 @@ const Runs: NextPage = () => {
                             const item = runs.results.kifejtes_sor[i]
                             return (<tr key={i}>
                                 <td>{i.padStart(2, '0')}</td>
-                                <td>{item.departureCity}, {item.departureStation}</td>
+                                <td style={{fontSize: '2vmin'}}>{item.departureCity}, {item.departureStation}</td>
                                 <td>{item.erkezik}</td>
                                 <td>{item.indul}</td>
                                 <td>{item.varhato_erkezik}</td>
