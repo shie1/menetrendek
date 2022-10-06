@@ -42,16 +42,28 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
 const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
     const router = useRouter()
     const query = useContext(Query)
+    const date = new Date(query.date)
+    const now = new Date()
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
     const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
     const start = item.indulasi_ido.split(":")
     const passed = (() => {
-        if (start[0] == query.hours) {
-            return start[1] < query.minutes
+        if (
+            date.getFullYear() === now.getFullYear() &&
+            date.getMonth() === now.getMonth() &&
+            date.getDate() === now.getDate()
+        ) {
+            if (start[0] == query.hours) {
+                return start[1] < query.minutes
+            }
+            return start[0] < query.hours
+        } else {
+            if (date.getFullYear() < now.getFullYear()) { return true }
+            if (date.getMonth() < now.getMonth()) { return true }
+            return date.getDate() < now.getDate()
         }
-        return start[0] < query.hours
     })()
     const [lastPassed, setLastPassed] = useContext(LastPassedState)
     const [nextBus, setNextBus] = useState(false)
