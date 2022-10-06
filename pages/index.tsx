@@ -39,6 +39,7 @@ const Home: NextPage = () => {
   const [from, setFrom] = useState<any>()
   const [to, setTo] = useState<any>()
   const [date, setDate] = useState<any>(new Date())
+  const [time, setTime] = useState<any>(false)
 
   return (<>
     <Stack spacing='md'>
@@ -49,8 +50,12 @@ const Home: NextPage = () => {
           <DatePicker clearable={false} sx={{ input: { border: '1px solid #7c838a' } }} radius='xl' onChange={setDate} value={date} />
         </Grid.Col>
         <Grid.Col span="content">
+          <TimeInput sx={{ '& .mantine-Input-input.mantine-TimeInput-input': { border: '1px solid #7c838a !important' } }} radius='xl' onChange={setTime} value={time ? time : new Date()} />
+        </Grid.Col>
+        <Grid.Col span="content">
           <ActionIcon sx={{ border: '1px solid #7c838a' }} onClick={() => {
             setDate(new Date())
+            setTime(false)
           }} variant='default' size="lg" radius="xl">
             <IconClock size={18} />
           </ActionIcon>
@@ -58,7 +63,8 @@ const Home: NextPage = () => {
       </Grid>
       <Button onClick={() => {
         if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }); return }
-        router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}&d=${dateString(date)}`)
+        const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
+        router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
       <Divider size="md" />
       <Box style={{ margin: '0 auto' }}>

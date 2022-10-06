@@ -203,8 +203,8 @@ const Routes: NextPage = () => {
                 sFrom: Number(router.query['sf'] as string),
                 to: Number(router.query['t'] as string),
                 sTo: Number(router.query['st'] as string),
-                hours: date.getHours(),
-                minutes: date.getMinutes(),
+                hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
+                minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
                 date: router.query['d'] as string
             })
         }
