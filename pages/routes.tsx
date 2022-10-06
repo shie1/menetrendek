@@ -22,6 +22,9 @@ const downloadURI = (uri: string, name: string) => {
     link.remove();
 }
 
+const Query = createContext<any>({})
+const LastPassedState = createContext<any>([])
+
 const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
 const ActionBullet = ({ muvelet }: { muvelet: string }) => {
@@ -38,16 +41,39 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
 
 const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, currOp: any }) => {
     const router = useRouter()
+    const query = useContext(Query)
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
     const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
+    const start = item.indulasi_ido.split(":")
+    const passed = (() => {
+        if (start[0] == query.hours) {
+            return start[1] < query.minutes
+        }
+        return start[0] < query.hours
+    })()
+    const [lastPassed, setLastPassed] = useContext(LastPassedState)
+    const [nextBus, setNextBus] = useState(false)
+
+    useEffect(() => {
+        if (lastPassed && !passed) {
+            setNextBus(true)
+        }
+    }, [lastPassed])
+    setLastPassed(passed)
+
+    useEffect(() => {
+        if (nextBus) {
+            document.querySelector("#next-bus")?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
+    }, [nextBus])
 
     useEffect(() => {
         if (currOp != val) { setOpen(false) }
     }, [currOp])
 
-    return (<Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)' })}>
+    return (<Accordion.Item id={nextBus ? 'next-bus' : ''} mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', opacity: passed ? '60%' : '100%', transition: '.25s', '&:hover': { opacity: '100%' } })}>
         <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
@@ -138,7 +164,7 @@ const Route = ({ item, set, val, currOp }: { item: any, set: any, val: any, curr
                         })}
                     </Timeline>
                         <Group position="right">
-                            <ActionIcon onClick={() => downloadURI(`https://menetrendek.shie1bi.hu/api/render?${router.asPath.split('?')[1]}&i=${val}`, `screenshot-${Date.now()}`)}>
+                            <ActionIcon onClick={() => downloadURI(`https://menetrendek.shie1bi.hu/api/render?${router.asPath.split('?')[1]}&h=${query.hours}&m=${query.minutes}&i=${val}`, `screenshot-${Date.now()}`)}>
                                 <IconDownload />
                             </ActionIcon>
                         </Group>
@@ -154,6 +180,8 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<any>(null)
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
+    const [lastPassed, setLastPassed] = useState<any>(true)
+    const date = new Date()
 
     useEffect(() => {
         setLoading(true)
@@ -163,8 +191,8 @@ const Routes: NextPage = () => {
                 sFrom: Number(router.query['sf'] as string),
                 to: Number(router.query['t'] as string),
                 sTo: Number(router.query['st'] as string),
-                hours: Number(router.query['h'] as string),
-                minutes: Number(router.query['m'] as string),
+                hours: date.getHours(),
+                minutes: date.getMinutes(),
                 date: router.query['d'] as string
             })
         }
@@ -177,15 +205,19 @@ const Routes: NextPage = () => {
     }, [query])
 
     return (<>
-        <LoadingOverlay visible={loading} />
-        <Accordion value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
-            {results ?
-                Object.keys(results.results.talalatok).map(key => {
-                    const item = results.results.talalatok[key]
-                    return (<Route set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
-                }
-                ) : <></>}
-        </Accordion>
+        <Query.Provider value={query}>
+            <LastPassedState.Provider value={[lastPassed, setLastPassed]}>
+                <LoadingOverlay visible={loading} />
+                <Accordion value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
+                    {results ?
+                        Object.keys(results.results.talalatok).map(key => {
+                            const item = results.results.talalatok[key]
+                            return (<Route set={setAccordion} currOp={accordion} val={key} key={key} item={item} />)
+                        }
+                        ) : <></>}
+                </Accordion>
+            </LastPassedState.Provider>
+        </Query.Provider>
     </>)
 }
 
