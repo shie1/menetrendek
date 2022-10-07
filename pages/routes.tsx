@@ -1,25 +1,40 @@
-import { Accordion, ActionIcon, Avatar, Center, Collapse, CopyButton, Divider, Grid, Group, LoadingOverlay, Skeleton, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
-import { useHash, useLocalStorage } from "@mantine/hooks";
+import {
+    Accordion,
+    ActionIcon,
+    Avatar,
+    Divider,
+    Grid,
+    Group,
+    Loader,
+    LoadingOverlay,
+    Skeleton,
+    Space,
+    Stack,
+    Text,
+    ThemeIcon,
+    Timeline,
+    useMantineTheme,
+} from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconAlertTriangle, IconWalk, IconBus, IconCheck, IconWifi, IconShare, IconClipboard, IconDownload, IconInfoCircle, IconX } from "@tabler/icons";
+import {
+    IconAlertTriangle,
+    IconWalk,
+    IconBus,
+    IconCheck,
+    IconWifi,
+    IconDownload,
+    IconInfoCircle,
+    IconX,
+    IconShare,
+} from "@tabler/icons";
 import type { NextPage } from "next";
-import Head from "next/head";
 import { useRouter } from "next/router";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, MouseEventHandler, useContext, useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 
 const calcDisc = (fee: number, discount: number) => {
     return Math.abs(fee - (fee * (discount / 100)))
-}
-
-const downloadURI = (uri: string, name: string) => {
-    var link = document.createElement("a");
-    link.download = name;
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    link.remove();
 }
 
 const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
@@ -46,7 +61,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
     const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
     const query = useContext(Query)
     const [accordion, setAccordion] = useContext(AccordionFix)
-    console.log(discount)
+    const [file, setFile] = useState<File | undefined>()
 
     useEffect(() => {
         if (accordion != val) { setOpen(false) }
@@ -60,7 +75,16 @@ const Route = ({ item, val }: { item: any, val: any }) => {
             } else {
                 setAccordion(val)
             }
-            if (!data) { apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then((e) => { setData(e); if (open) setAccordion(val) }) }
+            if (!data) {
+                apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
+                    setData(e)
+                    if (open) setAccordion(val)
+                    const id = Date.now().toString()
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query.hours}&m=${query.minutes}&i=${val}`
+                    const blob = await (await fetch(image)).blob()
+                    setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
+                })
+            }
         }}>
             <Stack spacing={0}>
                 <Grid>
@@ -87,7 +111,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
         <Accordion.Panel>
             <Skeleton p="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
                 {!data ? <><Timeline>
-                    {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((i: any) => {
+                    {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((item: any, i: any) => {
                         return <Timeline.Item title="Lorem" key={i}>
                             <Space h={50} />
                         </Timeline.Item>
@@ -143,9 +167,12 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                         })}
                     </Timeline>
                         <Group position="right">
-                            <ActionIcon onClick={() => downloadURI(`https://menetrendek.shie1bi.hu/api/render?${router.asPath.split('?')[1]}&h=${query.hours}&m=${query.minutes}&i=${val}`, `screenshot-${Date.now()}`)}>
-                                <IconDownload />
-                            </ActionIcon>
+                            {!file ? <Loader size={28} /> :
+                                <ActionIcon onClick={() => {
+                                    navigator.share({ files: [file] })
+                                }}>
+                                    <IconShare />
+                                </ActionIcon>}
                         </Group>
                     </>}
             </Skeleton>
