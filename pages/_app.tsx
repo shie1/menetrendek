@@ -62,7 +62,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     </Group>
                   </Group>
                   <Component {...pageProps} />
-                  <Space h="sm" />
+                  <Space h="xl" />
                   <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
                     <ActionIcon onClick={() => window.open("https://shie1bi.hu", "_blank")}>
                       <IconWorld size={16} />
