@@ -50,7 +50,7 @@ const StopInput = ({ variant, error, selection }: { variant: "from" | "to", erro
     variant="default"
     itemComponent={AutoCompleteItem}
     dropdownComponent={({ children }: any) => {
-      return (<ScrollArea style={{ height: 250, width: '100%' }}>{children}</ScrollArea>)
+      return (<ScrollArea style={{ maxHeight: 250, width: '100%' }}>{children}</ScrollArea>)
     }}
     data={data}
     value={selected?.value}
