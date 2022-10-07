@@ -7,5 +7,5 @@ export default async function handler(
     res: NextApiResponse<any>
 ) {
     const rb = JSON.parse(req.body)
-    res.status(200).json(await routes((new Date(`${rb.date} ${rb.hours}:${rb.minutes}`)), rb.from, rb.sFrom, rb.to, rb.sTo))
+    res.status(200).json(await routes(rb))
 }

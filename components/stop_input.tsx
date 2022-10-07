@@ -1,7 +1,9 @@
-import { Autocomplete, Avatar, Group, MantineColor, SelectItemProps, Text } from "@mantine/core"
+import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Text } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { IconArrowBarRight, IconArrowBarToRight, IconCircle, IconBus } from "@tabler/icons"
-import { forwardRef, useEffect, useState } from "react"
+import { forwardRef, useEffect, useState } from "react";
 import { apiCall } from "./api";
+import { isEqual } from "lodash"
 
 interface ItemProps extends SelectItemProps {
   color: MantineColor;
@@ -10,9 +12,14 @@ interface ItemProps extends SelectItemProps {
 
 const r = /[^a-zA-Z0-9áéíöőüű ]/g
 
-const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onChange?: Function, error?: string }) => {
+const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<any> }) => {
   const [data, setData] = useState<Array<any>>([])
-  const [selected, setSelected] = useState<any>(null)
+  const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
+  const [selected, setSelected] = selection
+
+  useEffect(() => {
+    if (selected) { setStops([selected, ...stops.filter(item => !isEqual(item, selected))]) }
+  }, [selected])
 
   const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
     ({ value, type, id, ...others }: ItemProps, ref) => (
@@ -28,7 +35,7 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
   );
 
   const load = (e: string) => {
-    setSelected(null); if (onChange) onChange(null)
+    setSelected(null)
     if (!e.length) { setData([]); return }
     apiCall("GET", "/api/autocomplete", { 'q': e }).then(resp => {
       setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, type: item.type })))
@@ -39,10 +46,14 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
     icon={selected ? (selected.type === "megallo" ? <IconBus size={18} stroke={1.5} /> : <IconCircle size={18} stroke={1.5} />) : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     size="md"
-    limit={10}
+    limit={99}
     variant="default"
     itemComponent={AutoCompleteItem}
+    dropdownComponent={({ children }: any) => {
+      return (<ScrollArea style={{ height: 250, width: '100%' }}>{children}</ScrollArea>)
+    }}
     data={data}
+    value={selected?.value}
     filter={(value, item) => {
       const a = value.toLowerCase().replace(r, '')
       const b = item.value.toLowerCase().replace(r, '').substring(0, a.length)
@@ -51,7 +62,7 @@ const StopInput = ({ variant, onChange, error }: { variant: "from" | "to", onCha
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={load}
-    onItemSubmit={(e) => { setSelected(e); if (onChange) onChange(e) }}
+    onItemSubmit={(e) => { setSelected(e) }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
     rightSectionWidth={42}
   />)

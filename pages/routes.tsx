@@ -30,7 +30,7 @@ import {
 } from "@tabler/icons";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { createContext, MouseEventHandler, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 
 const calcDisc = (fee: number, discount: number) => {
@@ -58,7 +58,6 @@ const Route = ({ item, val }: { item: any, val: any }) => {
     const theme = useMantineTheme()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
-    const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
     const query = useContext(Query)
     const [accordion, setAccordion] = useContext(AccordionFix)
     const [file, setFile] = useState<File | undefined>()
@@ -103,7 +102,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                 <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={theme.colorScheme === "dark" ? "#ffc400" : "#8c6c00"} /> : <></>}</Text>
                 <Group position="center" spacing='sm'>
                     <Text size="sm">{item.osszido}</Text>
-                    <Text size="sm">{currency.format(calcDisc(item.totalFare, discount))}</Text>
+                    <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text>
                     <Text size="sm">{item.ossztav}</Text>
                 </Group>
             </Stack>
@@ -142,7 +141,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                                         </Group>
                                         <Group spacing={10}>
                                             {!dataItem.jaratinfo.fare ? <></> :
-                                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, discount))}</Text>}
+                                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.discount))}</Text>}
                                             {!dataItem.jaratinfo.travelTime ? <></> :
                                                 <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
                                             {!dataItem.jaratszam ? <></> :
@@ -186,7 +185,8 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<any>(null)
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
-    const [lastPassed, setLastPassed] = useState<any>(true)
+    const [maxTransfers] = useLocalStorage<number | undefined>({ key: 'maximum-transfers', defaultValue: 5 });
+    const [discount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
     const date = new Date()
 
     useEffect(() => {
@@ -199,6 +199,8 @@ const Routes: NextPage = () => {
                 sTo: Number(router.query['st'] as string),
                 hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
                 minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
+                discount,
+                maxTransfers,
                 date: router.query['d'] as string
             })
         }

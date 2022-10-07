@@ -25,7 +25,9 @@ export const autocomplete = async (input: string) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const routes = async (date: Date, from: number, sFrom: number, to: number, sTo: number) => {
+export const routes = async (query: any) => {
+    const date = new Date(query.date)
+    const { from, sFrom, to, sTo, maxTransfers, minTransferTime } = query
     const body = {
         "func": "getRoutes",
         "params": {
@@ -39,7 +41,7 @@ export const routes = async (date: Date, from: number, sFrom: number, to: number
             "hova_ls_id": to,
             "hova_settlement_id": sTo,
             "hova_site_code": "",
-            "maxatszallas": "5",
+            "maxatszallas": maxTransfers,
             "maxwalk": 1000,
             "timeWindow": 0,
             "naptipus": 0,
@@ -48,6 +50,7 @@ export const routes = async (date: Date, from: number, sFrom: number, to: number
             "rendezes": "1",
             "discountPercent": "0",
             "utirany": "oda",
+            "var": minTransferTime,
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",

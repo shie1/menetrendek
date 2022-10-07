@@ -1,17 +1,56 @@
-import { ActionIcon, Box, Button, createStyles, Divider, Grid, Group, Paper, Select, Stack, Text } from '@mantine/core';
+import {
+  ActionIcon,
+  Button,
+  Center,
+  createStyles,
+  Divider,
+  Grid,
+  Group,
+  NumberInput,
+  Paper,
+  Select,
+  Stack,
+  Tabs,
+  Text,
+} from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { showNotification } from '@mantine/notifications';
-import { IconArrowForwardUp, IconCircle, IconClock, IconX, IconBus, IconArrowBarRight, IconArrowBarToRight } from '@tabler/icons';
+import { IconArrowForwardUp, IconClock, IconX, IconSettings, IconRotateClockwise2, IconBus, IconCircle, IconArrowBarToRight, IconArrowBarRight } from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import StopInput from '../components/stop_input'
 import { dateString } from '../client';
-import Head from 'next/head';
 import { useLocalStorage } from '@mantine/hooks';
-import { interactive } from '../components/styles';
 
-const useStyles = createStyles((theme) => ({
+const Input = createContext<any>([])
+
+const Stop = ({ value, type, id, sid }: { value: string, type: "megallo" | "telepules", id: number, sid: number }) => {
+  const [from, setFrom, to, setTo] = useContext(Input)
+
+  const set = (setter: any) => {
+    setter({ value, type, id, sid })
+  }
+
+  return (<Paper p='sm' radius="lg" shadow="lg">
+    <Group position='apart'>
+      <Group>
+        {type === "megallo" ? <IconBus /> : <IconCircle />}
+        <Text>{value}</Text>
+      </Group>
+      <Group>
+        <ActionIcon size="lg" onClick={() => set(setFrom)}>
+          <IconArrowBarRight />
+        </ActionIcon>
+        <ActionIcon size="lg" onClick={() => set(setTo)}>
+          <IconArrowBarToRight />
+        </ActionIcon>
+      </Group>
+    </Group>
+  </Paper>)
+}
+
+const useRoundInputStyles = createStyles((theme) => ({
   root: {
     position: 'relative',
   },
@@ -31,10 +70,32 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
+const DiscountSelector = () => {
+  const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
+  const { classes } = useRoundInputStyles()
+
+  return (<Select
+    data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
+    value={discount.toString()}
+    onChange={(e) => setDiscount(Number(e))}
+    label="Kedvezmény típusa"
+    radius='lg'
+    classNames={classes}
+  />)
+}
+
+const TransferLimiter = () => {
+  const min = 0
+  const max = 5
+
+  const { classes } = useRoundInputStyles()
+  const [value, setValue] = useLocalStorage<number | undefined>({ key: 'maximum-transfers', defaultValue: 5 });
+
+  return (<NumberInput label="Max átszállások" radius='lg' {...{ min, max }} value={value} onChange={setValue} classNames={classes} />);
+}
+
 const Home: NextPage = () => {
   const router = useRouter()
-  const { classes, theme } = useStyles()
-  const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
   const [from, setFrom] = useState<any>()
   const [to, setTo] = useState<any>()
@@ -43,8 +104,8 @@ const Home: NextPage = () => {
 
   return (<>
     <Stack spacing='md'>
-      <StopInput onChange={setFrom} variant='from' />
-      <StopInput onChange={setTo} variant='to' />
+      <StopInput selection={[from, setFrom]} variant='from' />
+      <StopInput selection={[to, setTo]} variant='to' />
       <Grid sx={{ width: '100%' }}>
         <Grid.Col span="auto">
           <DatePicker clearable={false} sx={{ input: { border: '1px solid #7c838a' } }} radius='xl' onChange={setDate} value={date} />
@@ -67,16 +128,30 @@ const Home: NextPage = () => {
         router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
       <Divider size="md" />
-      <Box style={{ margin: '0 auto' }}>
-        <Select
-          data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
-          value={discount.toString()}
-          onChange={(e) => setDiscount(Number(e))}
-          label="Kedvezmény típusa"
-          radius='lg'
-          classNames={classes}
-        />
-      </Box>
+      <Tabs variant="outline" radius="md" defaultValue="stops">
+        <Tabs.List>
+          <Tabs.Tab value="stops" icon={<IconRotateClockwise2 size={14} />}>Megállók</Tabs.Tab>
+          <Tabs.Tab value="options" icon={<IconSettings size={14} />}>Preferenciák</Tabs.Tab>
+        </Tabs.List>
+        <Tabs.Panel value="options" pt="xs">
+          <Stack spacing='sm' style={{ margin: '0 auto', maxWidth: '50%' }}>
+            <DiscountSelector />
+            <TransferLimiter />
+          </Stack>
+        </Tabs.Panel>
+        <Tabs.Panel value="stops" pt="xs">
+          {!stops.length ? <Center>
+            <Text size='sm' style={{ opacity: .8 }} align='center'>Itt fognak megjellenni a legutóbbi megállóid...</Text>
+          </Center> :
+            <Stack spacing='sm' px="sm">
+              <Input.Provider value={[from, setFrom, to, setTo]}>
+                {stops.map((item: any, i: any) => {
+                  return (<Stop {...item} key={i} />)
+                })}
+              </Input.Provider>
+            </Stack>}
+        </Tabs.Panel>
+      </Tabs>
     </Stack>
   </>)
 }
