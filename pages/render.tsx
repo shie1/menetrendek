@@ -56,6 +56,7 @@ const Render: NextPage = () => {
         primaryShade: 8,
         fontFamily: 'Sora, sans-serif',
         fontSizes: {
+            "xs": 18,
             "sm": 20,
             "md": 22,
             "lg": 24,
@@ -68,7 +69,7 @@ const Render: NextPage = () => {
                     <Grid>
                         <Grid.Col sx={{ position: 'relative' }} span="auto">
                             {!results?.nativeData[0].FromBay ? <></> :
-                                <Avatar variant="outline" m={10} radius="xl" size={30} sx={{ position: 'absolute', top: 0, left: 0 }}>{results.nativeData[0].FromBay}</Avatar>}
+                                <Avatar variant="outline" m={10} radius="xl" size={35} sx={{ position: 'absolute', top: 0, left: 0 }}>{results.nativeData[0].FromBay}</Avatar>}
                             <Text align="center" size="xl">{results?.indulasi_ido}</Text>
                             <Text align="center" size="sm">{results?.departureCity}, {results?.departureStation}</Text>
                         </Grid.Col>
@@ -92,7 +93,7 @@ const Render: NextPage = () => {
                                     <Group align="center">
                                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
                                         {!dataItem.jaratinfo ? <></> :
-                                            !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={25}>{dataItem.jaratinfo.FromBay}</Avatar>}
+                                            !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={30}>{dataItem.jaratinfo.FromBay}</Avatar>}
                                     </Group>
                                     {!dataItem.jaratinfo ? <></> : <>
                                         <Group spacing={10}>
@@ -123,9 +124,9 @@ const Render: NextPage = () => {
                     </Timeline>
                     {details ? <div id="done" /> : <></>}
                 </Paper>
-                <Group position="right" spacing={2}>
-                    <IconLink size={12} />
-                    <Text my={6} size={10}>menetrendek.shie1bi.hu</Text>
+                <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
+                    <IconLink size={17} />
+                    <Text size={15}>menetrendek.shie1bi.hu</Text>
                 </Group>
             </Box>
         </Center>
