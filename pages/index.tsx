@@ -22,7 +22,7 @@ import { useRouter } from 'next/router';
 import { createContext, useContext, useState } from 'react';
 import StopInput from '../components/stop_input'
 import { dateString } from '../client';
-import { useLocalStorage } from '@mantine/hooks';
+import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { isEqual } from "lodash"
 import { interactive } from '../components/styles';
 
@@ -31,14 +31,15 @@ const Input = createContext<any>([])
 const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo" | "telepules", id: number, sid: number, remove: any }) => {
   const [from, setFrom, to, setTo] = useContext(Input)
   const [hovered, setHovered] = useState(false)
+  const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
 
   const set = (setter: any) => {
     setter({ value, type, id, sid })
   }
 
-  return (<Menu position='bottom'>
+  return (<Menu trigger={touchscreen ? 'click' : 'hover'} shadow="md" radius="md" transition='rotate-right' position='bottom-start' closeOnClickOutside closeOnItemClick closeOnEscape>
     <Menu.Target>
-      <Paper style={{ userSelect: 'none' }} sx={interactive} p='md' radius="lg" shadow="lg">
+      <Paper style={{ userSelect: 'none' }} sx={interactive} p='md' radius="lg" shadow="md">
         <Group position='apart'>
           <Group spacing='sm' noWrap>
             {type === "megallo" ? <IconBus size={28} /> : <IconCircle size={28} />}
