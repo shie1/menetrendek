@@ -1,4 +1,4 @@
-import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Text } from "@mantine/core";
+import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Space, Text } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconArrowBarRight, IconArrowBarToRight, IconCircle, IconBus } from "@tabler/icons"
 import { forwardRef, useEffect, useRef, useState } from "react";
@@ -12,6 +12,22 @@ interface ItemProps extends SelectItemProps {
 }
 
 const r = /[^a-zA-Z0-9áéíöőüű ]/g
+
+const Dropdown = ({ children }: any) => {
+  const [overflowing, setOverflowing] = useState(true)
+  const ref = useRef<null | HTMLDivElement>(null)
+
+  return (<ScrollArea
+    viewportRef={ref}
+    onScrollPositionChange={(e) => setOverflowing(e.y !== ref.current!.scrollHeight - ref.current!.clientHeight)}
+    className="scrollarea" sx={(theme) => ({
+      maxHeight: 240,
+      width: '100%',
+      '&:after': {
+        transform: `translateY(${!overflowing ? '4em' : '0em'})`
+      }
+    })}>{children}</ScrollArea>)
+}
 
 const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<any> }) => {
   const [data, setData] = useState<Array<any>>([])
@@ -52,9 +68,7 @@ const StopInput = ({ variant, error, selection }: { variant: "from" | "to", erro
     limit={99}
     variant="default"
     itemComponent={AutoCompleteItem}
-    dropdownComponent={({ children }: any) => {
-      return (<ScrollArea style={{ maxHeight: 250, width: '100%' }}>{children}</ScrollArea>)
-    }}
+    dropdownComponent={Dropdown}
     data={data}
     value={selected?.value}
     filter={(value, item) => {

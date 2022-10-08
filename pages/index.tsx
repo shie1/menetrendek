@@ -9,6 +9,7 @@ import {
   Menu,
   NumberInput,
   Paper,
+  ScrollArea,
   Select,
   Stack,
   Tabs,
@@ -135,7 +136,7 @@ const Home: NextPage = () => {
         router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`)
       }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
       <Divider size="md" />
-      <Tabs variant="outline" radius="md" defaultValue="stops">
+      <Tabs sx={{ height: '100%' }} variant="outline" radius="md" defaultValue="stops">
         <Tabs.List>
           <Tabs.Tab value="stops" icon={<IconRotateClockwise2 size={14} />}>Megállók</Tabs.Tab>
           <Tabs.Tab value="options" icon={<IconSettings size={14} />}>Preferenciák</Tabs.Tab>
@@ -150,7 +151,7 @@ const Home: NextPage = () => {
           {!stops.length ? <Center>
             <Text size='sm' style={{ opacity: .8 }} align='center'>Itt fognak megjellenni a legutóbbi megállóid...</Text>
           </Center> :
-            <Stack spacing='sm' px="sm">
+            <Stack spacing='sm' px="sm" mb="xl">
               <Input.Provider value={[from, setFrom, to, setTo]}>
                 {stops.map((item: any, i: any) => {
                   return (<Stop {...item} key={i} remove={() => setStops(stops.filter(fItem => !isEqual(fItem, item)))} />)
