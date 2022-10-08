@@ -14,6 +14,9 @@ import {
   Text,
   ActionIcon,
   Space,
+  Modal,
+  Button,
+  Stack,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
@@ -26,6 +29,7 @@ import { createContext } from 'react';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
+  const [firstStart, setFirstStart] = useLocalStorage<boolean>({ key: 'first-start', defaultValue: true })
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
@@ -44,6 +48,16 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
+          {!firstStart ? <></> : <Modal size='lg' radius="lg" opened={firstStart} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
+            <Stack spacing={6}>
+              <Text size='lg'>Ez az oldal demonstráció céljából üzemel és nem helyettesíti a menetrendek.hu-t!</Text>
+              <Text size='sm'>A rendeltetésszerű használat betartatása céljából az oldal csak jelszavas hozzáféréssel tekinthető meg.</Text>
+              <Text size='sm'>Észrevételekért értesítsenek az alábbi email címen: shibibence@gmail.com</Text>
+            </Stack>
+            <Group position='right' mt='sm'>
+              <Button onClick={() => setFirstStart(false)}>Megértettem</Button>
+            </Group>
+          </Modal>}
           <div className='bg' />
           <Container tabIndex={-1} sx={{ height: '100vh' }}>
             <Center sx={{ height: '100%' }}>
