@@ -31,7 +31,6 @@ const Input = createContext<any>([])
 
 const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo" | "telepules", id: number, sid: number, remove: any }) => {
   const [from, setFrom, to, setTo] = useContext(Input)
-  const [hovered, setHovered] = useState(false)
   const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
 
   const set = (setter: any) => {

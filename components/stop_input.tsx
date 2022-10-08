@@ -1,10 +1,9 @@
-import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Space, Text } from "@mantine/core";
+import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Text } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconArrowBarRight, IconArrowBarToRight, IconCircle, IconBus } from "@tabler/icons"
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { apiCall } from "./api";
 import { isEqual } from "lodash"
-import { receiveMessageOnPort } from "worker_threads";
 
 interface ItemProps extends SelectItemProps {
   color: MantineColor;
@@ -14,18 +13,10 @@ interface ItemProps extends SelectItemProps {
 const r = /[^a-zA-Z0-9áéíöőüű ]/g
 
 const Dropdown = ({ children }: any) => {
-  const [overflowing, setOverflowing] = useState(true)
-  const ref = useRef<null | HTMLDivElement>(null)
-
   return (<ScrollArea
-    viewportRef={ref}
-    onScrollPositionChange={(e) => setOverflowing(e.y !== ref.current!.scrollHeight - ref.current!.clientHeight)}
-    className="scrollarea" sx={(theme) => ({
+    sx={(theme) => ({
       maxHeight: 240,
       width: '100%',
-      '&:after': {
-        transform: `translateY(${!overflowing ? '4em' : '0em'})`
-      }
     })}>{children}</ScrollArea>)
 }
 
