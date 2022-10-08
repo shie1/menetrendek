@@ -6,6 +6,7 @@ import {
   Divider,
   Grid,
   Group,
+  Menu,
   NumberInput,
   Paper,
   Select,
@@ -15,7 +16,7 @@ import {
 } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { showNotification } from '@mantine/notifications';
-import { IconArrowForwardUp, IconClock, IconX, IconSettings, IconRotateClockwise2, IconBus, IconCircle, IconArrowBarToRight, IconArrowBarRight } from '@tabler/icons';
+import { IconArrowForwardUp, IconClock, IconX, IconSettings, IconRotateClockwise2, IconBus, IconCircle, IconArrowBarToRight, IconArrowBarRight, IconMenu2 } from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
 import { createContext, useContext, useState } from 'react';
@@ -23,6 +24,7 @@ import StopInput from '../components/stop_input'
 import { dateString } from '../client';
 import { useLocalStorage } from '@mantine/hooks';
 import { isEqual } from "lodash"
+import { interactive } from '../components/styles';
 
 const Input = createContext<any>([])
 
@@ -34,25 +36,24 @@ const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo"
     setter({ value, type, id, sid })
   }
 
-  return (<Paper p='sm' radius="lg" shadow="lg">
-    <Group position='apart'>
-      <Group>
-        {type === "megallo" ? <IconBus /> : <IconCircle />}
-        <Text>{value}</Text>
-      </Group>
-      <Group>
-        <ActionIcon size="lg" onClick={remove}>
-          <IconX />
-        </ActionIcon>
-        <ActionIcon size="lg" onClick={() => set(setFrom)}>
-          <IconArrowBarRight />
-        </ActionIcon>
-        <ActionIcon size="lg" onClick={() => set(setTo)}>
-          <IconArrowBarToRight />
-        </ActionIcon>
-      </Group>
-    </Group>
-  </Paper>)
+  return (<Menu position='bottom'>
+    <Menu.Target>
+      <Paper style={{ userSelect: 'none' }} sx={interactive} p='md' radius="lg" shadow="lg">
+        <Group position='apart'>
+          <Group spacing='sm' noWrap>
+            {type === "megallo" ? <IconBus size={28} /> : <IconCircle size={28} />}
+            <Text size='md'>{value}</Text>
+          </Group>
+        </Group>
+      </Paper>
+    </Menu.Target>
+    <Menu.Dropdown>
+      <Menu.Label>{value}</Menu.Label>
+      <Menu.Item onClick={() => set(setFrom)} icon={<IconArrowBarRight size={14} />}>Indulás innen</Menu.Item>
+      <Menu.Item onClick={() => set(setTo)} icon={<IconArrowBarToRight size={14} />}>Érkezés ide</Menu.Item>
+      <Menu.Item onClick={remove} color='red' icon={<IconX size={14} />}>Eltávolítás</Menu.Item>
+    </Menu.Dropdown>
+  </Menu>)
 }
 
 const useRoundInputStyles = createStyles((theme) => ({
