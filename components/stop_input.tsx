@@ -1,9 +1,10 @@
 import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Text } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconArrowBarRight, IconArrowBarToRight, IconCircle, IconBus } from "@tabler/icons"
-import { forwardRef, useEffect, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import { apiCall } from "./api";
 import { isEqual } from "lodash"
+import { receiveMessageOnPort } from "worker_threads";
 
 interface ItemProps extends SelectItemProps {
   color: MantineColor;
@@ -15,6 +16,7 @@ const r = /[^a-zA-Z0-9áéíöőüű ]/g
 const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<any> }) => {
   const [data, setData] = useState<Array<any>>([])
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
+  const ref = useRef<HTMLInputElement | null>(null)
   const [selected, setSelected] = selection
 
   useEffect(() => {
@@ -45,6 +47,7 @@ const StopInput = ({ variant, error, selection }: { variant: "from" | "to", erro
   return (<Autocomplete
     icon={selected ? (selected.type === "megallo" ? <IconBus size={18} stroke={1.5} /> : <IconCircle size={18} stroke={1.5} />) : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
+    ref={ref}
     size="md"
     limit={99}
     variant="default"
@@ -62,7 +65,8 @@ const StopInput = ({ variant, error, selection }: { variant: "from" | "to", erro
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={load}
-    onItemSubmit={(e) => { setSelected(e) }}
+    onFocus={() => setSelected(null)}
+    onItemSubmit={(e) => { setSelected(e); ref.current?.blur() }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
     rightSectionWidth={42}
   />)

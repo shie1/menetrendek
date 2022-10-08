@@ -22,11 +22,13 @@ import { createContext, useContext, useState } from 'react';
 import StopInput from '../components/stop_input'
 import { dateString } from '../client';
 import { useLocalStorage } from '@mantine/hooks';
+import { isEqual } from "lodash"
 
 const Input = createContext<any>([])
 
-const Stop = ({ value, type, id, sid }: { value: string, type: "megallo" | "telepules", id: number, sid: number }) => {
+const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo" | "telepules", id: number, sid: number, remove: any }) => {
   const [from, setFrom, to, setTo] = useContext(Input)
+  const [hovered, setHovered] = useState(false)
 
   const set = (setter: any) => {
     setter({ value, type, id, sid })
@@ -39,6 +41,9 @@ const Stop = ({ value, type, id, sid }: { value: string, type: "megallo" | "tele
         <Text>{value}</Text>
       </Group>
       <Group>
+        <ActionIcon size="lg" onClick={remove}>
+          <IconX />
+        </ActionIcon>
         <ActionIcon size="lg" onClick={() => set(setFrom)}>
           <IconArrowBarRight />
         </ActionIcon>
@@ -146,7 +151,7 @@ const Home: NextPage = () => {
             <Stack spacing='sm' px="sm">
               <Input.Provider value={[from, setFrom, to, setTo]}>
                 {stops.map((item: any, i: any) => {
-                  return (<Stop {...item} key={i} />)
+                  return (<Stop {...item} key={i} remove={() => setStops(stops.filter(fItem => !isEqual(fItem, item)))} />)
                 })}
               </Input.Provider>
             </Stack>}
