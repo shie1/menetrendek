@@ -26,9 +26,11 @@ import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
 import { createContext } from 'react';
+import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
+  const router = useRouter()
   const [firstStart, setFirstStart] = useLocalStorage<boolean>({ key: 'first-start', defaultValue: true })
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -48,7 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
-          {!firstStart ? <></> : <Modal size='lg' radius="lg" opened={firstStart} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
+          <Modal size='lg' radius="lg" opened={firstStart && router.pathname !== '/render'} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
             <Stack spacing={6}>
               <Text size='lg'>Ez az oldal demonstráció céljából üzemel és nem helyettesíti a menetrendek.hu-t!</Text>
               <Text size='sm'>A rendeltetésszerű használat betartatása céljából az oldal csak jelszavas hozzáféréssel tekinthető meg.</Text>
@@ -57,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Group position='right' mt='sm'>
               <Button onClick={() => setFirstStart(false)}>Megértettem</Button>
             </Group>
-          </Modal>}
+          </Modal>
           <div className='bg' />
           <Container tabIndex={-1} sx={{ height: '100vh' }}>
             <Center sx={{ height: '100%' }}>

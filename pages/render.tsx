@@ -22,6 +22,7 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
 const Render: NextPage = () => {
     const [results, setResults] = useState<any>()
     const [details, setDetails] = useState<any>()
+    const [done, setDone] = useState(false)
     const [query, setQuery] = useState<any>()
     const router = useRouter()
 
@@ -49,6 +50,10 @@ const Render: NextPage = () => {
             apiCall("POST", "/api/exposition", { fieldvalue: results.kifejtes_postjson, nativeData: results.nativeData, datestring: router.query['d'] as string }).then(setDetails)
         }
     }, [results])
+
+    useEffect(() => {
+        if (details) setDone(true)
+    }, [details])
 
     return (<MantineProvider withGlobalStyles withNormalizeCSS theme={{
         colorScheme: 'dark',
@@ -122,7 +127,7 @@ const Render: NextPage = () => {
                             </Timeline.Item>)
                         })}
                     </Timeline>
-                    {details ? <div id="done" /> : <></>}
+                    {done ? <div id="done" /> : <></>}
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
