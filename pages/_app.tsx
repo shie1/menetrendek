@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
-          <Modal size='lg' radius="lg" opened={firstStart && router.pathname !== '/render'} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
+          {/* <Modal size='lg' radius="lg" opened={firstStart && router.pathname !== '/render'} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
             <Stack spacing={6}>
               <Text size='lg'>Ez az oldal demonstráció céljából üzemel és nem helyettesíti a menetrendek.hu-t!</Text>
               <Text size='sm'>A rendeltetésszerű használat betartatása céljából az oldal csak jelszavas hozzáféréssel tekinthető meg.</Text>
@@ -59,7 +59,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             <Group position='right' mt='sm'>
               <Button onClick={() => setFirstStart(false)}>Megértettem</Button>
             </Group>
-          </Modal>
+          </Modal> */}
           <div className='bg' />
           <Container tabIndex={-1} sx={{ height: '100vh' }}>
             <Center sx={{ height: '100%' }}>
