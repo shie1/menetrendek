@@ -26,6 +26,7 @@ import { dateString } from '../client';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { isEqual } from "lodash"
 import { interactive } from '../components/styles';
+import { useCookies } from 'react-cookie';
 
 const Input = createContext<any>([])
 
@@ -78,13 +79,13 @@ const useRoundInputStyles = createStyles((theme) => ({
 }));
 
 const DiscountSelector = () => {
-  const [discount, setDiscount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
+  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage']);
   const { classes } = useRoundInputStyles()
 
   return (<Select
     data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
-    value={discount.toString()}
-    onChange={(e) => setDiscount(Number(e))}
+    value={(cookies['discount-percentage'] || "0").toString()}
+    onChange={(e) => setCookie("discount-percentage", Number(e))}
     label="Kedvezmény típusa"
     radius='lg'
     classNames={classes}

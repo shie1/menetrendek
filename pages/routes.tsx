@@ -31,6 +31,7 @@ import {
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
+import useCookies from "react-cookie/cjs/useCookies";
 import { apiCall } from "../components/api";
 
 const calcDisc = (fee: number, discount: number) => {
@@ -186,7 +187,8 @@ const Routes: NextPage = () => {
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
     const [maxTransfers] = useLocalStorage<number | undefined>({ key: 'maximum-transfers', defaultValue: 5 });
-    const [discount] = useLocalStorage<number>({ key: 'discount-percentage', defaultValue: 0 })
+    const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage']);
+    const discount = cookies["discount-percentage"] || 0
     const date = new Date()
 
     useEffect(() => {
