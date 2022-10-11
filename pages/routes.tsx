@@ -186,9 +186,7 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<any>(null)
     const [results, setResults] = useState<any>(null)
     const [accordion, setAccordion] = useState<any>()
-    const [maxTransfers] = useLocalStorage<number | undefined>({ key: 'maximum-transfers', defaultValue: 5 });
     const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage']);
-    const discount = cookies["discount-percentage"] || 0
     const date = new Date()
 
     useEffect(() => {
@@ -201,8 +199,7 @@ const Routes: NextPage = () => {
                 sTo: Number(router.query['st'] as string),
                 hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
                 minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
-                discount,
-                maxTransfers,
+                discount: cookies["discount-percentage"] || 0,
                 date: router.query['d'] as string
             })
         }

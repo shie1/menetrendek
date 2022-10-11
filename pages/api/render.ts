@@ -7,7 +7,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    const browser = await launch({ headless: false })
+    const browser = await launch({ headless: true })
     const page = await browser.newPage();
     await page.setViewport({
         width: 3000,

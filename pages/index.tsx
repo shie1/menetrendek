@@ -92,16 +92,6 @@ const DiscountSelector = () => {
   />)
 }
 
-const TransferLimiter = () => {
-  const min = 0
-  const max = 5
-
-  const { classes } = useRoundInputStyles()
-  const [value, setValue] = useLocalStorage<number | undefined>({ key: 'maximum-transfers', defaultValue: 5 });
-
-  return (<NumberInput label="Max átszállások" radius='lg' {...{ min, max }} value={value} onChange={setValue} classNames={classes} />);
-}
-
 const Home: NextPage = () => {
   const router = useRouter()
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
@@ -144,7 +134,6 @@ const Home: NextPage = () => {
         <Tabs.Panel value="options" pt="xs">
           <Stack spacing='sm' style={{ margin: '0 auto', maxWidth: '50%' }}>
             <DiscountSelector />
-            <TransferLimiter />
           </Stack>
         </Tabs.Panel>
         <Tabs.Panel value="stops" pt="xs">
