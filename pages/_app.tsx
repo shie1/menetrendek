@@ -14,23 +14,18 @@ import {
   Text,
   ActionIcon,
   Space,
-  Modal,
-  Button,
-  Stack,
 } from '@mantine/core';
-import { useHotkeys, useLocalStorage, useMediaQuery } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
-import { createContext } from 'react';
 import { useRouter } from 'next/router';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
-  const router = useRouter()
   const [firstStart, setFirstStart] = useLocalStorage<boolean>({ key: 'first-start', defaultValue: true })
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const toggleColorScheme = (value?: ColorScheme) =>

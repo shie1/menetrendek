@@ -7,9 +7,7 @@ import {
   Grid,
   Group,
   Menu,
-  NumberInput,
   Paper,
-  ScrollArea,
   Select,
   Stack,
   Tabs,
@@ -17,7 +15,17 @@ import {
 } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { showNotification } from '@mantine/notifications';
-import { IconArrowForwardUp, IconClock, IconX, IconSettings, IconRotateClockwise2, IconBus, IconCircle, IconArrowBarToRight, IconArrowBarRight, IconMenu2 } from '@tabler/icons';
+import {
+  IconArrowForwardUp,
+  IconClock,
+  IconX,
+  IconSettings,
+  IconRotateClockwise2,
+  IconBus,
+  IconCircle,
+  IconArrowBarToRight,
+  IconArrowBarRight,
+} from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
 import { createContext, useContext, useState } from 'react';
@@ -85,7 +93,7 @@ const DiscountSelector = () => {
   return (<Select
     data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
     value={(cookies['discount-percentage'] || "0").toString()}
-    onChange={(e) => setCookie("discount-percentage", Number(e))}
+    onChange={(e) => setCookie("discount-percentage", Number(e), { path: '/', maxAge: 60 * 60 * 24 * 365 })}
     label="Kedvezmény típusa"
     radius='lg'
     classNames={classes}
