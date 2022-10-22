@@ -19,6 +19,7 @@
     "@types/sharp": "^0.31.0",
     "dayjs": "^1.11.5",
     "lz-string": "^1.4.4",
+    "moment": "^2.29.4",
     "next": "12.3.1",
     "next-pwa": "^5.6.0",
     "next-sitemap": "^3.1.23",

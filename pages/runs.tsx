@@ -1,15 +1,23 @@
-import { Group, LoadingOverlay, Stack, Table, Text, useMantineTheme } from "@mantine/core";
+import { Group, Loader, LoadingOverlay, Progress, Stack, Text, Timeline, Transition, useMantineTheme } from "@mantine/core";
+import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
+import { useTime } from "../components/time"
+import moment from 'moment';
+
+const format = "YYYY-MM-DD HH:mm"
 
 const Runs: NextPage = () => {
     const [query, setQuery] = useState<any>()
     const [runs, setRuns] = useState<any>()
     const [loading, setLoading] = useState(false)
+    const [cityState, setCityState] = useState(0)
+    const [stationState, setStationState] = useState(0)
+    const [percentage, setPercentage] = useState(0)
     const router = useRouter()
-    const theme = useMantineTheme()
+    const now = useTime()
 
     useEffect(() => {
         setLoading(true)
@@ -27,7 +35,46 @@ const Runs: NextPage = () => {
         if (query) {
             apiCall("POST", "/api/runs", query).then((e) => { setRuns(e); setLoading(false) })
         }
+        const interval = setInterval(() => {
+            if (query) {
+                apiCall("POST", "/api/runs", query).then((e) => { setRuns(e); setLoading(false) })
+            }
+        }, 10 * 1000)
+
+        return () => clearInterval(interval)
     }, [query])
+
+    useEffect(() => {
+        if (runs) {
+            const today = `${now.year()}-${now.month() + 1}-${now.date()}`
+
+            Object.keys(runs.custom).map((city: string, i: any) => {
+                const item = runs.custom[city]
+                const range = { start: moment(`${today} ${item.start}`, format), end: moment(`${today} ${item.end}`, format) }
+                if (now.isAfter(range.start)) { setCityState(i + 1) }
+            })
+        }
+    }, [runs, now])
+
+    useEffect(() => {
+        if (runs && cityState) {
+            const today = `${now.year()}-${now.month() + 1}-${now.date()}`
+
+            runs.custom[cityState - 1].items.map((item: any, i: any) => {
+                const range = { start: moment(`${today} ${item.start}`, format), end: moment(`${today} ${item.end}`, format) }
+                if (now.isAfter(range.start)) { setStationState(i + 1) }
+            })
+        }
+    }, [cityState, runs, now])
+
+    useEffect(() => {
+        if (runs && cityState && stationState) {
+            const today = `${now.year()}-${now.month() + 1}-${now.date()}`
+            const item = runs.custom[cityState].items[stationState - 1]
+            const range = { start: moment(`${today} ${item.varhato_indul || item.indul}`, format), end: moment(`${today} ${item.utveg}`, format) }
+            setPercentage(((now.unix() - range.start.unix()) / (range.end.unix() - range.start.unix())) * 100)
+        }
+    }, [cityState, runs, now, stationState])
 
     return (<>
         <LoadingOverlay visible={loading} />
@@ -37,38 +84,37 @@ const Runs: NextPage = () => {
                 <Text size="xl">{runs?.results.kozlekedteti}</Text>
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
             </Stack>
-            <Table verticalSpacing="sm" horizontalSpacing='sm' withColumnBorders>
-                <thead style={{ textAlign: 'center', borderBottom: `1px solid ${theme.colorScheme === "dark" ? "#373A40" : "#dee2e6"}` }}>
-                    <tr>
-                        <td colSpan={2}></td>
-                        <td colSpan={2}>Mentetrendi</td>
-                        <td colSpan={2}>Valós</td>
-                    </tr>
-                    <tr>
-                        <td>#</td>
-                        <td>Megálló</td>
-                        <td>érk.</td>
-                        <td>ind.</td>
-                        <td>érk.</td>
-                        <td>ind.</td>
-                    </tr>
-                </thead>
-                <tbody>
-                    {!runs ? <></> :
-                        Object.keys(runs.results.kifejtes_sor).map((i: any) => {
-                            const item = runs.results.kifejtes_sor[i]
-                            return (<tr key={i}>
-                                <td>{i.padStart(2, '0')}</td>
-                                <td style={{ fontSize: '2vmin' }}>{item.departureCity}, {item.departureStation}</td>
-                                <td>{item.erkezik}</td>
-                                <td>{item.indul}</td>
-                                <td>{item.varhato_erkezik}</td>
-                                <td>{item.varhato_indul}</td>
-                            </tr>)
-                        })
-                    }
-                </tbody>
-            </Table>
+            <Timeline active={cityState - 1}>
+                {!runs ? <></> :
+                    Object.keys(runs.custom).map((num: any) => {
+                        const item = runs.custom[num]
+                        const active = cityState > num ? false : cityState == num ? true : false
+                        return (<Timeline.Item key={num} bullet={<IconCircle />} title={<Text size='lg'>{item.departureCity}</Text>}>
+                            <Text size='xs' mt={-4}>{item.start}-{item.end}</Text>
+                            <Timeline my='md' active={cityState > num ? 99 : cityState == num ? stationState : -1}>
+                                {runs.custom[num].items.map((item: any, i: any) => {
+                                    return (<Timeline.Item bullet={<IconBus />} title={item.departureStation} key={i}>
+                                        <Stack>
+                                            <Group spacing={6}>
+                                                {!item.erkezik ? <></> : <Group spacing={4}>
+                                                    <IconArrowBarToRight size={20} />
+                                                    <Text size='sm'>{item.erkezik}</Text>
+                                                </Group>}
+                                                {!item.indul ? <></> : <Group spacing={4}>
+                                                    <IconArrowBarRight size={20} />
+                                                    <Text size='sm'>{item.indul}</Text>
+                                                </Group>}
+                                            </Group>
+                                            <Transition mounted={active && stationState == i+1} transition="slide-down">
+                                                {(styles) => (<Progress style={styles} value={percentage} />)}
+                                            </Transition>
+                                        </Stack>
+                                    </Timeline.Item>)
+                                })}
+                            </Timeline>
+                        </Timeline.Item>)
+                    })}
+            </Timeline>
         </Stack>
     </>)
 }

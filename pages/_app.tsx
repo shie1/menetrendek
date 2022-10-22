@@ -45,20 +45,10 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
-          {/* <Modal size='lg' radius="lg" opened={firstStart && router.pathname !== '/render'} onClose={() => setFirstStart(false)} withCloseButton={false} closeOnClickOutside={false} title="">
-            <Stack spacing={6}>
-              <Text size='lg'>Ez az oldal demonstráció céljából üzemel és nem helyettesíti a menetrendek.hu-t!</Text>
-              <Text size='sm'>A rendeltetésszerű használat betartatása céljából az oldal csak jelszavas hozzáféréssel tekinthető meg.</Text>
-              <Text size='sm'>Észrevételekért értesítsenek az alábbi email címen: shibibence@gmail.com</Text>
-            </Stack>
-            <Group position='right' mt='sm'>
-              <Button onClick={() => setFirstStart(false)}>Megértettem</Button>
-            </Group>
-          </Modal> */}
           <div className='bg' />
           <Container tabIndex={-1} sx={{ height: '100vh' }}>
             <Center sx={{ height: '100%' }}>
-              <Box py='sm' sx={{ width: 500, height: '100%' }}>
+              <Box p='sm' sx={{ width: 500, height: '100%' }}>
                 <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
                   <Group position='apart' mb='md'>
                     <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>

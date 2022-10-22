@@ -85,5 +85,26 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
         "els_id": els, // arr
         "datum": datestring
     }
-    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+    let resp = { ...(await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()), custom: {} }
+    let i2 = 0
+    Object.keys(resp.results.kifejtes_sor).map((i: any) => {
+        let item = resp.results.kifejtes_sor[i]
+        item["utveg"] = resp.results.kifejtes_sor[Number(i) + 1]?.erkezik
+        item["varhato_indul"] = item["varhato_indul"] === "n.a." ? null : item["varhato_indul"]
+        item["varhato_erkezik"] = item["varhato_erkezik"] === "n.a." ? null : item["varhato_erkezik"]
+        const lastItem = resp.results.kifejtes_sor[i - 1] ? resp.results.kifejtes_sor[i - 1] : { departureCity: null }
+        if (lastItem.departureCity !== item.departureCity) {
+            i2++
+            resp.custom[i2] = { departureCity: item.departureCity, items: [item] }
+        } else {
+            resp.custom[i2].items = [...resp.custom[i2].items, item]
+        }
+    })
+    Object.keys(resp.custom).map((i: any) => {
+        resp.custom[i].start = resp.custom[i].items[0].erkezik
+        resp.custom[i].varhato_start = resp.custom[i].items[0].varhato_erkezik
+        resp.custom[i].end = resp.custom[Number(i) + 1]?.items[0].erkezik
+        resp.custom[i].varhato_end = resp.custom[Number(i) + 1]?.items[0].varhato_erkezik
+    })
+    return resp
 }
