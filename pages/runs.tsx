@@ -2,10 +2,11 @@ import { Group, Loader, LoadingOverlay, Progress, Stack, Text, Timeline, Transit
 import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 import { useTime } from "../components/time"
 import moment from 'moment';
+import { Dev } from "./_app";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -14,10 +15,12 @@ const Runs: NextPage = () => {
     const [runs, setRuns] = useState<any>()
     const [loading, setLoading] = useState(false)
     const [cityState, setCityState] = useState(0)
+    const [finished, setFinished] = useState(false)
     const [stationState, setStationState] = useState(0)
     const [percentage, setPercentage] = useState(0)
     const router = useRouter()
     const now = useTime()
+    const [dev] = useContext(Dev)
 
     useEffect(() => {
         setLoading(true)
@@ -71,8 +74,9 @@ const Runs: NextPage = () => {
         if (runs && cityState && stationState) {
             const today = `${now.year()}-${now.month() + 1}-${now.date()}`
             const item = runs.custom[cityState].items[stationState - 1]
-            const range = { start: moment(`${today} ${item.varhato_indul || item.indul}`, format), end: moment(`${today} ${item.utveg}`, format) }
-            setPercentage(((now.unix() - range.start.unix()) / (range.end.unix() - range.start.unix())) * 100)
+            if (!item) { return }
+            const range = { start: moment(`${today} ${item.indul}`, format), end: item.utveg ? moment(`${today} ${item.utveg}`, format) : false }
+            if (range.end) { setPercentage(((now.unix() - range.start.unix()) / ((range.end as moment.Moment).unix() - range.start.unix())) * 100) } else { setFinished(true) }
         }
     }, [cityState, runs, now, stationState])
 
@@ -83,6 +87,7 @@ const Runs: NextPage = () => {
                 <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
                 <Text size="xl">{runs?.results.kozlekedteti}</Text>
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
+                {dev ? `${cityState}|${stationState}` : ''}
             </Stack>
             <Timeline active={cityState - 1}>
                 {!runs ? <></> :
@@ -105,7 +110,7 @@ const Runs: NextPage = () => {
                                                     <Text size='sm'>{item.indul}</Text>
                                                 </Group>}
                                             </Group>
-                                            <Transition mounted={active && stationState == i+1} transition="slide-down">
+                                            <Transition mounted={active && stationState == i + 1 && !finished} transition="slide-down">
                                                 {(styles) => (<Progress style={styles} value={percentage} />)}
                                             </Transition>
                                         </Stack>

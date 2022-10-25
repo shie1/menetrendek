@@ -15,7 +15,6 @@ import {
     Timeline,
     useMantineTheme,
 } from "@mantine/core";
-import { useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import {
     IconAlertTriangle,

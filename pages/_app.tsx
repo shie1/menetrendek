@@ -14,24 +14,41 @@ import {
   Text,
   ActionIcon,
   Space,
+  Affix,
+  Drawer,
+  ScrollArea,
+  Divider,
+  Button,
+  Stack,
 } from '@mantine/core';
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
+import { useForceUpdate, useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld, IconSettings, IconSettingsOff, IconRefresh } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
+import { createContext, useState } from 'react';
+import { TimeInput } from '@mantine/dates';
+
+export const Dev = createContext<Array<boolean | any>>([false, () => { }])
+
+export const Time = createContext<any>([null, () => { }])
 
 function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
-  const [firstStart, setFirstStart] = useLocalStorage<boolean>({ key: 'first-start', defaultValue: true })
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
+  const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
+  const [drawer, setDrawer] = useState(false)
+  const [time, setTime] = useState<any>(null)
+  const forceupdate = useForceUpdate()
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
-  useHotkeys([['ctrl+J', () => toggleColorScheme()]])
+  useHotkeys([
+    ['ctrl+J', () => toggleColorScheme()],
+    ['ctrl+D', () => setDev(!dev)],
+  ])
 
   return (<>
     <Head>
@@ -45,38 +62,47 @@ function MyApp({ Component, pageProps }: AppProps) {
         fontFamily: 'Sora, sans-serif',
       }} >
         <NotificationsProvider>
-          <div className='bg' />
-          <Container tabIndex={-1} sx={{ height: '100vh' }}>
-            <Center sx={{ height: '100%' }}>
-              <Box p='sm' sx={{ width: 500, height: '100%' }}>
-                <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
-                  <Group position='apart' mb='md'>
-                    <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
-                    <Group position="center">
-                      <Switch
-                        checked={colorScheme === 'dark'}
-                        onChange={() => toggleColorScheme()}
-                        size="lg"
-                        onLabel={<IconSun color={theme.white} size={20} stroke={1.5} />}
-                        offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
-                      />
-                    </Group>
-                  </Group>
-                  <Component {...pageProps} />
-                  <Space h="xl" />
-                  <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
-                    <ActionIcon onClick={() => window.open("https://shie1bi.hu", "_blank")}>
-                      <IconWorld size={16} />
-                    </ActionIcon>
-                    <Text size="sm">Shie1bi, {(new Date()).getFullYear()}</Text>
-                    <ActionIcon onClick={() => window.open("https://youtube.com/shie1bi", "_blank")}>
-                      <IconBrandYoutube size={16} />
-                    </ActionIcon>
-                  </Group>
-                </Card>
-              </Box>
-            </Center>
-          </Container>
+          <Dev.Provider value={[dev, setDev]}>
+            <Time.Provider value={[time, setTime]}>
+              <div className='bg' />
+              <Container tabIndex={-1} sx={{ height: '100vh' }}>
+                <Center sx={{ height: '100%' }}>
+                  <Box p='sm' sx={{ width: 500, height: '100%' }}>
+                    <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
+                      <Group position='apart' mb='md'>
+                        <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
+                        <Group position="center">
+                          <Switch
+                            checked={colorScheme === 'dark'}
+                            onChange={() => toggleColorScheme()}
+                            size="lg"
+                            onLabel={<IconSun color={theme.white} size={20} stroke={1.5} />}
+                            offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
+                          />
+                        </Group>
+                      </Group>
+                      <Component {...pageProps} />
+                      <Space h="xl" />
+                      <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
+                        <ActionIcon onClick={() => window.open("https://shie1bi.hu", "_blank")}>
+                          <IconWorld size={16} />
+                        </ActionIcon>
+                        <Text size="sm">Shie1bi, {(new Date()).getFullYear()}</Text>
+                        <ActionIcon onClick={() => window.open("https://youtube.com/shie1bi", "_blank")}>
+                          <IconBrandYoutube size={16} />
+                        </ActionIcon>
+                      </Group>
+                    </Card>
+                  </Box>
+                </Center>
+              </Container>
+              {!dev ? <></> : <Affix position={{ bottom: 20, right: 20 }}>
+                <ActionIcon variant='filled' onClick={() => setDrawer(!drawer)}>
+                  <IconSettings />
+                </ActionIcon>
+              </Affix>}
+            </Time.Provider>
+          </Dev.Provider>
         </NotificationsProvider>
       </MantineProvider>
     </ColorSchemeProvider>
