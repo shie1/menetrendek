@@ -107,14 +107,14 @@ const Runs: NextPage = () => {
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
                 {dev ? `${cityState}|${stationState}|${(percentage).toString().substring(0, 5)}` : ''}
             </Stack>
-            <Timeline active={cityState}>
+            <Timeline active={finished ? 99 : cityState}>
                 {!runs ? <></> :
                     Object.keys(runs.custom).map((num: any) => {
                         const item = runs.custom[num]
                         const active = cityState > num ? false : cityState == num ? true : false
                         return (<Timeline.Item key={num} bullet={<IconCircle />} title={<Text size='lg'>{item.departureCity}</Text>}>
                             <Text size='xs' mt={-4}>{item.start}-{item.end}</Text>
-                            <Timeline my='md' active={cityState > num ? 99 : cityState == num ? stationState : -1}>
+                            <Timeline my='md' active={finished ? 99 : (cityState > num ? 99 : cityState == num ? stationState : -1)}>
                                 {runs.custom[num].items.map((item: any, i: any) => {
                                     return (<Timeline.Item bullet={<IconBus />} title={item.departureStation} key={i}>
                                         <Stack>
