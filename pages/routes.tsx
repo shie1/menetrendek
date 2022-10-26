@@ -28,6 +28,7 @@ import {
     IconShare,
 } from "@tabler/icons";
 import type { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import useCookies from "react-cookie/cjs/useCookies";
@@ -135,9 +136,11 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                                     </Group>
                                     {!dataItem.jaratinfo ? <></> : <>
                                         <Group position="right">
-                                            <ActionIcon sx={{ position: 'absolute' }} onClick={() => router.push(`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}&d=${router.query['d']}`)}>
-                                                <IconInfoCircle />
-                                            </ActionIcon>
+                                            <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}&d=${router.query['d']}`}>
+                                                <ActionIcon sx={{ position: 'absolute' }}>
+                                                    <IconInfoCircle />
+                                                </ActionIcon>
+                                            </Link>
                                         </Group>
                                         <Group spacing={10}>
                                             {!dataItem.jaratinfo.fare ? <></> :
