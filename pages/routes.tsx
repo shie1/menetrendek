@@ -33,6 +33,7 @@ import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import useCookies from "react-cookie/cjs/useCookies";
 import { apiCall } from "../components/api";
+import useColors from "../components/colors";
 
 const calcDisc = (fee: number, discount: number) => {
     return Math.abs(fee - (fee * (discount / 100)))
@@ -56,7 +57,7 @@ const ActionBullet = ({ muvelet }: { muvelet: string }) => {
 
 const Route = ({ item, val }: { item: any, val: any }) => {
     const router = useRouter()
-    const theme = useMantineTheme()
+    const { warning } = useColors()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
     const query = useContext(Query)
@@ -100,7 +101,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                     </Grid.Col>
                 </Grid>
                 <Divider size="lg" my={6} />
-                <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={theme.colorScheme === "dark" ? "#ffc400" : "#8c6c00"} /> : <></>}</Text>
+                <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
                 <Group position="center" spacing='sm'>
                     <Text size="sm">{item.osszido}</Text>
                     <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text>

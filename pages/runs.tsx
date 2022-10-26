@@ -7,6 +7,7 @@ import { apiCall } from "../components/api";
 import { useTime } from "../components/time"
 import moment from 'moment';
 import { Dev } from "./_app";
+import useColors from "../components/colors";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -19,8 +20,10 @@ const Runs: NextPage = () => {
     const [stationState, setStationState] = useState(-1)
     const [percentage, setPercentage] = useState(0)
     const [progress, setProgress] = useState(false)
+    const { warning } = useColors()
     const router = useRouter()
     const now = useTime()
+    const theme = useMantineTheme()
     const [dev] = useContext(Dev)
 
     useEffect(() => {
@@ -55,7 +58,6 @@ const Runs: NextPage = () => {
             Object.keys(runs.custom).map((city: string, i: any) => {
                 const item = runs.custom[city]
                 const range = { start: moment(`${today} ${item.start}`, format), end: moment(`${today} ${item.end}`, format) }
-                console.log(now, range.start, range.end)
                 if (now.isBetween(range.start, range.end)) { setCityState(i) }
             })
         }
@@ -65,8 +67,8 @@ const Runs: NextPage = () => {
         if (runs) {
             // Update stationState
             const today = `${now.year()}-${now.month() + 1}-${now.date()}`
-            if (!runs.custom[cityState - 1]) { return }
-            runs.custom[cityState - 1].items.map((item: any, i: any) => {
+            if (!runs.custom[cityState]) { return }
+            runs.custom[cityState].items.map((item: any, i: any) => {
                 const range = { start: moment(`${today} ${item.erkezik}`, format), end: moment(`${today} ${item.utveg}`, format) }
                 if (now.isBetween(range.start, range.end)) { setStationState(i) }
             })
@@ -74,7 +76,7 @@ const Runs: NextPage = () => {
     }, [cityState, runs, now])
 
     useEffect(() => {
-        if (runs && cityState && stationState) {
+        if (runs && cityState !== -1 && stationState !== -1) {
             const today = `${now.year()}-${now.month() + 1}-${now.date()}`;
 
             // Check if finished
@@ -87,7 +89,7 @@ const Runs: NextPage = () => {
             // Get percentage
             (() => {
                 if (cityState == -1) { return }
-                const item = runs.custom[cityState].items[stationState - 1]
+                const item = runs.custom[cityState].items[stationState]
                 if (!item) { return }
                 const range = { start: moment(`${today} ${item.indul}`, format), end: item.utveg ? moment(`${today} ${item.utveg}`, format) : false }
                 setProgress(typeof range.end !== 'boolean' ? now.isAfter(range.start) : false)
@@ -119,14 +121,14 @@ const Runs: NextPage = () => {
                                             <Group spacing={6}>
                                                 {!item.erkezik ? <></> : <Group spacing={4}>
                                                     <IconArrowBarToRight size={20} />
-                                                    <Text size='sm'>{item.erkezik}</Text>
+                                                    <Text color={item.varhato_erkezik ? warning : ''} size='sm'>{item.varhato_erkezik || item.erkezik}</Text>
                                                 </Group>}
                                                 {!item.indul ? <></> : <Group spacing={4}>
                                                     <IconArrowBarRight size={20} />
-                                                    <Text size='sm'>{item.indul}</Text>
+                                                    <Text color={item.varhato_indul ? warning : ''} size='sm'>{item.varhato_indul || item.indul}</Text>
                                                 </Group>}
                                             </Group>
-                                            <Transition mounted={active && stationState - 1 == i && !finished} transition="slide-down">
+                                            <Transition mounted={active && stationState == i && !finished} transition="slide-down">
                                                 {(styles) => (<Progress animate={progress} style={styles} value={percentage} />)}
                                             </Transition>
                                         </Stack>

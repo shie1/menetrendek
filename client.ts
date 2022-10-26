@@ -92,6 +92,8 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
         item["utveg"] = resp.results.kifejtes_sor[Number(i) + 1]?.erkezik
         item["varhato_indul"] = item["varhato_indul"] === "n.a." ? null : item["varhato_indul"]
         item["varhato_erkezik"] = item["varhato_erkezik"] === "n.a." ? null : item["varhato_erkezik"]
+        if (item["varhato_indul"] === item["indul"]) { item["varhato_indul"] = null }
+        if (item["varhato_erkezik"] === item["erkezik"]) { item["varhato_erkezik"] = null }
         const lastItem = resp.results.kifejtes_sor[i - 1] ? resp.results.kifejtes_sor[i - 1] : { departureCity: null }
         if (lastItem.departureCity !== item.departureCity) {
             i2++
@@ -103,8 +105,10 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
     Object.keys(resp.custom).map((i: any) => {
         resp.custom[i].start = resp.custom[i].items[0].erkezik || resp.custom[i].items[0].indul
         resp.custom[i].varhato_start = resp.custom[i].items[0].varhato_erkezik
+        if (resp.custom[i].varhato_start == resp.custom[i].start) { resp.custom[i].varhato_start = null }
         resp.custom[i].end = resp.custom[Number(i) + 1]?.items[0].erkezik || resp.custom[i].items[resp.custom[i].items.length - 1].erkezik
         resp.custom[i].varhato_end = resp.custom[Number(i) + 1]?.items[0].varhato_erkezik || resp.custom[i].items[resp.custom[i].items.length - 1].varhato_erkezik
+        if (resp.custom[i].varhato_end == resp.custom[i].end) { resp.custom[i].varhato_end = null }
     })
     return resp
 }
