@@ -14,10 +14,11 @@ const Runs: NextPage = () => {
     const [query, setQuery] = useState<any>()
     const [runs, setRuns] = useState<any>()
     const [loading, setLoading] = useState(false)
-    const [cityState, setCityState] = useState(0)
+    const [cityState, setCityState] = useState(-1)
     const [finished, setFinished] = useState(false)
-    const [stationState, setStationState] = useState(0)
+    const [stationState, setStationState] = useState(-1)
     const [percentage, setPercentage] = useState(0)
+    const [progress, setProgress] = useState(false)
     const router = useRouter()
     const now = useTime()
     const [dev] = useContext(Dev)
@@ -49,34 +50,49 @@ const Runs: NextPage = () => {
 
     useEffect(() => {
         if (runs) {
+            // Update cityState
             const today = `${now.year()}-${now.month() + 1}-${now.date()}`
-
             Object.keys(runs.custom).map((city: string, i: any) => {
                 const item = runs.custom[city]
                 const range = { start: moment(`${today} ${item.start}`, format), end: moment(`${today} ${item.end}`, format) }
-                if (now.isAfter(range.start)) { setCityState(i + 1) }
+                console.log(now, range.start, range.end)
+                if (now.isBetween(range.start, range.end)) { setCityState(i) }
             })
         }
     }, [runs, now])
 
     useEffect(() => {
-        if (runs && cityState) {
+        if (runs) {
+            // Update stationState
             const today = `${now.year()}-${now.month() + 1}-${now.date()}`
-
+            if (!runs.custom[cityState - 1]) { return }
             runs.custom[cityState - 1].items.map((item: any, i: any) => {
-                const range = { start: moment(`${today} ${item.start}`, format), end: moment(`${today} ${item.end}`, format) }
-                if (now.isAfter(range.start)) { setStationState(i + 1) }
+                const range = { start: moment(`${today} ${item.erkezik}`, format), end: moment(`${today} ${item.utveg}`, format) }
+                if (now.isBetween(range.start, range.end)) { setStationState(i) }
             })
         }
     }, [cityState, runs, now])
 
     useEffect(() => {
         if (runs && cityState && stationState) {
-            const today = `${now.year()}-${now.month() + 1}-${now.date()}`
-            const item = runs.custom[cityState].items[stationState - 1]
-            if (!item) { return }
-            const range = { start: moment(`${today} ${item.indul}`, format), end: item.utveg ? moment(`${today} ${item.utveg}`, format) : false }
-            if (range.end) { setPercentage(((now.unix() - range.start.unix()) / ((range.end as moment.Moment).unix() - range.start.unix())) * 100) } else { setFinished(true) }
+            const today = `${now.year()}-${now.month() + 1}-${now.date()}`;
+
+            // Check if finished
+            (() => {
+                const city = runs.custom[runs.custom.length - 1]
+                const end = moment(`${today} ${city.end}`, format)
+                if (end.isBefore(now)) { setFinished(true) } else { setFinished(false) }
+            })();
+
+            // Get percentage
+            (() => {
+                if (cityState == -1) { return }
+                const item = runs.custom[cityState].items[stationState - 1]
+                if (!item) { return }
+                const range = { start: moment(`${today} ${item.indul}`, format), end: item.utveg ? moment(`${today} ${item.utveg}`, format) : false }
+                setProgress(typeof range.end !== 'boolean' ? now.isAfter(range.start) : false)
+                setPercentage(((now.unix() - range.start.unix()) / ((range.end as moment.Moment).unix() - range.start.unix())) * 100)
+            })();
         }
     }, [cityState, runs, now, stationState])
 
@@ -87,9 +103,9 @@ const Runs: NextPage = () => {
                 <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
                 <Text size="xl">{runs?.results.kozlekedteti}</Text>
                 <Text size="sm">{runs?.results.kozlekedik}</Text>
-                {dev ? `${cityState}|${stationState}` : ''}
+                {dev ? `${cityState}|${stationState}|${(percentage).toString().substring(0, 5)}` : ''}
             </Stack>
-            <Timeline active={cityState - 1}>
+            <Timeline active={cityState}>
                 {!runs ? <></> :
                     Object.keys(runs.custom).map((num: any) => {
                         const item = runs.custom[num]
@@ -110,8 +126,8 @@ const Runs: NextPage = () => {
                                                     <Text size='sm'>{item.indul}</Text>
                                                 </Group>}
                                             </Group>
-                                            <Transition mounted={active && stationState == i + 1 && !finished} transition="slide-down">
-                                                {(styles) => (<Progress style={styles} value={percentage} />)}
+                                            <Transition mounted={active && stationState - 1 == i && !finished} transition="slide-down">
+                                                {(styles) => (<Progress animate={progress} style={styles} value={percentage} />)}
                                             </Transition>
                                         </Stack>
                                     </Timeline.Item>)

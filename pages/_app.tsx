@@ -14,22 +14,15 @@ import {
   Text,
   ActionIcon,
   Space,
-  Affix,
-  Drawer,
-  ScrollArea,
-  Divider,
-  Button,
-  Stack,
 } from '@mantine/core';
 import { useForceUpdate, useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld, IconSettings, IconSettingsOff, IconRefresh } from '@tabler/icons';
+import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
 import { createContext, useState } from 'react';
-import { TimeInput } from '@mantine/dates';
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 
@@ -39,7 +32,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
-  const [drawer, setDrawer] = useState(false)
   const [time, setTime] = useState<any>(null)
   const forceupdate = useForceUpdate()
   const toggleColorScheme = (value?: ColorScheme) =>
@@ -96,11 +88,6 @@ function MyApp({ Component, pageProps }: AppProps) {
                   </Box>
                 </Center>
               </Container>
-              {!dev ? <></> : <Affix position={{ bottom: 20, right: 20 }}>
-                <ActionIcon variant='filled' onClick={() => setDrawer(!drawer)}>
-                  <IconSettings />
-                </ActionIcon>
-              </Affix>}
             </Time.Provider>
           </Dev.Provider>
         </NotificationsProvider>

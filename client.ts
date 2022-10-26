@@ -85,8 +85,8 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
         "els_id": els, // arr
         "datum": datestring
     }
-    let resp = { ...(await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()), custom: {} }
-    let i2 = 0
+    let resp = { ...(await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()), custom: [] }
+    let i2 = -1
     Object.keys(resp.results.kifejtes_sor).map((i: any) => {
         let item = resp.results.kifejtes_sor[i]
         item["utveg"] = resp.results.kifejtes_sor[Number(i) + 1]?.erkezik
@@ -101,10 +101,10 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
         }
     })
     Object.keys(resp.custom).map((i: any) => {
-        resp.custom[i].start = resp.custom[i].items[0].erkezik
+        resp.custom[i].start = resp.custom[i].items[0].erkezik || resp.custom[i].items[0].indul
         resp.custom[i].varhato_start = resp.custom[i].items[0].varhato_erkezik
-        resp.custom[i].end = resp.custom[Number(i) + 1]?.items[0].erkezik
-        resp.custom[i].varhato_end = resp.custom[Number(i) + 1]?.items[0].varhato_erkezik
+        resp.custom[i].end = resp.custom[Number(i) + 1]?.items[0].erkezik || resp.custom[i].items[resp.custom[i].items.length - 1].erkezik
+        resp.custom[i].varhato_end = resp.custom[Number(i) + 1]?.items[0].varhato_erkezik || resp.custom[i].items[resp.custom[i].items.length - 1].varhato_erkezik
     })
     return resp
 }
