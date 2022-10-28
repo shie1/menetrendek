@@ -1,4 +1,13 @@
-import { Group, Loader, LoadingOverlay, Progress, Stack, Text, Timeline, Transition, useMantineTheme } from "@mantine/core";
+import {
+    Group,
+    LoadingOverlay,
+    Progress,
+    Stack,
+    Text,
+    Timeline,
+    Transition,
+    useMantineTheme,
+} from "@mantine/core";
 import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";

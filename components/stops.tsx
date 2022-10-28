@@ -4,6 +4,7 @@ import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconTrain, IconMapPin 
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { apiCall } from "./api";
 import { isEqual } from "lodash"
+import { useCookies } from "react-cookie";
 
 interface ItemProps extends SelectItemProps {
   color: MantineColor;
@@ -41,6 +42,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
   const ref = useRef<HTMLInputElement | null>(null)
   const [selected, setSelected] = selection
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
 
   useEffect(() => {
     if (selected) { setStops([selected, ...stops.filter(item => !isEqual(item, selected))]) }
@@ -62,7 +64,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
   const load = (e: string) => {
     setSelected(null)
     if (!e.length) { setData([]); return }
-    apiCall("GET", "/api/autocomplete", { 'q': e }).then(resp => {
+    apiCall("POST", "/api/autocomplete", { 'input': e, 'networks': cookies["selected-networks"] }).then(resp => {
       setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, network: item.network_id })))
     })
   }
@@ -86,7 +88,12 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={load}
-    onFocus={() => setSelected(null)}
+    onFocus={(e) => {
+      setSelected(null)
+      if (!cookies["selected-networks"].length) {
+        setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+    }}
     onItemSubmit={(e) => { setSelected(e); ref.current?.blur() }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
     rightSectionWidth={42}

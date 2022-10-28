@@ -2,16 +2,15 @@ import {
   ActionIcon,
   Button,
   Center,
-  createStyles,
   Divider,
   Grid,
   Group,
   Menu,
   Paper,
-  Select,
   Stack,
   Tabs,
   Text,
+  useMantineTheme,
 } from '@mantine/core';
 import { DatePicker, TimeInput } from '@mantine/dates'
 import { showNotification } from '@mantine/notifications';
@@ -27,13 +26,23 @@ import {
 } from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { StopIcon, StopInput } from '../components/stops'
 import { dateString } from '../client';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { isEqual } from "lodash"
 import { interactive } from '../components/styles';
 import { useCookies } from 'react-cookie';
+import dynamic from 'next/dynamic'
+
+const DiscountSelector = dynamic(() =>
+  import('../components/selectors').then((e) => e.DiscountSelector),
+  { ssr: false }
+)
+const NetworksSelector = dynamic(() =>
+  import('../components/selectors').then((e) => e.NetworksSelector),
+  { ssr: false }
+)
 
 const Input = createContext<any>([])
 
@@ -70,47 +79,16 @@ const Stop = ({ value, network, id, sid, remove }: { value: string, network: Num
   </Menu>)
 }
 
-const useRoundInputStyles = createStyles((theme) => ({
-  root: {
-    position: 'relative',
-  },
-
-  input: {
-    height: 'auto',
-    paddingTop: 18,
-  },
-
-  label: {
-    position: 'absolute',
-    pointerEvents: 'none',
-    fontSize: theme.fontSizes.xs,
-    paddingLeft: theme.spacing.sm,
-    paddingTop: theme.spacing.sm / 2,
-    zIndex: 1,
-  },
-}));
-
-const DiscountSelector = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage']);
-  const { classes } = useRoundInputStyles()
-
-  return (<Select
-    data={[{ value: '0', label: 'Nincs' }, { value: '50', label: '50%' }, { value: '90', label: '90%' }, { value: '100', label: 'Díjmentes' }]}
-    value={(cookies['discount-percentage'] || "0").toString()}
-    onChange={(e) => setCookie("discount-percentage", Number(e), { path: '/', maxAge: 60 * 60 * 24 * 365 })}
-    label="Kedvezmény típusa"
-    radius='lg'
-    classNames={classes}
-  />)
-}
-
 const Home: NextPage = () => {
   const router = useRouter()
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [from, setFrom] = useState<any>()
   const [to, setTo] = useState<any>()
   const [date, setDate] = useState<any>(new Date())
   const [time, setTime] = useState<any>(false)
+  const theme = useMantineTheme()
+  const width = useMediaQuery('(min-width: 560px)')
 
   return (<>
     <Stack spacing='md'>
@@ -133,10 +111,11 @@ const Home: NextPage = () => {
         </Grid.Col>
       </Grid>
       <Button onClick={() => {
+        if (!cookies['selected-networks'].length) { setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 }) }
         if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }); return }
         const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
         router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`)
-      }} leftIcon={<IconArrowForwardUp size={22} />} radius="xl">Tovább</Button>
+      }} leftIcon={<IconArrowForwardUp size={22} />} variant="gradient" gradient={{ from: theme.primaryColor, to: 'blue' }} radius="xl">Tovább</Button>
       <Divider size="md" />
       <Tabs sx={{ height: '100%' }} variant="outline" radius="md" defaultValue="stops">
         <Tabs.List>
@@ -144,8 +123,9 @@ const Home: NextPage = () => {
           <Tabs.Tab value="options" icon={<IconSettings size={14} />}>Preferenciák</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="options" pt="xs">
-          <Stack spacing='sm' style={{ margin: '0 auto', maxWidth: '50%' }}>
+          <Stack spacing='sm' style={{ margin: '0 auto', maxWidth: width ? '80%' : '100%' }}>
             <DiscountSelector />
+            <NetworksSelector />
           </Stack>
         </Tabs.Panel>
         <Tabs.Panel value="stops" pt="xs">

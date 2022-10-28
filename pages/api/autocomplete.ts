@@ -6,5 +6,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    res.status(200).json(await autocomplete(req.query['q'] as string))
+    const rb = JSON.parse(req.body)
+    res.status(200).json(await autocomplete(rb))
 }

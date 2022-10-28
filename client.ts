@@ -1,12 +1,17 @@
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
-const networks = [0, 1, 10, 2, 13, 25]
-
 export const dateString = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
 }
 
-export const autocomplete = async (input: string) => {
+const parseNetworks = (networks: Array<any>) => {
+    let res = [0]
+    networks.map((item: string) => item.split(',').map(item2 => res.push(Number(item2))))
+    return res
+}
+
+export const autocomplete = async (query: any) => {
+    const { input, networks } = query
     const date = new Date()
     const body = {
         "func": "getStationOrAddrByTextC",
@@ -15,9 +20,9 @@ export const autocomplete = async (input: string) => {
             "searchIn": [
                 "stations"
             ],
-            "searchDate": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
+            "searchDate": dateString(date),
             "maxResults": 50,
-            networks,
+            networks: parseNetworks(networks),
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
@@ -25,7 +30,7 @@ export const autocomplete = async (input: string) => {
 
 export const routes = async (query: any) => {
     const date = new Date(query.date)
-    const { from, sFrom, to, sTo, maxTransfers, minTransferTime } = query
+    const { from, sFrom, to, sTo, maxTransfers, minTransferTime, networks } = query
     const body = {
         "func": "getRoutes",
         "params": {
@@ -52,7 +57,7 @@ export const routes = async (query: any) => {
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            networks,
+            "networks": parseNetworks(networks),
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()

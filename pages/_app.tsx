@@ -15,7 +15,7 @@ import {
   ActionIcon,
   Space,
 } from '@mantine/core';
-import { useForceUpdate, useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
@@ -25,7 +25,6 @@ import Head from 'next/head';
 import { createContext, useState } from 'react';
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
-
 export const Time = createContext<any>([null, () => { }])
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -33,7 +32,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
   const [time, setTime] = useState<any>(null)
-  const forceupdate = useForceUpdate()
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
 
