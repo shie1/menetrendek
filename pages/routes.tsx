@@ -1,63 +1,27 @@
 import {
     Accordion,
     ActionIcon,
-    Avatar,
-    Divider,
-    Grid,
     Group,
     Loader,
     LoadingOverlay,
     Skeleton,
     Space,
-    Stack,
-    Text,
-    ThemeIcon,
     Timeline,
-    useMantineTheme,
 } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import {
-    IconAlertTriangle,
-    IconWalk,
-    IconBus,
-    IconCheck,
-    IconWifi,
-    IconDownload,
-    IconInfoCircle,
-    IconX,
-    IconShare,
-} from "@tabler/icons";
+import { IconDownload, IconX, IconShare } from "@tabler/icons";
 import type { NextPage } from "next";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import useCookies from "react-cookie/cjs/useCookies";
 import { apiCall } from "../components/api";
-import useColors from "../components/colors";
+import { RouteExposition, RouteSummary } from "../components/routes";
 
-const calcDisc = (fee: number, discount: number) => {
-    return Math.abs(fee - (fee * (discount / 100)))
-}
-
-const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 const Query = createContext<any>({})
 const AccordionFix = createContext<any>([])
 
-const ActionBullet = ({ muvelet }: { muvelet: string }) => {
-    const size = 16
-    switch (muvelet) {
-        case 'átszállás':
-            return <IconWalk size={size} />
-        case 'leszállás':
-            return <IconCheck size={size} />
-        default:
-            return <IconBus size={size} />
-    }
-}
-
 const Route = ({ item, val }: { item: any, val: any }) => {
     const router = useRouter()
-    const { warning } = useColors()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
     const query = useContext(Query)
@@ -87,27 +51,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                 })
             }
         }}>
-            <Stack spacing={0}>
-                <Grid>
-                    <Grid.Col sx={{ position: 'relative' }} span="auto">
-                        {!item.nativeData[0].FromBay ? <></> :
-                            <Avatar variant="outline" m={10} radius="xl" size={26} sx={{ position: 'absolute', top: 0, left: 0 }}>{item.nativeData[0].FromBay}</Avatar>}
-                        <Text align="center" size="xl">{item.indulasi_ido}</Text>
-                        <Text align="center" size="sm">{item.departureCity}, {item.departureStation}</Text>
-                    </Grid.Col>
-                    <Grid.Col span="auto">
-                        <Text align="center" size="xl">{item.erkezesi_ido}</Text>
-                        <Text align="center" size="sm">{item.arrivalCity}, {item.arrivalStation}</Text>
-                    </Grid.Col>
-                </Grid>
-                <Divider size="lg" my={6} />
-                <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
-                <Group position="center" spacing='sm'>
-                    <Text size="sm">{item.osszido}</Text>
-                    <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text>
-                    <Text size="sm">{item.ossztav}</Text>
-                </Group>
-            </Stack>
+            <RouteSummary item={item} query={query} />
         </Accordion.Control>
         <Accordion.Panel>
             <Skeleton p="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
@@ -125,50 +69,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                     </Group>
                 </>
                     :
-                    <><Timeline active={99}>
-                        {Object.keys(data.results).map((i: any) => {
-                            const dataItem = data.results[i]
-                            return (<Timeline.Item key={i} title={dataItem.allomas} bullet={<ActionBullet muvelet={dataItem.muvelet} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
-                                <Stack spacing={0}>
-                                    <Group align="center">
-                                        <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
-                                        {!dataItem.jaratinfo ? <></> :
-                                            !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={24}>{dataItem.jaratinfo.FromBay}</Avatar>}
-                                    </Group>
-                                    {!dataItem.jaratinfo ? <></> : <>
-                                        <Group position="right">
-                                            <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}&d=${router.query['d']}`}>
-                                                <ActionIcon sx={{ position: 'absolute' }}>
-                                                    <IconInfoCircle />
-                                                </ActionIcon>
-                                            </Link>
-                                        </Group>
-                                        <Group spacing={10}>
-                                            {!dataItem.jaratinfo.fare ? <></> :
-                                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.discount))}</Text>}
-                                            {!dataItem.jaratinfo.travelTime ? <></> :
-                                                <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
-                                            {!dataItem.jaratszam ? <></> :
-                                                <Text size="sm">{dataItem.jaratszam}</Text>}
-                                        </Group>
-                                        {!dataItem.vegallomasok ? <></> :
-                                            <Text size="sm">{dataItem.vegallomasok}</Text>}
-                                        {!dataItem.jaratinfo.kozlekedik ? <></> :
-                                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
-                                        <Space h={2} />
-                                        {!dataItem.jaratinfo.wifi ? <></> :
-                                            <ThemeIcon variant="light" radius="xl">
-                                                <IconWifi size={20} />
-                                            </ThemeIcon>
-                                        }
-                                    </>}
-                                    {!dataItem.TimeForChange ? <></> :
-                                        <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}
-                                    {dataItem.muvelet !== "leszállás" ? <Space h="md" /> : <></>}
-                                </Stack>
-                            </Timeline.Item>)
-                        })}
-                    </Timeline>
+                    <><RouteExposition details={data} query={query} />
                         <Group position="right">
                             {!file ? <Loader size={28} /> :
                                 <ActionIcon onClick={() => {

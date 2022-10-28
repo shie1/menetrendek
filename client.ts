@@ -1,5 +1,7 @@
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
+const networks = [0, 1, 10, 2, 13, 25]
+
 export const dateString = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
 }
@@ -14,12 +16,8 @@ export const autocomplete = async (input: string) => {
                 "stations"
             ],
             "searchDate": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
-            "maxResults": 20,
-            "networks": [
-                1,
-                10,
-                24
-            ]
+            "maxResults": 50,
+            networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
@@ -54,11 +52,7 @@ export const routes = async (query: any) => {
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            "networks": [
-                1,
-                10,
-                24
-            ],
+            networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()

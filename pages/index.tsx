@@ -21,15 +21,14 @@ import {
   IconX,
   IconSettings,
   IconRotateClockwise2,
-  IconBus,
-  IconCircle,
   IconArrowBarToRight,
   IconArrowBarRight,
+  IconAlertCircle,
 } from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { createContext, useContext, useState } from 'react';
-import StopInput from '../components/stop_input'
+import { createContext, useContext, useEffect, useState } from 'react';
+import { StopIcon, StopInput } from '../components/stops'
 import { dateString } from '../client';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
 import { isEqual } from "lodash"
@@ -38,12 +37,17 @@ import { useCookies } from 'react-cookie';
 
 const Input = createContext<any>([])
 
-const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo" | "telepules", id: number, sid: number, remove: any }) => {
+const Stop = ({ value, network, id, sid, remove }: { value: string, network: Number, id: number, sid: number, remove: any }) => {
   const [from, setFrom, to, setTo] = useContext(Input)
   const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
 
+  if (typeof network === 'undefined') { // Migration from type to networks
+    remove()
+    showNotification({ id: 'deprecated-stops', title: 'Előzmények törölve!', color: 'grape', message: 'Az előzményeid törölve lettek, mert elavultak egy frissítés óta!', icon: <IconAlertCircle /> })
+  }
+
   const set = (setter: any) => {
-    setter({ value, type, id, sid })
+    setter({ value, network, id, sid })
   }
 
   return (<Menu trigger={touchscreen ? 'click' : 'hover'} shadow="md" radius="md" transition='rotate-right' position='bottom-start' closeOnClickOutside closeOnItemClick closeOnEscape>
@@ -51,7 +55,7 @@ const Stop = ({ value, type, id, sid, remove }: { value: string, type: "megallo"
       <Paper style={{ userSelect: 'none' }} sx={interactive} p='md' radius="lg" shadow="md">
         <Group position='apart'>
           <Group spacing='sm' noWrap>
-            {type === "megallo" ? <IconBus size={28} /> : <IconCircle size={28} />}
+            <StopIcon network={network} />
             <Text size='md'>{value}</Text>
           </Group>
         </Group>
