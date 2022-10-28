@@ -14,7 +14,7 @@ interface ItemProps extends SelectItemProps {
 const r = /[^a-zA-Z0-9áéíöőüű ]/g
 
 export const StopIcon = ({ network, ...props }: { network: Number }) => {
-  props = { ...props, size: 30 }
+  props = { ...props, size: 24 }
   switch (network) {
     case 0: // City
       return <IconMapPin {...props} />
