@@ -22,6 +22,7 @@ const Render: NextPage = () => {
             hours: Number(router.query['h'] as string),
             minutes: Number(router.query['m'] as string),
             index: Number(router.query['i'] as string),
+            networks: ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
             date: router.query['d'] as string
         })
     }, [router])
