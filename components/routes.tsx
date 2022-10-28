@@ -1,5 +1,7 @@
-import { Avatar, Divider, Grid, Group, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
-import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi } from "@tabler/icons"
+import { ActionIcon, Avatar, Divider, Grid, Group, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
+import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle } from "@tabler/icons"
+import Link from "next/link"
+import { useRouter } from "next/router"
 import useColors from "./colors"
 
 const calcDisc = (fee: number, discount: number) => {
@@ -50,18 +52,26 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
     </Stack>)
 }
 
-export const RouteExposition = ({ details, query, iconSize }: { details: any, query: any, iconSize?: number }) => {
+export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
+    const router = useRouter()
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
             return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet size={iconSize} muvelet={dataItem.muvelet} jarmu={dataItem.jarmu} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
-                <Stack spacing={0}>
+                <Stack spacing={0} sx={{ position: 'relative' }}>
                     <Group align="center">
                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
                         {!dataItem.jaratinfo ? <></> :
                             !dataItem.jaratinfo.FromBay ? <></> : <Avatar variant="outline" radius="xl" size={30}>{dataItem.jaratinfo.FromBay}</Avatar>}
                     </Group>
                     {!dataItem.jaratinfo ? <></> : <>
+                        {!withInfoButton ? <></> : <Group position="right">
+                            <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}&d=${router.query['d']}`}>
+                                <ActionIcon sx={{ position: 'absolute', top: 0 }}>
+                                    <IconInfoCircle />
+                                </ActionIcon>
+                            </Link>
+                        </Group>}
                         <Group spacing={10}>
                             {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare === -1 ? <></> :
                                 <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.discount))}</Text>}

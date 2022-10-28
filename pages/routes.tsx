@@ -69,7 +69,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                     </Group>
                 </>
                     :
-                    <><RouteExposition details={data} query={query} />
+                    <><RouteExposition details={data} query={query} withInfoButton />
                         <Group position="right">
                             {!file ? <Loader size={28} /> :
                                 <ActionIcon onClick={() => {
