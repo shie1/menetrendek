@@ -1,8 +1,10 @@
 import { ActionIcon, Avatar, Divider, Grid, Group, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
-import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle } from "@tabler/icons"
+import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons"
 import Link from "next/link"
 import { useRouter } from "next/router"
+import { useState } from "react"
 import useColors from "./colors"
+import { StopIcon } from "../components/stops"
 
 const calcDisc = (fee: number, discount: number) => {
     return Math.abs(fee - (fee * (discount / 100)))
@@ -10,7 +12,7 @@ const calcDisc = (fee: number, discount: number) => {
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = ({ muvelet, jarmu, size, ...props }: { muvelet: string, jarmu: string, size?: number }) => {
+export const ActionBullet = ({ muvelet, network, size, ...props }: { muvelet: string, network: number, size?: number }) => {
     if (!size) { size = 20 }
     switch (muvelet) {
         case 'átszállás':
@@ -18,12 +20,7 @@ export const ActionBullet = ({ muvelet, jarmu, size, ...props }: { muvelet: stri
         case 'leszállás':
             return <IconCheck size={size} />
         default:
-            switch (jarmu) {
-                case 'vonat':
-                    return <IconTrain size={size} />
-                default:
-                    return <IconBus size={size} />
-            }
+            return <StopIcon size={size} network={network} />
     }
 }
 
@@ -37,7 +34,9 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
                 <Text align="center" size="xl">{item.indulasi_ido}</Text>
                 <Text align="center" size="sm">{item.departureCity}, {item.departureStation}</Text>
             </Grid.Col>
-            <Grid.Col span="auto">
+            <Grid.Col span="auto" sx={{ position: 'relative' }}>
+                {!item.nativeData[0].ToBay ? <></> :
+                    <Avatar variant="outline" m={10} radius="xl" size={26} sx={{ position: 'absolute', top: 0, right: 0 }}>{item.nativeData[0].ToBay}</Avatar>}
                 <Text align="center" size="xl">{item.erkezesi_ido}</Text>
                 <Text align="center" size="sm">{item.arrivalCity}, {item.arrivalStation}</Text>
             </Grid.Col>
@@ -57,7 +56,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
-            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet size={iconSize} muvelet={dataItem.muvelet} jarmu={dataItem.jarmu} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet size={iconSize} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                 <Stack spacing={0} sx={{ position: 'relative' }}>
                     <Group align="center">
                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
@@ -84,6 +83,8 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                             <Text size="sm">{dataItem.vegallomasok}</Text>}
                         {!dataItem.jaratinfo.kozlekedik ? <></> :
                             <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
+                        {!dataItem.jaratinfo.ToBay ? <></> :
+                            <Text size="sm">Kocsiállás érkezéskor: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />
                         {!dataItem.jaratinfo.wifi ? <></> :
                             <ThemeIcon size="lg" variant="light" radius="xl">
