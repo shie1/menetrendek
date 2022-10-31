@@ -12,7 +12,7 @@ const calcDisc = (fee: number, discount: number) => {
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = ({ muvelet, network, size, ...props }: { muvelet: string, network: number, size?: number }) => {
+export const ActionBullet = ({ muvelet, network, size, ...props }: { muvelet?: string, network: number, size?: number }) => {
     if (!size) { size = 20 }
     switch (muvelet) {
         case 'átszállás':

@@ -1,4 +1,5 @@
 import {
+    ActionIcon,
     Group,
     LoadingOverlay,
     Progress,
@@ -8,7 +9,7 @@ import {
     Transition,
     useMantineTheme,
 } from "@mantine/core";
-import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle } from "@tabler/icons";
+import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useContext, useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import { useTime } from "../components/time"
 import moment from 'moment';
 import { Dev } from "./_app";
 import useColors from "../components/colors";
+import { ActionBullet } from "../components/routes";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -32,7 +34,6 @@ const Runs: NextPage = () => {
     const { warning } = useColors()
     const router = useRouter()
     const now = useTime()
-    const theme = useMantineTheme()
     const [dev] = useContext(Dev)
 
     useEffect(() => {
@@ -121,11 +122,11 @@ const Runs: NextPage = () => {
                     Object.keys(runs.custom).map((num: any) => {
                         const item = runs.custom[num]
                         const active = cityState > num ? false : cityState == num ? true : false
-                        return (<Timeline.Item key={num} bullet={<IconCircle />} title={<Text size='lg'>{item.departureCity}</Text>}>
+                        return (<Timeline.Item key={num} bullet={<IconMapPin />} title={<Text size='lg'>{item.departureCity}</Text>}>
                             <Text size='xs' mt={-4}>{item.start}-{item.end}</Text>
                             <Timeline my='md' active={finished ? 99 : (cityState > num ? 99 : cityState == num ? stationState : -1)}>
                                 {runs.custom[num].items.map((item: any, i: any) => {
-                                    return (<Timeline.Item bullet={<IconBus />} title={item.departureStation} key={i}>
+                                    return (<Timeline.Item bullet={<ActionBullet network={runs.results.network} />} title={item.departureStation} key={i}>
                                         <Stack>
                                             <Group spacing={6}>
                                                 {!item.erkezik ? <></> : <Group spacing={4}>
