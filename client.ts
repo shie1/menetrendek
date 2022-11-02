@@ -10,6 +10,31 @@ const parseNetworks = (networks: Array<any>) => {
     return res
 }
 
+export const parseKozlekedik = (kozlekedik: string) => {
+    const date = /([MDCLXVI]+[.\-][0-9]+)(\-[A-ző]+)/
+
+    const days = ["hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat", "vasárnap"]
+    const except = "kivéve"
+    const workday = "munkanap"
+    const nonwork = "munkaszünet"
+    const before = "megelőző"
+    const other = ["iskola", "nap", "és"]
+    const keywords = [...days, except, workday, nonwork, before, ...other]
+    const filterKeywords = () => {
+        let res = []
+        for (let word of kozlekedik.split(" ")) {
+            if (word.match(date)) {
+                res.push(word.match(date)![1].replace('-', '.'))
+            }
+            for (let kword of keywords) {
+                if (word.includes(kword)) { res.push(kword) }
+            }
+        }
+        return res
+    }
+    return filterKeywords()
+}
+
 export const autocomplete = async (query: any) => {
     const { input, networks } = query
     const date = new Date()
