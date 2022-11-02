@@ -26,7 +26,7 @@ import {
 } from '@tabler/icons';
 import type { NextPage } from 'next'
 import { useRouter } from 'next/router';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { StopIcon, StopInput } from '../components/stops'
 import { dateString } from '../client';
 import { useLocalStorage, useMediaQuery } from '@mantine/hooks';
@@ -34,6 +34,7 @@ import { isEqual } from "lodash"
 import { interactive } from '../components/styles';
 import { useCookies } from 'react-cookie';
 import dynamic from 'next/dynamic'
+import { apiCall } from '../components/api';
 
 const DiscountSelector = dynamic(() =>
   import('../components/selectors').then((e) => e.DiscountSelector),
@@ -90,6 +91,34 @@ const Home: NextPage = () => {
   const theme = useMantineTheme()
   const width = useMediaQuery('(min-width: 560px)')
 
+  const search = () => {
+    if (!cookies['selected-networks'].length) { setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 }) }
+    const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
+    if (from && to) { router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`) }
+    const input: { from: string, to: string } = { from: (document.querySelector("#stopinput-from") as HTMLInputElement).value!, to: (document.querySelector("#stopinput-to") as HTMLInputElement).value! };
+    let query: { from: any, to: any } = { from: {}, to: {} }
+    if (!input.from || !input.to) { showNotification({ title: 'Hiba!', color: 'red', icon: <IconX />, message: 'Az indulási és az érkezési pont nem lehet üres!', id: 'inputerror-empty' }); return }
+    apiCall("POST", "/api/autocomplete", { 'input': input.from, 'networks': cookies["selected-networks"] }).then(resp => {
+      query["from"] = ((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, network: item.network_id })))[0]
+      apiCall("POST", "/api/autocomplete", { 'input': input.to, 'networks': cookies["selected-networks"] }).then(resp => {
+        query["to"] = ((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, network: item.network_id })))[0]
+        if (typeof query.from !== 'undefined' && typeof query.to !== 'undefined') {
+          setFrom(query.from)
+          setTo(query.to)
+          router.push(`/routes?f=${query.from.id}&t=${query.to.id}&sf=${query.from.sid}&st=${query.to.sid}${ts}&d=${dateString(date)}`)
+          return
+        } else {
+          showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Nem található ilyen megálló!', color: 'red', id: 'inputerror-noresults' })
+        }
+      })
+    })
+  }
+
+  useEffect(() => {
+    window.addEventListener("search-trigger", search)
+    return () => window.removeEventListener("search-trigger", search)
+  }, [])
+
   return (<>
     <Stack spacing='md'>
       <StopInput selection={[from, setFrom]} variant='from' />
@@ -110,12 +139,7 @@ const Home: NextPage = () => {
           </ActionIcon>
         </Grid.Col>
       </Grid>
-      <Button onClick={() => {
-        if (!cookies['selected-networks'].length) { setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 }) }
-        if (!from || !to) { showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Az indulási és az érkezési pont nincs kiválasztva!', color: 'red', id: 'inputError1' }); return }
-        const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
-        router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`)
-      }} leftIcon={<IconArrowForwardUp size={22} />} variant="gradient" gradient={{ from: theme.primaryColor, to: 'blue' }} radius="xl">Tovább</Button>
+      <Button onClick={search} leftIcon={<IconArrowForwardUp size={22} />} variant="gradient" gradient={{ from: theme.primaryColor, to: 'blue' }} radius="xl">Tovább</Button>
       <Divider size="md" />
       <Tabs sx={{ height: '100%' }} variant="outline" radius="md" defaultValue="stops">
         <Tabs.List>

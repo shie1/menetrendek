@@ -38,6 +38,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   useHotkeys([
     ['ctrl+J', () => toggleColorScheme()],
     ['ctrl+D', () => setDev(!dev)],
+    ['Enter', () => window.dispatchEvent(new Event("search-trigger"))]
   ])
 
   return (<>
@@ -55,7 +56,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <Dev.Provider value={[dev, setDev]}>
             <Time.Provider value={[time, setTime]}>
               <div className='bg' />
-              <Container tabIndex={-1} sx={{ height: '100vh' }}>
+              <Container aria-current="page" sx={{ height: '100vh' }}>
                 <Center sx={{ height: '100%' }}>
                   <Box p='sm' sx={{ width: 500, height: '100%' }}>
                     <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>

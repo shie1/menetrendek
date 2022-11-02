@@ -43,6 +43,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
   const ref = useRef<HTMLInputElement | null>(null)
   const [selected, setSelected] = selection
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
+  const [lastKey, setLastKey] = useState<string>("")
 
   useEffect(() => {
     if (selected) { setStops([selected, ...stops.filter(item => !isEqual(item, selected))]) }
@@ -73,6 +74,11 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     icon={selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     ref={ref}
+    id={`stopinput-${variant}`}
+    onKeyDown={(e) => {
+      setLastKey(e.key)
+      if (e.key == "Enter" && !lastKey.startsWith("Arrow")) { e.preventDefault(); window.dispatchEvent(new Event("search-trigger")) }
+    }}
     size="md"
     limit={99}
     variant="default"
@@ -87,7 +93,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     }}
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
-    onChange={load}
+    onChange={(e) => { load(e) }}
     onFocus={(e) => {
       setSelected(null)
       if (!cookies["selected-networks"].length) {
