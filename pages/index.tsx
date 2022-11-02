@@ -94,7 +94,7 @@ const Home: NextPage = () => {
   const search = () => {
     if (!cookies['selected-networks'].length) { setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 }) }
     const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
-    if (from && to) { router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`) }
+    if (from && to) { router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`); return }
     const input: { from: string, to: string } = { from: (document.querySelector("#stopinput-from") as HTMLInputElement).value!, to: (document.querySelector("#stopinput-to") as HTMLInputElement).value! };
     let query: { from: any, to: any } = { from: {}, to: {} }
     if (!input.from || !input.to) { showNotification({ title: 'Hiba!', color: 'red', icon: <IconX />, message: 'Az indulási és az érkezési pont nem lehet üres!', id: 'inputerror-empty' }); return }
