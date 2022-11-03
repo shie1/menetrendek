@@ -26,6 +26,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
     const [open, setOpen] = useState<boolean>(false)
     const query = useContext(Query)
     const [accordion, setAccordion] = useContext(AccordionFix)
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const [file, setFile] = useState<File | undefined>()
 
     useEffect(() => {
@@ -45,7 +46,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
                     setData(e)
                     if (open) setAccordion(val)
                     const id = Date.now().toString()
-                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query.hours}&m=${query.minutes}&i=${val}`
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query.hours}&m=${query.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}`
                     const blob = await (await fetch(image)).blob()
                     setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
                 })
@@ -95,16 +96,16 @@ const Routes: NextPage = () => {
 
     useEffect(() => {
         setLoading(true)
-        if (router.query['f']) {
+        if (router.query['sf']) {
             setQuery({
-                from: Number(router.query['f'] as string),
-                sFrom: Number(router.query['sf'] as string),
-                to: Number(router.query['t'] as string),
-                sTo: Number(router.query['st'] as string),
+                from: Number(router.query['f'] as string) || 0,
+                sFrom: Number(router.query['sf'] as string) || 0,
+                to: Number(router.query['t'] as string) || 0,
+                sTo: Number(router.query['st'] as string) || 0,
                 hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
                 minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
                 discount: cookies["discount-percentage"] || 0,
-                networks: cookies["selected-networks"],
+                networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
                 date: router.query['d'] as string
             })
         }

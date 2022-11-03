@@ -8,8 +8,8 @@ import { StopIcon } from "../components/stops"
 import { Dev } from "../pages/_app"
 import { parseKozlekedik } from "../client"
 
-const calcDisc = (fee: number, discount: number) => {
-    return Math.abs(fee - (fee * (discount / 100)))
+const calcDisc = (fee: number, discount?: number) => {
+    return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
 }
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })

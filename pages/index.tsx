@@ -92,9 +92,18 @@ const Home: NextPage = () => {
   const width = useMediaQuery('(min-width: 560px)')
 
   const search = () => {
+    const params = (query: any) => {
+      const ts: any = time ? { h: time.getHours().toString().padStart(2, '0'), m: time.getMinutes().toString().padStart(2, '0') } : {}
+      let res: any = {}
+      Object.entries({ ...ts, d: dateString(date), f: query.from.id, t: query.to.id, sf: query.from.sid, st: query.to.sid }).map((item: Array<any>) => {
+        if (item[1]) {
+          res[item[0]] = item[1]
+        }
+      })
+      return (new URLSearchParams(res)).toString()
+    }
     if (!cookies['selected-networks'].length) { setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 }) }
-    const ts = time ? `&h=${time.getHours().toString().padStart(2, '0')}&m=${time.getMinutes().toString().padStart(2, '0')}` : ''
-    if (from && to) { router.push(`/routes?f=${from.id}&t=${to.id}&sf=${from.sid}&st=${to.sid}${ts}&d=${dateString(date)}`); return }
+    if (from && to) { router.push(`/routes?${params({ from, to })}`); return }
     const input: { from: string, to: string } = { from: (document.querySelector("#stopinput-from") as HTMLInputElement).value!, to: (document.querySelector("#stopinput-to") as HTMLInputElement).value! };
     let query: { from: any, to: any } = { from: {}, to: {} }
     if (!input.from || !input.to) { showNotification({ title: 'Hiba!', color: 'red', icon: <IconX />, message: 'Az indulási és az érkezési pont nem lehet üres!', id: 'inputerror-empty' }); return }
@@ -105,7 +114,7 @@ const Home: NextPage = () => {
         if (typeof query.from !== 'undefined' && typeof query.to !== 'undefined') {
           setFrom(query.from)
           setTo(query.to)
-          router.push(`/routes?f=${query.from.id}&t=${query.to.id}&sf=${query.from.sid}&st=${query.to.sid}${ts}&d=${dateString(date)}`)
+          router.push(`/routes?${params(query)}`)
           return
         } else {
           showNotification({ icon: <IconX size={20} />, title: 'Hiba!', message: 'Nem található ilyen megálló!', color: 'red', id: 'inputerror-noresults' })

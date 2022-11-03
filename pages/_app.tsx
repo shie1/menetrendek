@@ -23,6 +23,7 @@ import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
 import { createContext, useState } from 'react';
+import { useCookies } from 'react-cookie';
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -31,6 +32,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({ key: 'color-scheme', defaultValue: 'dark' })
   const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
+  const [cookies, setCookie, removeCookie] = useCookies(['primary-color']);
   const [time, setTime] = useState<any>(null)
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));

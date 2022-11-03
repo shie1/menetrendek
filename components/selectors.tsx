@@ -1,4 +1,5 @@
-import { createStyles, Select, MultiSelect, Stack, ActionIcon } from "@mantine/core";
+import { createStyles, Select, MultiSelect, Stack, ActionIcon, ColorInput, useMantineTheme, ColorSwatch, Group, Paper, Text } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { IconX, IconRotateClockwise } from "@tabler/icons";
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";

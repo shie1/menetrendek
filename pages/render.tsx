@@ -15,14 +15,14 @@ const Render: NextPage = () => {
 
     useEffect(() => {
         setQuery({
-            from: Number(router.query['f'] as string),
-            sFrom: Number(router.query['sf'] as string),
-            to: Number(router.query['t'] as string),
-            sTo: Number(router.query['st'] as string),
+            from: Number(router.query['f'] as string) || 0,
+            sFrom: Number(router.query['sf'] as string) || 0,
+            to: Number(router.query['t'] as string) || 0,
+            sTo: Number(router.query['st'] as string) || 0,
             hours: Number(router.query['h'] as string),
             minutes: Number(router.query['m'] as string),
             index: Number(router.query['i'] as string),
-            networks: ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
+            networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
             date: router.query['d'] as string
         })
     }, [router])

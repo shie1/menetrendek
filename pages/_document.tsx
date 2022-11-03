@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 const appName = "Menetrendek"
 const appDesc = "Helyközi menetrend kereső"
-const appRoot = "https://menetrendek.shie1bi.hu/"
+const appRoot = "https://menetrendek.info/"
 const appThumb = "/img/preview.jpg"
 
 const Document: NextPage = () => {
