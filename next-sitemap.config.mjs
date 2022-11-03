@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 const config = {
-    siteUrl: process.env.SITE_URL || 'https://menetrendek.shie1bi.hu',
+    siteUrl: process.env.SITE_URL || 'https://menetrendek.ifno',
     generateRobotsTxt: true,
 }
 
