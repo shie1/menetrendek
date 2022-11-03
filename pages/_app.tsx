@@ -24,6 +24,7 @@ import { interactive } from '../components/styles';
 import Head from 'next/head';
 import { createContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import Script from "next/script"
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -57,6 +58,12 @@ function MyApp({ Component, pageProps }: AppProps) {
         <NotificationsProvider>
           <Dev.Provider value={[dev, setDev]}>
             <Time.Provider value={[time, setTime]}>
+              <Script
+                id="Adsense-id"
+                async
+                strategy="beforeInteractive"
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3057716180157458"
+              />
               <div className='bg' />
               <Container aria-current="page" sx={{ height: '100vh' }}>
                 <Center sx={{ height: '100%' }}>
