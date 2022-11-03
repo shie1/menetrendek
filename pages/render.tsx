@@ -66,7 +66,7 @@ const Render: NextPage = () => {
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
-                    <Text size={15}>menetrendek.shie1bi.hu</Text>
+                    <Text size={15}>menetrendek.info</Text>
                 </Group>
             </Box>
         </Center>
