@@ -44,18 +44,35 @@ const Document: NextPage = () => {
             <meta property="twitter:title" content={appName} />
             <meta property="twitter:description" content={appDesc} />
             <meta property="twitter:image" content={appThumb} />
-            <Script
+
+            <Script // Adsense
                 id="Adsense-id"
                 async
                 strategy="beforeInteractive"
                 src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3057716180157458"
             />
+
+            <div id="google-analytics-container">
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-6W8M5NBDY1"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-analytics" strategy="afterInteractive">
+                    {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){window.dataLayer.push(arguments);}
+                    gtag('js', new Date());
+
+                    gtag('config', 'G-6W8M5NBDY1');
+                    `}
+                </Script>
+            </div>
         </Head>
         <body>
             <Main />
             <NextScript />
         </body>
-    </Html>)
+    </Html >)
 }
 
 export default Document
