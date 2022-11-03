@@ -25,6 +25,7 @@ import Head from 'next/head';
 import { createContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/dist/client/router';
+import Script from "next/script"
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -59,6 +60,18 @@ function MyApp({ Component, pageProps }: AppProps) {
         <NotificationsProvider>
           <Dev.Provider value={[dev, setDev]}>
             <Time.Provider value={[time, setTime]}>
+              <div id='google-analytics-container'>
+                <Script strategy='afterInteractive' src='https://www.googletagmanager.com/gtag/js?id=G-7E6FQCCW4D' />
+                <Script id='google-analytics' strategy='afterInteractive'>
+                  {`
+                    window.dataLayer = window.dataLayer || [];
+                    function gtag(){dataLayer.push(arguments);}
+                    gtag('js', new Date());
+                  
+                    gtag('config', 'G-7E6FQCCW4D');
+                  `}
+                </Script>
+              </div>
               <div className='bg' />
               <Container aria-current="page" sx={{ height: '100vh' }}>
                 <Center sx={{ height: '100%' }}>
