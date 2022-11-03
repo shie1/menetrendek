@@ -38,7 +38,7 @@ const Dropdown = ({ children, ...props }: any) => {
     }}>{children}</ScrollArea>)
 }
 
-export const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<any> }) => {
+export const StopInput = ({ variant, error, selection, rightSection }: { variant: "from" | "to", error?: string, selection: Array<any>, rightSection?: any }) => {
   const [data, setData] = useState<Array<any>>([])
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
   const ref = useRef<HTMLInputElement | null>(null)
@@ -75,6 +75,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     icon={selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     ref={ref}
+    rightSection={rightSection}
     id={`stopinput-${variant}`}
     onKeyDown={(e) => {
       setLastKey(e.key)

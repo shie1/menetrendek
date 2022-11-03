@@ -1,4 +1,4 @@
-import { ActionIcon, Avatar, Divider, Grid, Group, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
+import { ActionIcon, Avatar, Divider, Grid, Group, Paper, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
 import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons"
 import Link from "next/link"
 import { useRouter } from "next/router"

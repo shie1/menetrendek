@@ -3,6 +3,7 @@ import { IconLink } from "@tabler/icons";
 import type { NextPage } from "next";
 import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
+import { dateString } from "../client";
 import { apiCall } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
 
@@ -23,7 +24,7 @@ const Render: NextPage = () => {
             minutes: Number(router.query['m'] as string),
             index: Number(router.query['i'] as string),
             networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
-            date: router.query['d'] as string
+            date: router.query['d'] as string || dateString(new Date())
         })
     }, [router])
 

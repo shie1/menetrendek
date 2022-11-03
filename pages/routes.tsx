@@ -4,6 +4,7 @@ import {
     Group,
     Loader,
     LoadingOverlay,
+    Paper,
     Skeleton,
     Space,
     Timeline,
@@ -14,6 +15,7 @@ import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { createContext, useContext, useEffect, useState } from "react";
 import useCookies from "react-cookie/cjs/useCookies";
+import { dateString } from "../client";
 import { apiCall } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
 
@@ -34,7 +36,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
     }, [accordion])
 
     return (<Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
-        <Accordion.Control sx={{ padding: '16px', }} disabled={open && !data} onClick={() => {
+        <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data} onClick={() => {
             setOpen(!open)
             if (open) {
                 setAccordion(0)
@@ -106,7 +108,7 @@ const Routes: NextPage = () => {
                 minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
                 discount: cookies["discount-percentage"] || 0,
                 networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
-                date: router.query['d'] as string
+                date: router.query['d'] as string || dateString(new Date())
             })
         }
     }, [router])
@@ -121,7 +123,7 @@ const Routes: NextPage = () => {
         <Query.Provider value={query}>
             <AccordionFix.Provider value={[accordion, setAccordion]}>
                 <LoadingOverlay visible={loading} />
-                <Accordion value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
+                <Accordion mt="sm" value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
                     {results ?
                         Object.keys(results.results.talalatok).map(key => {
                             const item = results.results.talalatok[key]

@@ -24,6 +24,7 @@ import { interactive } from '../components/styles';
 import Head from 'next/head';
 import { createContext, useState } from 'react';
 import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/dist/client/router';
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -36,6 +37,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [time, setTime] = useState<any>(null)
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
+  const router = useRouter()
 
   useHotkeys([
     ['ctrl+J', () => toggleColorScheme()],
@@ -63,7 +65,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                   <Box p='sm' sx={{ width: 500, height: '100%' }}>
                     <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
                       <Group position='apart' mb='md'>
-                        <Link href="/"><Group sx={interactive}><Title>Menetrendek</Title></Group></Link>
+                        <Link href="/"><Group sx={interactive}><Title order={router.pathname === "/" ? 2 : 1} size={32}>Menetrendek</Title></Group></Link>
                         <Group position="center">
                           <Switch
                             checked={colorScheme === 'dark'}
