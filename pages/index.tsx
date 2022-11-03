@@ -105,6 +105,7 @@ const Home: NextPage = () => {
   const [time, setTime] = useState<any>(false)
   const theme = useMantineTheme()
   const width = useMediaQuery('(min-width: 560px)')
+  const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
 
   const search = () => {
     const params = (query: any) => {
@@ -169,7 +170,7 @@ const Home: NextPage = () => {
       </Grid>
       <Button onClick={search} leftIcon={<IconArrowForwardUp size={22} />} variant="gradient" gradient={{ from: theme.primaryColor, to: 'blue' }} radius="xl">Tovább</Button>
       <Divider size="md" />
-      <Tabs sx={{ height: '100%' }} variant="outline" radius="md" defaultValue="stops">
+      <Tabs sx={{ height: '100%', '& .mantine-Tabs-tabLabel': { fontSize: touchscreen ? theme.fontSizes.sm * 1.1 : theme.fontSizes.sm } }} variant="outline" radius="md" defaultValue="stops">
         <Tabs.List>
           <Tabs.Tab value="introduction" icon={<IconInfoCircle size={14} />}>Információ</Tabs.Tab>
           <Tabs.Tab value="stops" icon={<IconRotateClockwise2 size={14} />}>Gyors elérés</Tabs.Tab>
