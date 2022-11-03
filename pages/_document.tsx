@@ -23,7 +23,7 @@ const Document: NextPage = () => {
         <Head>
             <meta charSet="utf-8" />
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-            <link rel='apple-touch-icon' href='/apple-touch-icon.png' />
+            <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
             <link rel='icon' type="image/x-icon" href='/favicon.ico' />
             <meta name="twitter:card" content="summary_large_image" />
             <link rel="manifest" href="/api/manifest.webmanifest" />
