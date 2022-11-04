@@ -179,8 +179,8 @@ export const QuickMenu = () => {
                 {stops.length === 0 ? <Text size='sm' style={{ opacity: .8 }} align='center'>Itt fognak megjellenni a legutóbbi megállóid...</Text> :
                     <Group position="center" align="center" spacing={6}>
                         {stops.map((stop: Stop, i: any) => {
-                            return (<motion.div layout layoutDependency={stops}>
-                                <QuickStop {...stop} key={i} remove={() => setStops(stops.filter(fStop => !isEqual(fStop, stop)))} />
+                            return (<motion.div key={i} layout layoutDependency={stops}>
+                                <QuickStop {...stop} remove={() => setStops(stops.filter(fStop => !isEqual(fStop, stop)))} />
                             </motion.div>)
                         })}
                     </Group>
