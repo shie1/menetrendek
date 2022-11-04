@@ -48,7 +48,7 @@ export const NetworksSelector = () => {
 
     useEffect(() => {
         if (!cookies["selected-networks"]) {
-            setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+            setCookie("selected-networks", ['1', '2', '25', '3', '10','24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
         }
     }, [cookies])
 
@@ -64,8 +64,18 @@ export const NetworksSelector = () => {
             { label: 'Trolibusz', value: '11', group: 'Busz' },
             { label: 'Metró', value: '14', group: 'Egyéb' }
         ]}
-        onChange={(val) => setCookie("selected-networks", val, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
-        value={cookies["selected-networks"]}
+        onChange={(val) => {
+            setCookie("selected-networks", val.reduce(function (acc: any, curr) {
+                acc.push(...curr.split(','))
+                return acc;
+            }, []), { path: '/', maxAge: 60 * 60 * 24 * 365 })
+        }
+        }
+        value={cookies["selected-networks"].map((item: string) => {
+            if (item == "10") { return '10,24' }
+            if (item == "24") { return }
+            return item
+        })}
         rightSection={<Stack spacing={4}>
             <ActionIcon onClick={() => {
                 setCookie("selected-networks", [], { path: '/', maxAge: 60 * 60 * 24 * 365 })
