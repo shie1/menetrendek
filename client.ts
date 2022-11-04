@@ -1,13 +1,9 @@
+import { Stop } from "./components/stops"
+
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
 export const dateString = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-}
-
-const parseNetworks = (networks: Array<any>) => {
-    let res = [0]
-    networks.map((item: string) => item.split(',').map(item2 => res.push(Number(item2))))
-    return res
 }
 
 export const parseKozlekedik = (kozlekedik: string) => {
@@ -47,29 +43,37 @@ export const autocomplete = async (query: any) => {
             ],
             "searchDate": dateString(date),
             "maxResults": 50,
-            networks: parseNetworks(networks),
+            networks: networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
 export const routes = async (query: any) => {
-    const date = new Date(query.date)
-    const { from, sFrom, to, sTo, maxTransfers, minTransferTime, networks } = query
+    const rb: {
+        from: Stop;
+        to: Stop;
+        hours: number;
+        minutes: number;
+        discount: number;
+        networks: Array<number>;
+        date: string
+    } = query
+    const date = new Date(rb.date)
     const body = {
         "func": "getRoutes",
         "params": {
             "datum": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
             "ext_settings": "block",
-            "honnan_ls_id": from,
-            "honnan_settlement_id": sFrom,
-            "honnan_site_code": "",
+            "honnan_ls_id": rb.from.ls_id,
+            "honnan_settlement_id": rb.from.s_id,
+            "honnan_site_code": rb.from.site_code,
             "hour": date.getHours(),
             "min": date.getMinutes(),
-            "hova_ls_id": to,
-            "hova_settlement_id": sTo,
-            "hova_site_code": "",
-            "maxatszallas": maxTransfers,
+            "hova_ls_id": rb.to.ls_id,
+            "hova_settlement_id": rb.to.s_id,
+            "hova_site_code": rb.to.site_code,
+            "maxatszallas": '5',
             "maxwalk": 1000,
             "timeWindow": 0,
             "naptipus": 0,
@@ -78,11 +82,11 @@ export const routes = async (query: any) => {
             "rendezes": "1",
             "discountPercent": "0",
             "utirany": "oda",
-            "var": minTransferTime,
+            "var": '0',
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            "networks": parseNetworks(networks),
+            "networks": rb.networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()

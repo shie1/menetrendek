@@ -1,20 +1,22 @@
 import { Autocomplete, Group, MantineColor, ScrollArea, SelectItemProps, Text } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconTrain, IconMapPin } from "@tabler/icons";
+import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconTrain, IconMapPin, IconQuestionMark } from "@tabler/icons";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { apiCall } from "./api";
 import { isEqual } from "lodash"
 import { useCookies } from "react-cookie";
 
-interface ItemProps extends SelectItemProps {
-  color: MantineColor;
-  type: "megallo" | "telepules";
-  network: Number;
+export interface Stop {
+  value?: string
+  network?: number;
+  ls_id: number;
+  s_id: number;
+  site_code: string;
 }
 
 const r = /[^a-zA-Z0-9áéíöőüű ]/g
 
-export const StopIcon = ({ network, size, ...props }: { network: Number, size?: number, }) => {
+export const StopIcon = ({ network, size, ...props }: { network: Number, size?: number }) => {
   props = { ...props, size: size ? size : 24 }
   switch (network) {
     case 0: // City
@@ -26,7 +28,7 @@ export const StopIcon = ({ network, size, ...props }: { network: Number, size?: 
     case 2: // Train station
       return <IconTrain {...props} />
     default:
-      return <></>
+      return <IconQuestionMark {...props} />
   }
 }
 
@@ -38,7 +40,7 @@ const Dropdown = ({ children, ...props }: any) => {
     }}>{children}</ScrollArea>)
 }
 
-export const StopInput = ({ variant, error, selection, rightSection }: { variant: "from" | "to", error?: string, selection: Array<any>, rightSection?: any }) => {
+export const StopInput = ({ variant, error, selection, rightSection }: { variant: "from" | "to", error?: string, selection: Array<Stop | any>, rightSection?: any }) => {
   const [data, setData] = useState<Array<any>>([])
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
   const ref = useRef<HTMLInputElement | null>(null)
@@ -46,15 +48,11 @@ export const StopInput = ({ variant, error, selection, rightSection }: { variant
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [lastKey, setLastKey] = useState<string>("")
 
-  useEffect(() => {
-    if (selected) { setStops([selected, ...stops.filter(item => !isEqual(item, selected))]) }
-  }, [selected])
-
-  const AutoCompleteItem = forwardRef<HTMLDivElement, ItemProps>(
-    ({ value, network, id, ...others }: ItemProps, ref) => (
-      <div key={`${id}-${value}-${network}`} ref={ref} {...others}>
+  const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
+    ({ value, network, ls_id, s_id, site_code, ...others }: SelectItemProps & Stop, ref) => (
+      <div key={`${ls_id}-${s_id}-${site_code}`} ref={ref} {...others}>
         <Group noWrap>
-          <StopIcon network={network} />
+          <StopIcon network={network!} />
           <div>
             <Text>{value}</Text>
           </div>
@@ -67,12 +65,12 @@ export const StopInput = ({ variant, error, selection, rightSection }: { variant
     setSelected(null)
     if (!e.length) { setData([]); return }
     apiCall("POST", "/api/autocomplete", { 'input': e, 'networks': cookies["selected-networks"] }).then(resp => {
-      setData((resp.results as Array<any>).map(item => ({ value: item.lsname, id: item.ls_id, sid: item.settlement_id, network: item.network_id })))
+      setData((resp.results as Array<any>).map(item => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
     })
   }
 
   return (<Autocomplete
-    icon={selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
+    icon={typeof selected !== 'string' && selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     ref={ref}
     rightSection={rightSection}
@@ -95,14 +93,18 @@ export const StopInput = ({ variant, error, selection, rightSection }: { variant
     }}
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
-    onChange={(e) => { load(e) }}
+    onChange={(e) => { load(e); setSelected(e) }}
     onFocus={(e) => {
       setSelected(null)
       if (!cookies["selected-networks"].length) {
         setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
       }
     }}
-    onItemSubmit={(e) => { setSelected(e); ref.current?.blur() }}
+    onItemSubmit={(e) => {
+      setSelected(e)
+      ref.current?.blur()
+      setStops([e, ...stops.filter(item => !isEqual(item, e))])
+    }}
     placeholder={variant === "from" ? "Honnan?" : "Hova?"}
     rightSectionWidth={42}
   />)

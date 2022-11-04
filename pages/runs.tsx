@@ -19,6 +19,7 @@ import moment from 'moment';
 import { Dev } from "./_app";
 import useColors from "../components/colors";
 import { ActionBullet } from "../components/routes";
+import { dateString } from "../client";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -43,7 +44,7 @@ const Runs: NextPage = () => {
                 id: Number(router.query['id'] as string),
                 sls: Number(router.query['s'] as string),
                 els: Number(router.query['e'] as string),
-                date: router.query['d'] as string
+                date: router.query['d'] as string || dateString(new Date())
             })
         }
     }, [router])
