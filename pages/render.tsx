@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { dateString } from "../client";
 import { apiCall } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
+import { Stop } from "../components/stops";
 
 const Render: NextPage = () => {
     const [results, setResults] = useState<any>()
@@ -15,11 +16,21 @@ const Render: NextPage = () => {
     const router = useRouter()
 
     useEffect(() => {
+        const { from, to }: { from: Stop, to: Stop } = {
+            from: {
+                ls_id: Number(router.query['fl'] as string) || 0,
+                s_id: Number(router.query['fs'] as string) || 0,
+                site_code: router.query['fc'] as string || ''
+            },
+            to: {
+                ls_id: Number(router.query['tl'] as string) || 0,
+                s_id: Number(router.query['ts'] as string) || 0,
+                site_code: router.query['tc'] as string || ''
+            }
+        }
         setQuery({
-            from: Number(router.query['f'] as string) || 0,
-            sFrom: Number(router.query['sf'] as string) || 0,
-            to: Number(router.query['t'] as string) || 0,
-            sTo: Number(router.query['st'] as string) || 0,
+            from,
+            to,
             hours: Number(router.query['h'] as string),
             minutes: Number(router.query['m'] as string),
             index: Number(router.query['i'] as string),
