@@ -25,7 +25,8 @@ export const StopIcon = ({ network, size, ...props }: { network: Number, size?: 
     case 10: // Bus stop (A)
     case 24: // Bus stop (B)
       return <IconBus {...props} />
-    case 2: // Train station
+    case 2: // Train station (A)
+    case 14: // Train station (B)
       return <IconTrain {...props} />
     default:
       return <IconQuestionMark {...props} />
