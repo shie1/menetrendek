@@ -78,6 +78,7 @@ body {
 /* scrollbar */
 
 body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   border-radius: 10px;
   background-color: #3b3b3b;
@@ -90,6 +91,7 @@ body::-webkit-scrollbar {
 
 body::-webkit-scrollbar-thumb {
   border-radius: 10px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   background-color: #555;
 }
