@@ -1,5 +1,6 @@
 import {
     ActionIcon,
+    Badge,
     Button,
     Center,
     Grid,
@@ -7,7 +8,6 @@ import {
     List,
     Menu,
     Paper,
-    ScrollArea,
     Stack,
     Tabs,
     Text,
@@ -17,7 +17,22 @@ import {
 } from "@mantine/core";
 import { DatePicker, TimeInput } from "@mantine/dates"
 import { useLocalStorage, useMediaQuery } from "@mantine/hooks"
-import { IconRefresh, IconClock, IconArrowForwardUp, IconApps, IconInfoCircle, IconLayout2, IconMoonStars, IconRotateClockwise2, IconSearch, IconSettings, IconShare, IconAlertCircle, IconArrowBarRight, IconArrowBarToRight, IconX } from "@tabler/icons"
+import {
+    IconClock,
+    IconArrowForwardUp,
+    IconApps,
+    IconInfoCircle,
+    IconLayout2,
+    IconMoonStars,
+    IconRotateClockwise2,
+    IconSearch,
+    IconSettings,
+    IconShare,
+    IconAlertCircle,
+    IconArrowBarRight,
+    IconArrowBarToRight,
+    IconX,
+} from "@tabler/icons";
 import { createElement, useContext, useEffect, useState } from "react";
 import { StopIcon, StopInput } from "./stops"
 import { gradientText, interactive } from "./styles"
@@ -150,7 +165,7 @@ export const QuickMenu = () => {
     return (<Tabs onTabChange={setTab} sx={{ height: '100%', '& .mantine-Tabs-tabLabel': { fontSize: touchscreen ? theme.fontSizes.sm * 1.1 : theme.fontSizes.sm } }} variant="outline" radius="md" defaultValue="stops" value={tab}>
         <Tabs.List>
             <Tabs.Tab value="introduction" icon={<IconInfoCircle size={14} />}>Információ</Tabs.Tab>
-            <Tabs.Tab value="stops" icon={<IconRotateClockwise2 size={14} />}>Gyors elérés</Tabs.Tab>
+            <Tabs.Tab rightSection={stops.length ? <Badge radius="xl" sx={{ width: 20, height: 20 }} p={0}>{stops.length}</Badge> : <></>} value="stops" icon={<IconRotateClockwise2 size={14} />}>Gyors elérés</Tabs.Tab>
             <Tabs.Tab value="options" icon={<IconSettings size={14} />}>Preferenciák</Tabs.Tab>
         </Tabs.List>
         <Tabs.Panel value="introduction">

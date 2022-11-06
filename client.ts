@@ -49,6 +49,20 @@ export const autocomplete = async (query: any) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
+export const stationsNear = async (query: any) => {
+    const { latitude, longitude, networks } = query
+    const date = new Date()
+    const body = {
+        "query": "get_lsid_by_coordsC",
+        "datum": "2022-11-06",
+        "wgslat": latitude,
+        "wgslon": longitude,
+        "radius": 1500,
+        "networks": networks
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
+
 export const routes = async (query: any) => {
     const rb: {
         from: Stop;
