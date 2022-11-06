@@ -1,22 +1,9 @@
-import {
-    ActionIcon,
-    Group,
-    LoadingOverlay,
-    Progress,
-    Stack,
-    Text,
-    Timeline,
-    Transition,
-    useMantineTheme,
-} from "@mantine/core";
-import { IconArrowBarRight, IconArrowBarToRight, IconBus, IconCircle, IconMapPin } from "@tabler/icons";
+import { Divider, Group, LoadingOverlay, Stack, Text, Timeline } from "@mantine/core";
+import { IconArrowBarRight, IconArrowBarToRight, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
-import { useTime } from "../components/time"
-import moment from 'moment';
-import { Dev } from "./_app";
 import useColors from "../components/colors";
 import { ActionBullet } from "../components/routes";
 import { dateString } from "../client";
@@ -53,7 +40,7 @@ const Runs: NextPage = () => {
             if (query) {
                 apiCall("POST", "/api/runsDelay", query).then((e) => { setDelay(e) })
             }
-        }, 10 * 1000)
+        }, 2 * 1000)
 
         return () => clearInterval(interval)
     }, [query])
@@ -61,10 +48,11 @@ const Runs: NextPage = () => {
     return (<>
         <LoadingOverlay visible={loading} />
         <Stack my="md" spacing='sm'>
-            <Stack mb='sm' spacing={0} justify="center" align="center">
+            <Stack px='md' mb='sm' spacing={0} justify="center" align="center">
                 <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
-                <Text size="xl">{runs?.results.kozlekedteti}</Text>
+                <Text size="xl" mb={4}>{runs?.results.kozlekedteti}</Text>
                 <Text size="sm" align="center">{runs?.results.kozlekedik}</Text>
+                {!delay?.result.data.length ? <></> : <Text size="sm">Késés: {delay?.result.data[0].delay}</Text>}
             </Stack>
             <Timeline active={99}>
                 {!runs ? <></> :
@@ -80,11 +68,11 @@ const Runs: NextPage = () => {
                                             <Group spacing={6}>
                                                 {!item.erkezik ? <></> : <Group spacing={4}>
                                                     <IconArrowBarToRight size={20} />
-                                                    <Text color={item.varhato_erkezik ? warning : ''} size='sm'>{item.varhato_erkezik || item.erkezik}</Text>
+                                                    <Text size='sm'>{item.erkezik}</Text>
                                                 </Group>}
                                                 {!item.indul ? <></> : <Group spacing={4}>
                                                     <IconArrowBarRight size={20} />
-                                                    <Text color={item.varhato_indul ? warning : ''} size='sm'>{item.varhato_indul || item.indul}</Text>
+                                                    <Text size='sm'>{item.indul}</Text>
                                                 </Group>}
                                             </Group>
                                         </Stack>

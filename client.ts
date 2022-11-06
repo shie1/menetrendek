@@ -160,7 +160,7 @@ export const runsDelay = async (runId: number) => {
         "func": "getRunsDelay",
         "params": {
             "runs": [
-                969973
+                runId
             ]
         }
     }

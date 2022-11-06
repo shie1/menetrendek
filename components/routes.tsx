@@ -68,7 +68,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                     </Group>
                     {!dataItem.jaratinfo ? <></> : <>
                         {!withInfoButton ? <></> : <Group position="right">
-                            <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}${!router.query['d'] ? '' : '&d=' + router.query['d']}}`}>
+                            <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}${!router.query['d'] ? '' : '&d=' + router.query['d']}`}>
                                 <ActionIcon sx={{ position: 'absolute', top: 0 }}>
                                     <IconInfoCircle />
                                 </ActionIcon>
