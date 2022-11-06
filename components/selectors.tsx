@@ -47,7 +47,7 @@ export const NetworksSelector = () => {
     const { classes } = useRoundInputStyles()
 
     useEffect(() => {
-        if (!cookies["selected-networks"]) {
+        if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
             setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
         }
     }, [cookies])
