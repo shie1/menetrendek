@@ -154,3 +154,15 @@ export const runs = async (id: number, datestring: string, sls: number, els: num
     })
     return resp
 }
+
+export const runsDelay = async (runId: number) => {
+    const body = {
+        "func": "getRunsDelay",
+        "params": {
+            "runs": [
+                969973
+            ]
+        }
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}

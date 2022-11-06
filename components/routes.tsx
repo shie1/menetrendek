@@ -47,7 +47,7 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
         <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
         <Group position="center" spacing='sm'>
             <Text size="sm">{item.osszido}</Text>
-            {item.totalFare !== -1 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text> : <></>}
+            {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text> : <></>}
             <Text size="sm">{item.ossztav}</Text>
         </Group>
     </Stack>)
@@ -75,7 +75,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                             </Link>
                         </Group>}
                         <Group spacing={10}>
-                            {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare === -1 ? <></> :
+                            {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare < 0 ? <></> :
                                 <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.discount))}</Text>}
                             {!dataItem.jaratinfo.travelTime ? <></> :
                                 <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}

@@ -99,27 +99,29 @@ const Routes: NextPage = () => {
 
     useEffect(() => {
         setLoading(true)
-        const { from, to }: { from: Stop, to: Stop } = {
-            from: {
-                ls_id: Number(router.query['fl'] as string) || 0,
-                s_id: Number(router.query['fs'] as string) || 0,
-                site_code: router.query['fc'] as string || ''
-            },
-            to: {
-                ls_id: Number(router.query['tl'] as string) || 0,
-                s_id: Number(router.query['ts'] as string) || 0,
-                site_code: router.query['tc'] as string || ''
+        if (router.query['fs']) {
+            const { from, to }: { from: Stop, to: Stop } = {
+                from: {
+                    ls_id: Number(router.query['fl'] as string) || 0,
+                    s_id: Number(router.query['fs'] as string) || 0,
+                    site_code: router.query['fc'] as string || ''
+                },
+                to: {
+                    ls_id: Number(router.query['tl'] as string) || 0,
+                    s_id: Number(router.query['ts'] as string) || 0,
+                    site_code: router.query['tc'] as string || ''
+                }
             }
+            setQuery({
+                from,
+                to,
+                hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
+                minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
+                discount: cookies["discount-percentage"] || 0,
+                networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
+                date: router.query['d'] as string || dateString(new Date())
+            })
         }
-        setQuery({
-            from,
-            to,
-            hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
-            minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
-            discount: cookies["discount-percentage"] || 0,
-            networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
-            date: router.query['d'] as string || dateString(new Date())
-        })
     }, [router])
 
     useEffect(() => {

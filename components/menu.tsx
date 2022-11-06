@@ -105,10 +105,10 @@ export const SearchSection = () => {
             }
         }
         router.push(`/routes?${(new URLSearchParams({
-            fl: from!.ls_id.toString(),
+            ...(from!.ls_id ? { fl: from!.ls_id.toString() } : {}),
             fs: from!.s_id.toString(),
             ...(from!.site_code ? { fc: from!.site_code } : {}),
-            tl: to!.ls_id.toString(),
+            ...(to!.ls_id ? { tl: to!.ls_id.toString() } : {}),
             ts: to!.s_id.toString(),
             ...(to!.site_code ? { tc: to!.site_code } : {}),
             ...(time ? { h: time.getHours().toString(), m: time.getMinutes().toString() } : {}),
