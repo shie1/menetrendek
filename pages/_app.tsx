@@ -118,7 +118,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                               <motion.div animate={{ opacity: 1, transform: 'scaleY(100%) translateY(0%)' }} exit={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} initial={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} transition={{ duration: .2 }}>
                                 <Stack sx={{ width: '-webkit-fill-available' }}>
                                   <SearchSection />
-                                  <Divider mb='sm' size="md" />
+                                  <Divider size="md" />
                                 </Stack>
                               </motion.div>}
                           </AnimatePresence>
