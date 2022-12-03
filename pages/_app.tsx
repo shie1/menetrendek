@@ -16,20 +16,23 @@ import {
   Space,
   Stack,
   Divider,
+  ScrollArea,
+  Collapse,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld } from '@tabler/icons';
+import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld, IconChevronUp } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useRef, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/dist/client/router';
 import Script from "next/script"
 import { SearchSection } from '../components/menu';
 import { Stop } from '../components/stops';
+import { motion } from "framer-motion"
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -47,11 +50,13 @@ function MyApp({ Component, pageProps }: AppProps) {
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
   const router = useRouter()
+  const [search, setSearch] = useState(true)
 
   useHotkeys([
     ['ctrl+J', () => toggleColorScheme()],
     ['ctrl+D', () => setDev(!dev)],
-    ['Enter', () => window.dispatchEvent(new Event("search-trigger"))]
+    ['Enter', () => window.dispatchEvent(new Event("search-trigger"))],
+    ['ctrl+K', () => setSearch(!search)]
   ])
 
   useEffect(() => {
@@ -106,36 +111,28 @@ function MyApp({ Component, pageProps }: AppProps) {
                   </div>
                   <div className='bg' />
                   <Container aria-current="page" sx={{ height: '100vh' }}>
-                    <Center sx={{ height: '100%' }}>
-                      <Box p='sm' sx={{ width: 500, height: '100%' }}>
-                        <Card radius="lg" shadow='xl' sx={{ minHeight: '100%', position: 'relative' }}>
-                          <Group position='apart' mb='md'>
+                    <Center sx={{ height: '-webkit-fill-available' }}>
+                      <Box p='sm' sx={{ width: 500, height: '-webkit-fill-available' }}>
+                        <Card p="md" radius="lg" shadow='xl' sx={{ height: '-webkit-fill-available', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+                          <Group id='app-header' position='apart' mb='md'>
                             <Link href="/"><Group sx={interactive}><Title order={router.pathname === "/" ? 2 : 1} size={32}>Menetrendek</Title></Group></Link>
                             <Group position="center">
-                              <Switch
-                                checked={colorScheme === 'dark'}
-                                onChange={() => toggleColorScheme()}
-                                size="lg"
-                                onLabel={<IconSun color={theme.white} size={20} stroke={1.5} />}
-                                offLabel={<IconMoonStars color={theme.colors.gray[6]} size={20} stroke={1.5} />}
-                              />
+                              <motion.div animate={{ rotate: search ? 0 : 180 }}>
+                                <ActionIcon onClick={() => setSearch(!search)} variant="filled" color={theme.primaryColor} size="lg" radius="xl">
+                                  <IconChevronUp size={50} />
+                                </ActionIcon>
+                              </motion.div>
                             </Group>
                           </Group>
-                          <Stack id='app-main'>
-                            <SearchSection />
-                            <Divider size="md" />
-                            <Component {...pageProps} />
+                          <Stack id='app-main' sx={{ height: '100%', overflow: 'visible', display: 'flex' }}>
+                            <Collapse in={search} sx={{ width: '-webkit-fill-available' }}>
+                              <SearchSection />
+                              <Divider mt='md' size="md" />
+                            </Collapse>
+                            <Stack sx={{ marginBottom: '14%', maxHeight: '100%', overflowY: 'auto' }}>
+                              <Component {...pageProps} />
+                            </Stack>
                           </Stack>
-                          <Space h="xl" />
-                          <Group my={6} spacing={0} position='center' align="center" sx={{ bottom: 0, position: 'absolute', width: '94%' }}>
-                            <ActionIcon onClick={() => window.open("https://shie1bi.hu", "_blank")}>
-                              <IconWorld size={16} />
-                            </ActionIcon>
-                            <Text size="sm">Shie1bi, {(new Date()).getFullYear()}</Text>
-                            <ActionIcon onClick={() => window.open("https://youtube.com/shie1bi", "_blank")}>
-                              <IconBrandYoutube size={16} />
-                            </ActionIcon>
-                          </Group>
                         </Card>
                       </Box>
                     </Center>

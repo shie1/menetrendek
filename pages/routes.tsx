@@ -5,6 +5,7 @@ import {
     Loader,
     LoadingOverlay,
     Paper,
+    ScrollArea,
     Skeleton,
     Space,
     Timeline,
@@ -134,14 +135,14 @@ const Routes: NextPage = () => {
         <Query.Provider value={query}>
             <AccordionFix.Provider value={[accordion, setAccordion]}>
                 <LoadingOverlay visible={loading} />
-                <Accordion mt="sm" value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
-                    {results ?
-                        Object.keys(results.results.talalatok).map(key => {
-                            const item = results.results.talalatok[key]
-                            return (<Route val={key} key={key} item={item} />)
-                        }
-                        ) : <></>}
-                </Accordion>
+                    <Accordion mt="sm" value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
+                        {results ?
+                            Object.keys(results.results.talalatok).map(key => {
+                                const item = results.results.talalatok[key]
+                                return (<Route val={key} key={key} item={item} />)
+                            }
+                            ) : <></>}
+                    </Accordion>
             </AccordionFix.Provider>
         </Query.Provider>
     </>)

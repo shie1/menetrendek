@@ -1,7 +1,7 @@
 import { createStyles, Select, MultiSelect, Stack, ActionIcon, ColorInput, useMantineTheme, ColorSwatch, Group, Paper, Text } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconX, IconRotateClockwise } from "@tabler/icons";
-import { useEffect } from "react";
+import { createRef, forwardRef, useEffect, useRef, useState } from "react";
 import { useCookies } from "react-cookie";
 
 const useRoundInputStyles = createStyles((theme) => ({
@@ -45,6 +45,8 @@ export const DiscountSelector = () => {
 export const NetworksSelector = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const { classes } = useRoundInputStyles()
+    const opts = createRef<any>()
+    const [pd, setPd] = useState(0)
 
     useEffect(() => {
         if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
@@ -88,7 +90,15 @@ export const NetworksSelector = () => {
                 <IconRotateClockwise />
             </ActionIcon>
         </Stack>}
+        onFocus={() => {
+            setTimeout(() => {
+                setPd(document.querySelector('.mantine-MultiSelect-dropdown')!.clientHeight + 100)
+            }, 100)
+        }
+        }
+        onBlur={() => setPd(0)}
         label="Közlekedés"
+        sx={{ paddingBottom: pd }}
         radius='lg'
         classNames={classes}
     />)

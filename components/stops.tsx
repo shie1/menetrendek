@@ -45,11 +45,23 @@ const Dropdown = ({ children, ...props }: any) => {
 export const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<Stop | any> }) => {
   const [data, setData] = useState<Array<any>>([])
   const [stops, setStops] = useLocalStorage<Array<any>>({ key: 'frequent-stops', defaultValue: [] })
+  const [geoStops, setGeoStops] = useState<Array<Stop>>([])
   const ref = useRef<HTMLInputElement | null>(null)
   const [selected, setSelected] = selection
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [lastKey, setLastKey] = useState<string>("")
   const geoPerms = useContext<boolean>(GeoPerms)
+
+  useEffect(() => {
+    if (geoPerms && typeof window !== 'undefined') {
+      navigator.geolocation.getCurrentPosition((geo) => {
+        const { latitude, longitude } = geo.coords
+        apiCall("POST", "/api/stationsNear", { networks: cookies["selected-networks"], latitude, longitude }).then(e => {
+          setGeoStops((e.results.ls as Array<any>).map(item => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
+        })
+      })
+    }
+  }, [geoPerms])
 
   const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     ({ value, network, ls_id, s_id, site_code, ...others }: SelectItemProps & Stop, ref) => (
@@ -76,14 +88,10 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     icon={typeof selected !== 'string' && selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     ref={ref}
-    rightSection={variant === "from" && geoPerms ? <ActionIcon mr={6} radius="xl" onClick={() => {
-      navigator.geolocation.getCurrentPosition((geo) => {
-        const { latitude, longitude } = geo.coords
-        apiCall("POST", "/api/stationsNear", { networks: cookies["selected-networks"], latitude, longitude }).then(e => {
-          setData((e.results.ls as Array<any>).map(item => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
-          ref.current?.focus()
-        })
-      })
+    rightSection={variant === "from" && geoStops ? <ActionIcon mr={6} radius="xl" onClick={() => {
+      ref.current?.focus()
+      ref.current!.value = ''
+      setData(geoStops)
     }}>
       <IconMapPin />
     </ActionIcon> : <></>}
@@ -107,6 +115,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
     onChange={(e) => { load(e); setSelected(e) }}
+    onBlur={(e) => { if (!e.currentTarget.value) { setData([]) } }}
     onFocus={(e) => {
       setSelected(null)
       if (!cookies["selected-networks"].length) {
