@@ -37,6 +37,10 @@ const Route = ({ item, val }: { item: any, val: any }) => {
         if (accordion != val) { setOpen(false) }
     }, [accordion])
 
+    useEffect(() => {
+        setData(undefined)
+    }, [router])
+
     return (<Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
         <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data} onClick={() => {
             setOpen(!open)
@@ -135,14 +139,14 @@ const Routes: NextPage = () => {
         <Query.Provider value={query}>
             <AccordionFix.Provider value={[accordion, setAccordion]}>
                 <LoadingOverlay visible={loading} />
-                    <Accordion mt="sm" value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
-                        {results ?
-                            Object.keys(results.results.talalatok).map(key => {
-                                const item = results.results.talalatok[key]
-                                return (<Route val={key} key={key} item={item} />)
-                            }
-                            ) : <></>}
-                    </Accordion>
+                <Accordion mt="sm" value={accordion} chevron={<></>} chevronSize={0} radius="lg" variant="filled" >
+                    {results ?
+                        Object.keys(results.results.talalatok).map(key => {
+                            const item = results.results.talalatok[key]
+                            return (<Route val={key} key={key} item={item} />)
+                        }
+                        ) : <></>}
+                </Accordion>
             </AccordionFix.Provider>
         </Query.Provider>
     </>)

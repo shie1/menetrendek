@@ -51,6 +51,7 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [lastKey, setLastKey] = useState<string>("")
   const geoPerms = useContext<boolean>(GeoPerms)
+  const [input, setInput] = useState<string>()
 
   useEffect(() => {
     if (geoPerms && typeof window !== 'undefined') {
@@ -84,11 +85,18 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     })
   }
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (input) load(input)
+    }, 500)
+    return () => clearTimeout(timer)
+  }, [input])
+
   return (<Autocomplete
     icon={typeof selected !== 'string' && selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
     radius="xl"
     ref={ref}
-    rightSection={variant === "from" && geoStops ? <ActionIcon mr={6} radius="xl" onClick={() => {
+    rightSection={variant === "from" && geoStops ? !geoStops.length ? <></> : <ActionIcon mr={6} radius="xl" onClick={() => {
       ref.current?.focus()
       ref.current!.value = ''
       setData(geoStops)
@@ -114,9 +122,9 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
     }}
     error={error}
     sx={{ input: { border: '1px solid #7c838a' } }}
-    onChange={(e) => { load(e); setSelected(e) }}
+    onChange={(e) => { setInput(e); setData([]); setSelected(e) }}
     onBlur={(e) => { if (!e.currentTarget.value) { setData([]) } }}
-    onFocus={(e) => {
+    onFocus={() => {
       setSelected(null)
       if (!cookies["selected-networks"].length) {
         setCookie("selected-networks", ['1', '2', '25', '3', '10,24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })

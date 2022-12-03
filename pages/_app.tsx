@@ -1,8 +1,6 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import {
-  ColorScheme,
-  ColorSchemeProvider,
   MantineProvider,
   Box,
   Card,
@@ -10,29 +8,24 @@ import {
   Container,
   Group,
   Title,
-  Switch,
-  Text,
   ActionIcon,
-  Space,
   Stack,
   Divider,
-  ScrollArea,
-  Collapse,
 } from '@mantine/core';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { IconSun, IconMoonStars, IconBrandYoutube, IconWorld, IconChevronUp } from '@tabler/icons';
+import { IconChevronUp } from '@tabler/icons';
 import { useMantineTheme } from '@mantine/styles';
 import { NotificationsProvider } from '@mantine/notifications';
 import Link from 'next/link';
 import { interactive } from '../components/styles';
 import Head from 'next/head';
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/dist/client/router';
 import Script from "next/script"
 import { SearchSection } from '../components/menu';
 import { Stop } from '../components/stops';
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion";
 
 export const Dev = createContext<Array<boolean | any>>([false, () => { }])
 export const Time = createContext<any>([null, () => { }])
@@ -112,19 +105,24 @@ function MyApp({ Component, pageProps }: AppProps) {
                         <Group id='app-header' position='apart' mb='md'>
                           <Link href="/"><Group sx={interactive}><Title order={router.pathname === "/" ? 2 : 1} size={32}>Menetrendek</Title></Group></Link>
                           <Group position="center">
-                            <motion.div animate={{ rotate: search ? 0 : 180 }}>
+                            <motion.div style={{ height: '100%', display: 'flex', flexDirection: 'column' }} animate={{ rotate: search ? 0 : 180 }}>
                               <ActionIcon onClick={() => setSearch(!search)} variant="filled" color={theme.primaryColor} size="lg" radius="xl">
                                 <IconChevronUp size={50} />
                               </ActionIcon>
                             </motion.div>
                           </Group>
                         </Group>
-                        <Stack id='app-main' sx={{ height: '100%', overflow: 'visible', display: 'flex' }}>
-                          <Collapse in={search} sx={{ width: '-webkit-fill-available' }}>
-                            <SearchSection />
-                            <Divider mt='md' size="md" />
-                          </Collapse>
-                          <Stack sx={{ marginBottom: '14%', maxHeight: '100%', overflowY: 'auto' }}>
+                        <Stack id='app-main' sx={{ overflow: 'visible', display: 'flex', height: '100%' }}>
+                          <AnimatePresence>
+                            {search &&
+                              <motion.div animate={{ opacity: 1, transform: 'scaleY(100%) translateY(0%)' }} exit={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} initial={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} transition={{ duration: .2 }}>
+                                <Stack sx={{ width: '-webkit-fill-available' }}>
+                                  <SearchSection />
+                                  <Divider mb='sm' size="md" />
+                                </Stack>
+                              </motion.div>}
+                          </AnimatePresence>
+                          <Stack sx={{ flexGrow: 1, marginBottom: '14%', overflowY: 'auto' }}>
                             <Component {...pageProps} />
                           </Stack>
                         </Stack>
