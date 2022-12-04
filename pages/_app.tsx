@@ -36,7 +36,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   const theme = useMantineTheme()
   const [input, setInput] = useState<{ from: Stop; to: Stop; }>()
   const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
-  const [cookies, setCookie, removeCookie] = useCookies(['primary-color']);
   const [time, setTime] = useState<any>(null)
   const [geoPerms, setGeoPerms] = useState(false)
   const router = useRouter()

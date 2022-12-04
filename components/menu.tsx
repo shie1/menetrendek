@@ -93,24 +93,23 @@ export const SearchSection = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
 
     const search = async () => {
+        const map = (arr: Array<any>) => (arr.map(item => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
         let sfrom = from; let sto = to
         if (typeof from === 'string' || typeof to === 'string') {
             if (typeof from === 'string') {
-                sfrom = await apiCall("POST", "/api/autocomplete", { 'input': from, 'networks': cookies["selected-networks"] })
-                setFrom(sfrom!)
+                sfrom = map((await apiCall("POST", "/api/autocomplete", { 'input': from, 'networks': cookies["selected-networks"] })).results)[0]
             }
             if (typeof to === 'string') {
-                sto = await apiCall("POST", "/api/autocomplete", { 'input': from, 'networks': cookies["selected-networks"] })
-                setTo(sto!)
+                sto = map((await apiCall("POST", "/api/autocomplete", { 'input': to, 'networks': cookies["selected-networks"] })).results)[0]
             }
         }
         router.push(`/routes?${(new URLSearchParams({
-            ...(from!.ls_id ? { fl: from!.ls_id.toString() } : {}),
-            fs: from!.s_id.toString(),
-            ...(from!.site_code ? { fc: from!.site_code } : {}),
-            ...(to!.ls_id ? { tl: to!.ls_id.toString() } : {}),
-            ts: to!.s_id.toString(),
-            ...(to!.site_code ? { tc: to!.site_code } : {}),
+            ...(sfrom!.ls_id ? { fl: sfrom!.ls_id.toString() } : {}),
+            fs: sfrom!.s_id.toString(),
+            ...(sfrom!.site_code ? { fc: sfrom!.site_code } : {}),
+            ...(sto!.ls_id ? { tl: sto!.ls_id.toString() } : {}),
+            ts: sto!.s_id.toString(),
+            ...(sto!.site_code ? { tc: sto!.site_code } : {}),
             ...(time ? { h: time.getHours().toString(), m: time.getMinutes().toString() } : {}),
             ...(date ? { d: dateString(date) } : {})
         })).toString()}`)
@@ -163,7 +162,7 @@ export const QuickMenu = () => {
     }, [stops])
 
     return (<Tabs onTabChange={setTab} sx={{ height: '100%', '& .mantine-Tabs-tabLabel': { fontSize: touchscreen ? theme.fontSizes.sm * 1.1 : theme.fontSizes.sm } }} variant="outline" radius="md" defaultValue="stops" value={tab}>
-        <Tabs.List>
+        <Tabs.List >
             <Tabs.Tab value="introduction" icon={<IconInfoCircle size={14} />}>Információ</Tabs.Tab>
             <Tabs.Tab rightSection={stops.length ? <Badge radius="xl" sx={{ width: 20, height: 20 }} p={0}>{stops.length}</Badge> : <></>} value="stops" icon={<IconRotateClockwise2 size={14} />}>Gyors elérés</Tabs.Tab>
             <Tabs.Tab value="options" icon={<IconSettings size={14} />}>Preferenciák</Tabs.Tab>

@@ -39,7 +39,9 @@ const Dropdown = ({ children, ...props }: any) => {
     sx={{
       maxHeight: 240,
       width: '100%',
-    }}>{children}</ScrollArea>)
+    }}>
+    {children}
+  </ScrollArea>)
 }
 
 export const StopInput = ({ variant, error, selection }: { variant: "from" | "to", error?: string, selection: Array<Stop | any> }) => {
@@ -88,9 +90,10 @@ export const StopInput = ({ variant, error, selection }: { variant: "from" | "to
   useEffect(() => {
     const timer = setTimeout(() => {
       if (input) load(input)
+      if (selected) setSelected(selected)
     }, 500)
     return () => clearTimeout(timer)
-  }, [input])
+  }, [input, selected])
 
   return (<Autocomplete
     icon={typeof selected !== 'string' && selected ? <StopIcon network={selected.network} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
