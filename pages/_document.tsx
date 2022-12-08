@@ -44,13 +44,6 @@ const Document: NextPage = () => {
             <meta property="twitter:title" content={appName} />
             <meta property="twitter:description" content={appDesc} />
             <meta property="twitter:image" content={appThumb} />
-
-            <Script // Adsense
-                id="Adsense-id"
-                async
-                strategy="beforeInteractive"
-                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3057716180157458"
-            />
         </Head>
         <body>
             <Main />
