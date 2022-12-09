@@ -1,5 +1,5 @@
 import { Title, Container, Stack, Group, Text, Divider } from "@mantine/core";
-import { IconLayout } from "@tabler/icons";
+import { IconLayout, IconSearch, IconShare, IconApps } from "@tabler/icons";
 import type { NextPage } from "next";
 import { FeaturesGrid } from "../components/hello";
 
@@ -13,7 +13,10 @@ const Home: NextPage = () => {
         </Stack>
         <FeaturesGrid
             data={[
-                { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." }
+                { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." }
             ]}
         />
     </Container>)
