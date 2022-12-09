@@ -1,11 +1,11 @@
-import { Text } from "@mantine/core";
 import type { NextPage } from "next";
 import { motion } from "framer-motion"
 import PageTransition from "../components/pageTransition";
 
-const Home: NextPage = () => {
+const Routes: NextPage = () => {
     return (<PageTransition>
+        asdasdsadsad
     </PageTransition>)
 }
 
-export default Home
+export default Routes

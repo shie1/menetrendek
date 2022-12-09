@@ -1,14 +1,17 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { MantineProvider, Container } from '@mantine/core';
+import { MantineProvider, Container, Divider, Stack, Title, Text } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import Head from 'next/head';
 import Script from "next/script"
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from '@tabler/icons';
+import { FeaturesGrid } from '../components/hello';
+import { QuickMenu } from '../components/menu';
+import { motion, AnimatePresence } from "framer-motion"
 
 function MyApp({ Component, pageProps }: AppProps) {
-
   return (<>
     <Head>
       <title>Menetrendek</title>
@@ -16,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <MantineProvider withNormalizeCSS withGlobalStyles theme={{
       colorScheme: 'dark',
       primaryColor: 'indigo',
-      primaryShade: 9,
+      primaryShade: 7,
       fontFamily: 'Sora, sans-serif',
     }} >
       <NotificationsProvider>
@@ -33,11 +36,32 @@ function MyApp({ Component, pageProps }: AppProps) {
           </Script>
         </div>
         <div className='bg' />
-        <Header links={[{ label: "Főoldal", link: "/" }, { label: "Kereső", link: "/search" }]} />
+        <Header links={[]} />
         <Container aria-current="page">
-          <Component {...pageProps} />
+          <motion.div layout>
+            <QuickMenu />
+            <AnimatePresence mode='wait'>
+              <Component {...pageProps} />
+            </AnimatePresence>
+            <Divider size="md" my="md" />
+            <Stack pb="xl" spacing={3}>
+              <Title>Menetrendek</Title>
+              <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+              <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+              <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+            </Stack>
+            <FeaturesGrid
+              data={[
+                { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+              ]}
+            />
+          </motion.div>
         </Container>
-        <Footer data={[]} />
+        <Footer data={[{ title: "", links: [{ label: "Támogatás", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>
     </MantineProvider>
   </>)

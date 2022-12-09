@@ -52,8 +52,8 @@ export function Feature({ icon: Icon, title, description }: FeatureProps) {
     const theme = useMantineTheme();
     return (
         <div>
-            <ThemeIcon variant="light" size={40} radius={40}>
-                <Icon size={20} stroke={1.5} />
+            <ThemeIcon variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} size={40} radius={40}>
+                <Icon size={20} stroke={2.2} />
             </ThemeIcon>
             <Text style={{ marginTop: theme.spacing.sm, marginBottom: 7 }}>{title}</Text>
             <Text size="sm" color="dimmed" style={{ lineHeight: 1.6 }}>

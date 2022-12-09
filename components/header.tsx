@@ -1,7 +1,10 @@
-import { createStyles, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { createStyles, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, ScrollArea } from '@mantine/core';
+import { useDisclosure, useScrollLock } from '@mantine/hooks';
 import { IconChevronDown } from '@tabler/icons';
 import { useRouter } from 'next/router';
+import { motion } from "framer-motion"
+import { useEffect } from 'react';
+import { interactive } from './styles';
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -60,7 +63,15 @@ export function Header({ links }: HeaderSearchProps) {
     const { classes } = useStyles();
     const router = useRouter()
 
-    const items = links.map((link) => {
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.documentElement.style.overflow = opened ? 'hidden' : 'initial'
+        }
+    }, [opened])
+
+    const items = (burger?: boolean) => links.map((link) => {
+        const openAction = (event: any, url: string) => { event.preventDefault(); router.push(url); if (burger) toggle() }
+
         const menuItems = link.links?.map((item) => (
             <Menu.Item key={item.link}>{item.label}</Menu.Item>
         ));
@@ -72,10 +83,10 @@ export function Header({ links }: HeaderSearchProps) {
                         <a
                             href={link.link}
                             className={classes.link}
-                            onClick={(event) => { event.preventDefault(); router.push(link.link) }}
+                            onClick={(event) => openAction(event, link.link)}
                         >
                             <Center>
-                                <span className={classes.linkLabel}>{link.label}</span>
+                                <Text size={burger ? "xl" : "sm"} className={classes.linkLabel}>{link.label}</Text>
                                 <IconChevronDown size={12} stroke={1.5} />
                             </Center>
                         </a>
@@ -90,35 +101,48 @@ export function Header({ links }: HeaderSearchProps) {
                 key={link.label}
                 href={link.link}
                 className={classes.link}
-                onClick={(event) => { event.preventDefault(); router.push(link.link) }}
+                onClick={(event) => openAction(event, link.link)}
             >
-                {link.label}
+                <Text size={burger ? "xl" : "sm"}>
+                    {link.label}
+                </Text>
             </a>
         );
     });
 
-    return (
-        <MHeader height={56} className={classes.header} mb={120}>
+    return (<div style={{ overflow: 'hidden' }}>
+        <motion.div transition={{ ease: "easeInOut", duration: .2 }} style={{ position: 'absolute', bottom: 0, left: 0, overflow: 'hidden' }} animate={{ y: 56, height: opened ? '100vh' : 0 }} initial={{ y: '100%', height: '100%' }}>
+            <MediaQuery styles={{ display: 'none' }} largerThan="sm">
+                <Paper sx={{ width: '100vw', height: '100vh', zIndex: 1 }}>
+                    <Stack p="md" spacing="sm">
+                        {items(true)}
+                    </Stack>
+                </Paper>
+            </MediaQuery>
+        </motion.div>
+        <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={120}>
             <Container>
                 <div className={classes.inner}>
-                    <Group spacing='xs' noWrap>
+                    <Group onClick={() => router.push("/")} sx={interactive} spacing='xs' noWrap>
                         <Image src="/api/img/logo.png?s=40" width={40} alt="menetrendek.info logó" />
                         <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
                             <Text size={22} weight={550}>Menetrendek.info</Text>
                         </MediaQuery>
                     </Group>
                     <Group spacing={5} className={classes.links}>
-                        {items}
+                        {items()}
                     </Group>
-                    <Burger
-                        opened={opened}
-                        onClick={toggle}
-                        className={classes.burger}
-                        size="sm"
-                        color="#fff"
-                    />
+                    {!links.length ? <></> :
+                        <Burger
+                            opened={opened}
+                            onClick={toggle}
+                            className={classes.burger}
+                            size="sm"
+                            color="#fff"
+                        />
+                    }
                 </div>
             </Container>
         </MHeader>
-    );
+    </div>);
 }
