@@ -1,4 +1,5 @@
 import { Stop } from "./components/stops"
+import { Query } from "./pages/_app"
 
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
@@ -64,16 +65,8 @@ export const stationsNear = async (query: any) => {
 }
 
 export const routes = async (query: any) => {
-    const rb: {
-        from: Stop;
-        to: Stop;
-        hours: number;
-        minutes: number;
-        discount: number;
-        networks: Array<number>;
-        date: string
-    } = query
-    const date = new Date(rb.date)
+    const rb: Query = query
+    const date = new Date(rb.time.date)
     const body = {
         "func": "getRoutes",
         "params": {
@@ -82,8 +75,8 @@ export const routes = async (query: any) => {
             "honnan_ls_id": rb.from.ls_id,
             "honnan_settlement_id": rb.from.s_id,
             "honnan_site_code": rb.from.site_code,
-            "hour": date.getHours(),
-            "min": date.getMinutes(),
+            "hour": rb.time.hours,
+            "min": rb.time.minutes,
             "hova_ls_id": rb.to.ls_id,
             "hova_settlement_id": rb.to.s_id,
             "hova_site_code": rb.to.site_code,
@@ -100,7 +93,7 @@ export const routes = async (query: any) => {
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            "networks": rb.networks,
+            "networks": rb.user.networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()

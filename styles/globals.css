@@ -51,11 +51,6 @@ body {
   filter: brightness(.15);
 }
 
-.mantine-Accordion-chevron {
-  position: absolute;
-  display: none;
-}
-
 /* scrollbar */
 
 *::-webkit-scrollbar-track {

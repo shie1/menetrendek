@@ -1,12 +1,20 @@
-import { ActionIcon, Avatar, Divider, Grid, Group, Paper, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
-import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons"
+import {
+    ActionIcon,
+    Avatar,
+    Divider,
+    Grid,
+    Group,
+    Space,
+    Stack,
+    Text,
+    ThemeIcon,
+    Timeline,
+} from "@mantine/core";
+import { IconWalk, IconCheck, IconAlertTriangle, IconWifi, IconInfoCircle } from "@tabler/icons";
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useContext, useState } from "react"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
-import { Dev } from "../pages/_app"
-import { parseKozlekedik } from "../client"
 
 const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
@@ -55,7 +63,6 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
 
 export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
     const router = useRouter()
-    const [dev] = useContext(Dev)
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
@@ -85,7 +92,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                         {!dataItem.vegallomasok ? <></> :
                             <Text size="sm">{dataItem.vegallomasok}</Text>}
                         {!dataItem.jaratinfo.kozlekedik ? <></> :
-                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik} {!dev ? <></> : `(${parseKozlekedik(dataItem.jaratinfo.kozlekedik)})`}</Text>}
+                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
                         {!dataItem.jaratinfo.ToBay ? <></> :
                             <Text size="sm">Kocsiállás érkezéskor: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />

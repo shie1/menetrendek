@@ -10,8 +10,30 @@ import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from
 import { FeaturesGrid } from '../components/hello';
 import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
+import { createContext, useState } from 'react';
+import { Stop } from '../components/stops';
+
+export interface Query {
+  from: Stop;
+  to: Stop;
+  time: {
+    hours: number;
+    minutes: number;
+    date: string;
+  }
+  user: {
+    discount: number;
+    networks: Array<number>;
+  },
+  index?: number;
+}
+export type QuerySetter = (a: Query) => void
+
+export const Query = createContext<{ query: Query | undefined; setQuery: QuerySetter }>({ query: undefined, setQuery: () => { } })
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const [query, setQuery] = useState<Query | undefined>()
+
   return (<>
     <Head>
       <title>Menetrendek</title>
@@ -37,30 +59,32 @@ function MyApp({ Component, pageProps }: AppProps) {
         </div>
         <div className='bg' />
         <Header links={[]} />
-        <Container aria-current="page">
-          <motion.div layout>
-            <QuickMenu />
-            <AnimatePresence mode='wait'>
-              <Component {...pageProps} />
-            </AnimatePresence>
-            <Divider size="md" my="md" />
-            <Stack pb="xl" spacing={3}>
-              <Title>Menetrendek</Title>
-              <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-              <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
-              <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-            </Stack>
-            <FeaturesGrid
-              data={[
-                { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
-              ]}
-            />
-          </motion.div>
-        </Container>
+        <Query.Provider value={{ query, setQuery }}>
+          <Container aria-current="page">
+            <motion.div layout>
+              <QuickMenu />
+              <AnimatePresence mode='wait'>
+                <Component {...pageProps} />
+              </AnimatePresence>
+              <Divider size="md" my="md" />
+              <Stack pb="xl" spacing={3}>
+                <Title>Menetrendek</Title>
+                <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+              </Stack>
+              <FeaturesGrid
+                data={[
+                  { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                  { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                  { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                  { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                  { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                ]}
+              />
+            </motion.div>
+          </Container>
+        </Query.Provider>
         <Footer data={[{ title: "", links: [{ label: "Támogatás", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>
     </MantineProvider>
