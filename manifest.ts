@@ -55,41 +55,59 @@ const manifest = {
     ],
     "icons": [
         {
-            "src": "/api/img/logo.png?s=48",
+            "src": "/api/img/logo_maskable.png?s=48",
             "sizes": "48x48",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=72",
+            "src": "/api/img/logo_maskable.png?s=72",
             "sizes": "72x72",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=96",
+            "src": "/api/img/logo_maskable.png?s=96",
             "sizes": "96x96",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=144",
+            "src": "/api/img/logo_maskable.png?s=144",
             "sizes": "144x144",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=168",
+            "src": "/api/img/logo_maskable.png?s=168",
             "sizes": "168x168",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=192",
+            "src": "/api/img/logo_maskable.png?s=192",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/png",
+            "purpose": "maskable"
         },
         {
-            "src": "/api/img/logo.png?s=512",
+            "src": "/api/img/logo_maskable.png?s=512",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/api/img/logo_monochrome.png?s=512",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "monochrome"
+        },
+        {
+            "src": "/api/img/logo_maskable.png?s=512",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any"
-        }
+        },
     ],
     "start_url": "/",
     "lang": "hu-HU",
@@ -126,6 +144,11 @@ const manifest = {
             "url": "https://play.google.com/store/apps/details?id=hu.webvalto.bkkfutar",
             "id": "hu.webvalto.bkkfutar"
         }
+    ],
+    "display_override": [
+        "standalone",
+        "fullscreen",
+        "minimal-ui"
     ]
 }
 export default manifest;
