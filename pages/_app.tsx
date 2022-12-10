@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
 import { useWindowScroll } from '@mantine/hooks';
+import { useCookies } from 'react-cookie';
 
 export interface Query {
   from: Stop;
@@ -34,7 +35,14 @@ export const Query = createContext<{ query: Query | undefined; setQuery: QuerySe
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [query, setQuery] = useState<Query | undefined>()
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [scroll, scrollTo] = useWindowScroll();
+
+  useEffect(() => {
+    if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
+      setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    }
+  }, [cookies])
 
   useEffect(() => {
     const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab") e.preventDefault() }
