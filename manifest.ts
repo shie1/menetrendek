@@ -17,37 +17,37 @@ const manifest = {
     "id": "/",
     "screenshots": [
         {
-            "src": "/api/img/screenshots/mobile_1.png",
+            "src": "/api/img/mobile_1.png",
             "sizes": "1442x3202",
             "type": "image/png",
             "label": "Járatok keresése"
         },
         {
-            "src": "/api/img/screenshots/mobile_2.png",
+            "src": "/api/img/mobile_2.png",
             "sizes": "1442x3202",
             "type": "image/png",
             "label": "Átszállásos út kifejtve"
         },
         {
-            "src": "/api/img/screenshots/mobile_3.png",
+            "src": "/api/img/mobile_3.png",
             "sizes": "1442x3202",
             "type": "image/png",
             "label": "Járat megállói"
         },
         {
-            "src": "/api/img/screenshots/desktop_1.png",
+            "src": "/api/img/desktop_1.png",
             "sizes": "1920x937",
             "type": "image/png",
             "label": "Járatok keresése"
         },
         {
-            "src": "/api/img/screenshots/desktop_2.png",
+            "src": "/api/img/desktop_2.png",
             "sizes": "1920x937",
             "type": "image/png",
             "label": "Átszállásos út kifejtve"
         },
         {
-            "src": "/api/img/screenshots/desktop_3.png",
+            "src": "/api/img/desktop_3.png",
             "sizes": "1920x937",
             "type": "image/png",
             "label": "Járat megállói"
