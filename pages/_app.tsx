@@ -14,6 +14,7 @@ import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
 import { useWindowScroll } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
+import { useUserAgent } from '../components/ua';
 
 export interface Input {
   from: Stop | undefined;
@@ -39,10 +40,13 @@ export const Query = createContext<{ query: Query | undefined; setQuery: QuerySe
 export const Input = createContext<{ input: Input, setInput: InputSetter }>({ input: { from: undefined, to: undefined }, setInput: () => { } })
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
   const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
   const [scroll, scrollTo] = useWindowScroll();
+
+  console.log(ua)
 
   useEffect(() => {
     if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {

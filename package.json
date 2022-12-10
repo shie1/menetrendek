@@ -18,6 +18,7 @@
     "@tabler/icons": "^1.101.0",
     "@types/lodash": "^4.14.186",
     "@types/sharp": "^0.31.0",
+    "@types/ua-parser-js": "^0.7.36",
     "dayjs": "^1.11.5",
     "framer-motion": "^7.6.4",
     "lz-string": "^1.4.4",
@@ -30,7 +31,8 @@
     "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",
     "sanitize-filename": "^1.6.3",
-    "sharp": "^0.31.1"
+    "sharp": "^0.31.1",
+    "ua-parser-js": "^1.0.32"
   },
   "devDependencies": {
     "@types/node": "18.7.23",

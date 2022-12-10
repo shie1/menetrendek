@@ -1,4 +1,4 @@
-import { Group, Button, Stack, Text, useMantineTheme, Paper, Menu, ScrollArea, ActionIcon } from "@mantine/core"
+import { Group, Button, Stack, Text, useMantineTheme, Paper, Menu, ScrollArea, ActionIcon, Transition } from "@mantine/core"
 import { IconArrowBarRight, IconArrowBarToRight, IconChevronDown, IconSearch, IconX } from "@tabler/icons";
 import { useContext, useState } from "react";
 import { Stop, StopIcon, StopInput } from "./stops"
@@ -11,6 +11,7 @@ import { interactive } from "./styles"
 import { AnimatePresence, motion } from "framer-motion"
 import { Input } from "../pages/_app";
 import { isEqual } from "lodash";
+import { useUserAgent } from "./ua";
 
 const QuickStop = ({ value, network, ls_id, s_id, site_code, remove }: Stop & { remove: () => void }) => {
     const { input, setInput } = useContext(Input)
@@ -45,6 +46,18 @@ const QuickStop = ({ value, network, ls_id, s_id, site_code, remove }: Stop & { 
     </Menu>)
 }
 
+export const Stops = ({ stops, setStops }: { stops: Array<Stop>, setStops: any }) => (<Paper shadow="lg" p={2} radius="lg">
+    <ScrollArea style={{ overflow: 'visible' }} type="auto" offsetScrollbars>
+        <Group style={{ overflow: 'visible' }} noWrap>
+            {stops.map((stop: Stop, i: any) => {
+                return (<motion.div key={i} layout layoutDependency={stops}>
+                    <QuickStop remove={() => { setStops(stops.filter(fStop => !isEqual(fStop, stop))) }} {...stop} />
+                </motion.div>)
+            })}
+        </Group>
+    </ScrollArea>
+</Paper>)
+
 export const QuickMenu = () => {
     const { input, setInput } = useContext(Input)
     const [from, setFrom] = [input ? input.from as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, from: e }) }]
@@ -54,6 +67,7 @@ export const QuickMenu = () => {
     const [time, setTime] = useState<Date | null>(null)
     const [stops, setStops] = useLocalStorage({ key: 'frequent-stops', defaultValue: [] })
     const [stopsOpen, setStopsOpen] = useState(false)
+    const ua = useUserAgent()
     const theme = useMantineTheme()
     const router = useRouter()
 
@@ -95,21 +109,15 @@ export const QuickMenu = () => {
                 </ActionIcon>
             </motion.div>
         </Group>
-        <AnimatePresence>
+        {ua?.device.vendor === "Apple" ? <Transition mounted={stopsOpen && stops.length > 0} transition="scale-y" duration={300} timingFunction="ease">
+            {(styles) => (<div style={styles}>
+                <Stops stops={stops} setStops={setStops} />
+            </div>)}
+        </Transition> : <AnimatePresence>
             {stopsOpen && stops.length &&
                 <motion.div transition={{ duration: .2, ease: "easeInOut" }} exit={{ height: 0, opacity: 0 }} animate={{ height: 'initial' }} initial={{ height: 0, opacity: 1 }}>
-                    <Paper shadow="lg" p={2} radius="lg">
-                        <ScrollArea style={{ overflow: 'visible' }} type="auto" offsetScrollbars>
-                            <Group style={{ overflow: 'visible' }} noWrap>
-                                {stops.map((stop: Stop, i: any) => {
-                                    return (<motion.div key={i} layout layoutDependency={stops}>
-                                        <QuickStop remove={() => { setStops(stops.filter(fStop => !isEqual(fStop, stop))) }} {...stop} />
-                                    </motion.div>)
-                                })}
-                            </Group>
-                        </ScrollArea>
-                    </Paper>
+                    <Stops stops={stops} setStops={setStops} />
                 </motion.div>}
-        </AnimatePresence>
+        </AnimatePresence>}
     </Stack>)
 }
