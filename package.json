@@ -1,5 +1,6 @@
 {
   "name": "menetrendek",
+  "description": "A modern menetrend kereső. MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART",
   "version": "0.1.0",
   "private": true,
   "scripts": {

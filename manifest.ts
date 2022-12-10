@@ -45,10 +45,21 @@ const manifest = {
             "src": "/api/img/logo.png?s=192",
             "sizes": "192x192",
             "type": "image/png"
+        },
+        {
+            "src": "/api/img/logo.png?s=512",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
         }
     ],
     "start_url": "/",
     "lang": "hu-HU",
-    "splash_pages": null
+    "splash_pages": null,
+    "dir": "ltr",
+    "categories": [
+        "navigation",
+        "travel"
+    ]
 }
 export default manifest;
