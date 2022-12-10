@@ -1,18 +1,29 @@
 import { Group, Button, Stack, Text, useMantineTheme, Paper, Menu, ScrollArea, ActionIcon } from "@mantine/core"
-import { IconAlertCircle, IconArrowBarRight, IconArrowBarToRight, IconChevronDown, IconSearch, IconX } from "@tabler/icons"
-import { useContext, useState } from "react"
+import { IconArrowBarRight, IconArrowBarToRight, IconChevronDown, IconSearch, IconX } from "@tabler/icons";
+import { useContext, useState } from "react";
 import { Stop, StopIcon, StopInput } from "./stops"
 import { useRouter } from "next/router"
 import { apiCall } from "./api"
 import { useCookies } from "react-cookie"
 import { dateString } from "../client"
-import { useLocalStorage, useMediaQuery } from "@mantine/hooks"
-import { showNotification } from "@mantine/notifications"
+import { useLocalStorage } from "@mantine/hooks";
 import { interactive } from "./styles"
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
+import { Input } from "../pages/_app";
+import { isEqual } from "lodash";
 
-const QuickStop = ({ value, network, ls_id, s_id, site_code }: Stop) => {
-    const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
+const QuickStop = ({ value, network, ls_id, s_id, site_code, remove }: Stop & { remove: () => void }) => {
+    const { input, setInput } = useContext(Input)
+    const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
+    const [from, setFrom] = [input ? input.from as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, from: e }) }]
+    const [to, setTo] = [input ? input.to as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, to: e }) }]
+
+    const stop = { value, network, ls_id, s_id, site_code }
+
+    const set = (setter: any) => {
+        setter(stop)
+        setStops([stop, ...stops.filter(item => !isEqual(item, stop))])
+    }
 
     return (<Menu trigger='click' shadow="md" radius="md" transition='rotate-right' position='bottom-start' closeOnClickOutside closeOnItemClick closeOnEscape>
         <Menu.Target>
@@ -27,16 +38,17 @@ const QuickStop = ({ value, network, ls_id, s_id, site_code }: Stop) => {
         </Menu.Target>
         <Menu.Dropdown>
             <Menu.Label>{value}</Menu.Label>
-            <Menu.Item icon={<IconArrowBarRight size={14} />}>Indulás innen</Menu.Item>
-            <Menu.Item icon={<IconArrowBarToRight size={14} />}>Érkezés ide</Menu.Item>
-            <Menu.Item color='red' icon={<IconX size={14} />}>Eltávolítás</Menu.Item>
+            <Menu.Item onClick={() => set(setFrom)} icon={<IconArrowBarRight size={14} />}>Indulás innen</Menu.Item>
+            <Menu.Item onClick={() => set(setTo)} icon={<IconArrowBarToRight size={14} />}>Érkezés ide</Menu.Item>
+            <Menu.Item onClick={() => remove()} color='red' icon={<IconX size={14} />}>Eltávolítás</Menu.Item>
         </Menu.Dropdown>
     </Menu>)
 }
 
 export const QuickMenu = () => {
-    const [from, setFrom] = useState<Stop>()
-    const [to, setTo] = useState<Stop>()
+    const { input, setInput } = useContext(Input)
+    const [from, setFrom] = [input ? input.from as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, from: e }) }]
+    const [to, setTo] = [input ? input.to as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, to: e }) }]
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const [date, setDate] = useState<Date | null>(null)
     const [time, setTime] = useState<Date | null>(null)
@@ -83,18 +95,21 @@ export const QuickMenu = () => {
                 </ActionIcon>
             </motion.div>
         </Group>
-        <motion.div style={{overflow: 'hidden'}} animate={{ height: stopsOpen ? 'initial' : 0 }}>
-            <Paper shadow="lg" p={2} radius="lg">
-                <ScrollArea style={{ overflow: 'visible' }} type="auto" offsetScrollbars>
-                    <Group style={{ overflow: 'visible' }} noWrap>
-                        {stops.map((stop: Stop, i: any) => {
-                            return (<motion.div key={i} layout layoutDependency={stops}>
-                                <QuickStop {...stop} />
-                            </motion.div>)
-                        })}
-                    </Group>
-                </ScrollArea>
-            </Paper>
-        </motion.div>
+        <AnimatePresence>
+            {stopsOpen && stops.length &&
+                <motion.div transition={{ duration: .2, ease: "easeInOut" }} exit={{ height: 0, opacity: 0 }} animate={{ height: 'initial' }} initial={{ height: 0, opacity: 1 }}>
+                    <Paper shadow="lg" p={2} radius="lg">
+                        <ScrollArea style={{ overflow: 'visible' }} type="auto" offsetScrollbars>
+                            <Group style={{ overflow: 'visible' }} noWrap>
+                                {stops.map((stop: Stop, i: any) => {
+                                    return (<motion.div key={i} layout layoutDependency={stops}>
+                                        <QuickStop remove={() => { setStops(stops.filter(fStop => !isEqual(fStop, stop))) }} {...stop} />
+                                    </motion.div>)
+                                })}
+                            </Group>
+                        </ScrollArea>
+                    </Paper>
+                </motion.div>}
+        </AnimatePresence>
     </Stack>)
 }

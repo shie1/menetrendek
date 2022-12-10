@@ -6,12 +6,11 @@ export const interactive = (theme: any) => ({ transition: '.2s', cursor: 'pointe
 
 export const useMyAccordion = createStyles((theme) => ({
     root: {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
-        borderRadius: theme.radius.sm,
+        borderRadius: theme.radius.md,
     },
 
     item: {
-        backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0],
+        backgroundColor: theme.fn.rgba(theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0], .9),
         border: '1px solid transparent',
         position: 'relative',
         zIndex: 0,
@@ -22,7 +21,7 @@ export const useMyAccordion = createStyles((theme) => ({
             backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : theme.white,
             boxShadow: theme.shadows.md,
             borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2],
-            borderRadius: theme.radius.md,
+            borderRadius: theme.radius.lg,
             zIndex: 1,
         },
     },

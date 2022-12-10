@@ -1,6 +1,8 @@
 import { Autocomplete, ScrollArea, Group, Text } from "@mantine/core"
 import { SelectItemProps } from "@mantine/core/lib/Select";
+import { useLocalStorage } from "@mantine/hooks";
 import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons";
+import { isEqual } from "lodash";
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
 import { apiCall } from "./api";
@@ -64,6 +66,7 @@ export const StopInput = ({ variant, selection }: { variant: "from" | "to", sele
     const [input, setInput] = useState<string>("")
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const { selected, setSelected } = selection
+    const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
     const ref = useRef<HTMLInputElement | null>(null)
 
     const load = (e: string) => {
@@ -98,11 +101,11 @@ export const StopInput = ({ variant, selection }: { variant: "from" | "to", sele
         dropdownComponent={Dropdown}
         itemComponent={AutoCompleteItem}
         id={`stopinput-${variant}`}
-        onItemSubmit={(e: any) => { setSelected(e); ref.current?.blur() }}
+        onItemSubmit={(e: any) => { setSelected(e); ref.current?.blur(); setStops([e, ...stops.filter(item => !isEqual(item, e))]) }}
         onChange={(e) => { if (!e) { setData([]) }; setSelected(undefined); setInput(e) }}
         onBlur={(e) => { if (!e.currentTarget.value) { setData([]) } }}
         onFocus={() => { setSelected(undefined) }}
-        value={input}
+        value={selected?.value || input}
         limit={99}
         placeholder={variant === "from" ? "Honnan?" : "Hova?"}
         rightSectionWidth={42}
