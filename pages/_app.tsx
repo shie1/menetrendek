@@ -1,17 +1,18 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { MantineProvider, Container, Divider, Stack, Title, Text } from '@mantine/core';
+import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, ActionIcon, Transition } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import Head from 'next/head';
 import Script from "next/script"
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from '@tabler/icons';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconArrowUp } from '@tabler/icons';
 import { FeaturesGrid } from '../components/hello';
 import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
+import { useWindowScroll } from '@mantine/hooks';
 
 export interface Query {
   from: Stop;
@@ -33,6 +34,15 @@ export const Query = createContext<{ query: Query | undefined; setQuery: QuerySe
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [query, setQuery] = useState<Query | undefined>()
+  const [scroll, scrollTo] = useWindowScroll();
+
+  useEffect(() => {
+    const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab") e.preventDefault() }
+    if (typeof window !== 'undefined') {
+      window.addEventListener("keydown", handler)
+    }
+    return () => window.removeEventListener("keydown", handler)
+  })
 
   return (<>
     <Head>
@@ -84,6 +94,22 @@ function MyApp({ Component, pageProps }: AppProps) {
               />
             </motion.div>
           </Container>
+          <Affix position={{ bottom: 20, right: 20 }}>
+            <Transition transition="slide-up" mounted={scroll.y > 320}>
+              {(transitionStyles) => (
+                <ActionIcon
+                  variant='filled'
+                  color="blue"
+                  radius="xl"
+                  size="lg"
+                  style={transitionStyles}
+                  onClick={() => scrollTo({ y: 0 })}
+                >
+                  <IconArrowUp size={25} />
+                </ActionIcon>
+              )}
+            </Transition>
+          </Affix>
         </Query.Provider>
         <Footer data={[{ title: "", links: [{ label: "Támogatás", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>

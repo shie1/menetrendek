@@ -1,5 +1,6 @@
 import { createStyles, Text, Container, ActionIcon, Group, Image } from '@mantine/core';
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
+import { Logo } from './brand';
 
 const useStyles = createStyles((theme) => ({
     footer: {
@@ -130,7 +131,7 @@ export function Footer({ data }: FooterLinksProps) {
         <footer className={classes.footer}>
             <Container className={classes.inner}>
                 <div className={classes.logo}>
-                    <Image src="/api/img/logo.png?s=30" alt='menetrendek.info logó' width={30} />
+                    <Logo size={30} />
                     <Text component='h1' weight={30} size="xs" color="dimmed" className={classes.description}>
                         Menetrendek <br /> A modern menetrend kereső
                     </Text>

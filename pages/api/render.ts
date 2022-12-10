@@ -13,7 +13,7 @@ export default async function handler(
         width: 3000,
         height: 3000,
     })
-    await page.goto(`https://menetrendek.info/render?${(new URLSearchParams(req.query as any)).toString()}`);
+    await page.goto(`https://v2.menetrendek.info/render?${(new URLSearchParams(req.query as any)).toString()}`);
     await page.reload()
     await page.waitForSelector("#done");
     Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'jpeg', quality: 90, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)

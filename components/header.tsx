@@ -1,10 +1,11 @@
-import { createStyles, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, ScrollArea } from '@mantine/core';
-import { useDisclosure, useScrollLock } from '@mantine/hooks';
-import { IconChevronDown } from '@tabler/icons';
+import { createStyles, useMantineTheme, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, ThemeIcon, Box } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { IconBus, IconChevronDown } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { motion } from "framer-motion"
 import { useEffect } from 'react';
 import { interactive } from './styles';
+import { Logo } from './brand';
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -62,6 +63,7 @@ export function Header({ links }: HeaderSearchProps) {
     const [opened, { toggle }] = useDisclosure(false);
     const { classes } = useStyles();
     const router = useRouter()
+    const theme = useMantineTheme()
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -123,8 +125,8 @@ export function Header({ links }: HeaderSearchProps) {
         <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={120}>
             <Container>
                 <div className={classes.inner}>
-                    <Group onClick={() => router.push("/")} sx={interactive} spacing='xs' noWrap>
-                        <Image src="/api/img/logo.png?s=40" width={40} alt="menetrendek.info logó" />
+                    <Group sx={{ cursor: 'pointer' }} onClick={() => router.push("/")} spacing='xs' noWrap>
+                        <Logo size={40} />
                         <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
                             <Text size={22} weight={550}>Menetrendek.info</Text>
                         </MediaQuery>

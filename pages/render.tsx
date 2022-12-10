@@ -83,7 +83,7 @@ const Render: NextPage = () => {
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
-                    <Text size={15}>menetrendek.info</Text>
+                    <Text size={15}>{typeof window !== 'undefined' && location.origin.split("://")[1]}</Text>
                 </Group>
             </Box>
         </Center>

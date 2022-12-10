@@ -24,7 +24,7 @@ const Route = ({ item, val }: { item: any, val: any }) => {
 
     useEffect(() => {
         setData(undefined)
-    }, [router])
+    }, [query])
 
     return (<Accordion.Item mb="md" value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
         <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data} onClick={() => {
@@ -78,8 +78,11 @@ const Routes: NextPage = () => {
     const { classes, theme } = useMyAccordion()
     const [results, setResults] = useState<any>()
     const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks']);
+    const [value, setValue] = useState<string | null>(null);
 
     useEffect(() => {
+        setValue(null)
+        setResults(undefined)
         if (router.query['fs']) {
             const { from, to }: { from: Stop, to: Stop } = {
                 from: {
@@ -117,13 +120,15 @@ const Routes: NextPage = () => {
 
     return (<PageTransition>
         <Container size="sm" p={0}>
-            <Accordion variant="separated" classNames={classes} className={classes.root}>
+            <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
                 {results ?
                     Object.keys(results.results.talalatok).map(key => {
                         const item = results.results.talalatok[key]
                         return (<Route val={key} key={key} item={item} />)
                     }
-                    ) : <></>}
+                    ) : <>
+                        {[...Array(7)].map((e, i) => <Accordion.Item key={i} mb="md" sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
+                    </>}
             </Accordion>
         </Container>
     </PageTransition>)
