@@ -132,7 +132,7 @@ export function Footer({ data }: FooterLinksProps) {
             <Container className={classes.inner}>
                 <div className={classes.logo}>
                     <Logo size={30} />
-                    <Text component='h1' weight={30} size="xs" color="dimmed" className={classes.description}>
+                    <Text weight={30} size="xs" color="dimmed" className={classes.description}>
                         Menetrendek <br /> A modern menetrend kereső
                     </Text>
                 </div>
