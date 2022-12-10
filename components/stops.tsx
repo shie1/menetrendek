@@ -57,8 +57,6 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     )
 );
 
-const r = /[^a-zA-Z0-9áéíöőüű ]/g
-
 export type StopSetter = (a: Stop | undefined) => void
 
 export const StopInput = ({ variant, selection }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter } }) => {
@@ -93,11 +91,7 @@ export const StopInput = ({ variant, selection }: { variant: "from" | "to", sele
         size="md"
         variant="unstyled"
         sx={{ borderBottom: '3px solid #373A40' }}
-        filter={(value, item) => {
-            const a = value.toLowerCase().replace(r, '')
-            const b = item.value.toLowerCase().replace(r, '').substring(0, a.length)
-            return a.startsWith(b)
-        }}
+        filter={() => true}
         dropdownComponent={Dropdown}
         itemComponent={AutoCompleteItem}
         id={`stopinput-${variant}`}
