@@ -3,12 +3,11 @@ import { Head, NextScript, Main, Html } from "next/document";
 import { useMantineTheme } from "@mantine/core";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
-import Script from "next/script";
 
-const appName = "Menetrendek"
-const appDesc = "Modern menetrend kereső | MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART"
+const appName = "Menetrendek - A modern menetrend kereső"
+const appDesc = "MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART"
 const appRoot = "https://menetrendek.info/"
-const appThumb = "/img/preview.jpg"
+const appThumb = ""
 
 const Document: NextPage = () => {
     const theme = useMantineTheme()
@@ -37,13 +36,16 @@ const Document: NextPage = () => {
             <meta property="og:url" content={appUrl} />
             <meta property="og:title" content={appName} />
             <meta property="og:description" content={appDesc} />
-            <meta property="og:image" content={appThumb} />
 
             <meta property="twitter:card" content="summary_large_image" />
             <meta property="twitter:url" content={appUrl} />
             <meta property="twitter:title" content={appName} />
             <meta property="twitter:description" content={appDesc} />
-            <meta property="twitter:image" content={appThumb} />
+
+            {!appThumb ? <></> : <>
+                <meta property="og:image" content={appThumb} />
+                <meta property="twitter:image" content={appThumb} />
+            </>}
         </Head>
         <body>
             <Main />
