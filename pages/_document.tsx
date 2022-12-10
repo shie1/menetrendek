@@ -27,7 +27,7 @@ const Document: NextPage = () => {
             <link rel='icon' type="image/x-icon" href='/favicon.ico' />
             <meta name="twitter:card" content="summary_large_image" />
             <link rel="manifest" href="/api/manifest.webmanifest" />
-            <meta name="theme-color" content="#9C36B5" />
+            <meta name="theme-color" content="#396be1" />
             <link rel='canonical' href={appUrl} />
 
             <meta name="title" content={appName} />
