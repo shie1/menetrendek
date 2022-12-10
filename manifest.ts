@@ -98,6 +98,34 @@ const manifest = {
     "categories": [
         "navigation",
         "travel"
+    ],
+    "prefer_related_applications": false,
+    "related_applications": [
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=app.mav.menetrend",
+            "id": "app.mav.menetrend"
+        },
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=hu.sandorbogyo.menetrendek",
+            "id": "hu.sandorbogyo.menetrendek"
+        },
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=hu.mavszk.vonatinfo",
+            "id": "hu.mavszk.vonatinfo"
+        },
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=hu.donmade.menetrend.budapest",
+            "id": "hu.donmade.menetrend.budapest"
+        },
+        {
+            "platform": "play",
+            "url": "https://play.google.com/store/apps/details?id=hu.webvalto.bkkfutar",
+            "id": "hu.webvalto.bkkfutar"
+        }
     ]
 }
 export default manifest;
