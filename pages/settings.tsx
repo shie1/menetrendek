@@ -1,17 +1,28 @@
 import type { NextPage } from "next"
 import PageTransition from "../components/pageTransition"
-import { Stack, Text, Group } from "@mantine/core"
-import { CheckboxCard } from "../components/checkCard"
+import { Stack, Text, Image, Card, Title, NumberInput } from "@mantine/core"
+import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
 import { useEffect } from "react"
+import { IconDiscount } from "@tabler/icons"
 
 
 const Settings: NextPage = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['nerf-mode'])
+    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage'])
 
     return (<PageTransition>
         <Stack>
-            <CheckboxCard checked={cookies["nerf-mode"] === "true"} onChange={(e) => { setCookie("nerf-mode", e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }} title="Nerf mode" description={<Group spacing={4}><Text size={16}>Ha villog a weboldal, vagy valami nem működik, ezt kell bekapcsolni.</Text><Text>A különböző webböngészők különböző módokon oldanak meg külünböző funkciókat, ennek hatására a weboldal nem minden böngészőben és készüléken fog az elvárt módon működni. Ez a beállítás igyekszik kiküszöbölni ezt, bizonyos funkciók &quot;gyengítésével&quot;.</Text><Text color="blue">Ez a funkció Apple készülékeken javasolt.</Text></Group>} />
+            <ContentCard icon={IconDiscount} title="Kedvezmény">
+                <Stack spacing={4}>
+                    <Text>Itt be tudod állítani, hogy hány százalékos Kedvezménnyel utazol.</Text>
+                    <NumberInput
+                        value={Number(cookies['discount-percentage']) || 0}
+                        onChange={(e) => setCookie("discount-percentage", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
+                        min={0} max={100} size="md"
+                    />
+                </Stack>
+            </ContentCard>
+            <CheckboxCard checked={cookies["no-page-transitions"] === "false"} onChange={(e) => { setCookie("no-page-transitions", !e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }} title="Tartalomátmenetek" description={<Stack spacing={4}><Text>Ha zavarnak a tartalomátmenetek, itt kikapcsolhatod.</Text><Image sx={(theme) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })} src="https://i.imgur.com/tJv1MPE.gif" /></Stack>} />
         </Stack>
     </PageTransition >)
 }

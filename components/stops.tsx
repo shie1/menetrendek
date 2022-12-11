@@ -65,22 +65,16 @@ export type StopSetter = (a: Stop | undefined) => void
 export const StopInput = ({ variant, selection }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter } }) => {
     const [data, setData] = useState<Array<any>>([])
     const [input, setInput] = useState<string>("")
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'nerf-mode']);
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions']);
     const { selected, setSelected } = selection
     const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
     const ref = useRef<HTMLInputElement | null>(null)
 
     useEffect(() => {
-        if (cookies["nerf-mode"] === "true") {
-            if (!data.length) {
-                setData(stops)
-            }
-        } else {
-            if (data.length && isEqual(stops, data)) {
-                setData([])
-            }
+        if (!data.length) {
+            setData(stops)
         }
-    }, [data, cookies])
+    }, [data])
 
     const load = (e: string) => {
         setSelected(undefined)

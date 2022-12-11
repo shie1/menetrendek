@@ -105,7 +105,7 @@ const Routes: NextPage = () => {
                     date: router.query['d'] as string || dateString(new Date())
                 },
                 user: {
-                    discount: cookies["discount-percentage"] || 0,
+                    discount: Number(cookies["discount-percentage"]) || 0,
                     networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
                 }
             })

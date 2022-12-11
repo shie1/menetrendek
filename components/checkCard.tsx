@@ -1,5 +1,6 @@
-import { UnstyledButton, Checkbox, Text, createStyles } from '@mantine/core';
+import { UnstyledButton, Checkbox, Text, createStyles, Space } from '@mantine/core';
 import { useUncontrolled } from '@mantine/hooks';
+import { createElement } from "react"
 
 const useStyles = createStyles((theme) => ({
     button: {
@@ -67,5 +68,32 @@ export function CheckboxCard({
                 </Text>
             </div>
         </UnstyledButton>
+    );
+}
+
+export function ContentCard({
+    title,
+    children,
+    icon,
+    ...others
+}: { title: React.ReactNode; icon: any; children: any }) {
+    const { classes, cx } = useStyles();
+
+    return (
+        <div
+            {...others}
+            className={classes.button}
+        >
+            {createElement(icon, { size: 24 })}
+            <Space w={20} />
+            <div style={{ width: '100%' }}>
+                <Text weight={500} mb={7} sx={{ lineHeight: 1 }}>
+                    {title}
+                </Text>
+                <Text size="sm" color="dimmed">
+                    {children}
+                </Text>
+            </div>
+        </div>
     );
 }

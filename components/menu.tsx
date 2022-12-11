@@ -65,8 +65,6 @@ export const QuickMenu = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'nerf-mode']);
     const [date, setDate] = useState<Date | null>(null)
     const [time, setTime] = useState<Date | null>(null)
-    const [stops, setStops] = useLocalStorage({ key: 'frequent-stops', defaultValue: [] })
-    const [stopsOpen, setStopsOpen] = useState(false)
     const ua = useUserAgent()
     const theme = useMantineTheme()
     const router = useRouter()
@@ -102,18 +100,5 @@ export const QuickMenu = () => {
             <StopInput selection={{ selected: to, setSelected: setTo }} variant="to" />
             <Button variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} onClick={search} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>Keresés</Button>
         </Group>
-        {cookies["nerf-mode"] === "true" ? <></> : <><Group position="center" my={-15}>
-            <motion.div animate={{ rotateX: stopsOpen ? -180 : 0, }}>
-                <ActionIcon variant="transparent" size="md" onClick={() => setStopsOpen(!stopsOpen)}>
-                    <IconChevronDown size={30} />
-                </ActionIcon>
-            </motion.div>
-        </Group>
-            <AnimatePresence>
-                {stopsOpen && stops.length &&
-                    <motion.div transition={{ duration: .2, ease: "easeInOut" }} exit={{ height: 0, opacity: 0 }} animate={{ height: 'initial' }} initial={{ height: 0, opacity: 1 }}>
-                        <Stops stops={stops} setStops={setStops} />
-                    </motion.div>}
-            </AnimatePresence></>}
     </Stack>)
 }
