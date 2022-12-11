@@ -39,18 +39,26 @@ export type QuerySetter = (a: Query) => void
 export const Query = createContext<{ query: Query | undefined; setQuery: QuerySetter }>({ query: undefined, setQuery: () => { } })
 export const Input = createContext<{ input: Input, setInput: InputSetter }>({ input: { from: undefined, to: undefined }, setInput: () => { } })
 
+export const AnimatedLayout = ({ children }: { children: any }) => {
+  const [cookies] = useCookies(["nerf-mode"])
+  return (cookies["nerf-mode"] === "true" ? children : <motion.div layout>{children}</motion.div>)
+}
+
 function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
   const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'nerf-mode']);
   const [scroll, scrollTo] = useWindowScroll();
 
-  useEffect(() => {
+  useEffect(() => { //Initialize cookies
     if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
       setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
-  }, [cookies])
+    if (typeof cookies["nerf-mode"] === 'undefined') {
+      setCookie("nerf-mode", ua?.device.vendor === "Apple" ? true : false, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    }
+  }, [cookies, ua])
 
   useEffect(() => {
     const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab" || e.key === "Alt") e.preventDefault() }
@@ -84,11 +92,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           </Script>
         </div>
         <div className='bg' />
-        <Header links={[]} />
+        <Header links={[{ label: "Beállítások", link: "/settings" }]} />
         <Query.Provider value={{ query, setQuery }}>
           <Input.Provider value={{ input, setInput }}>
             <Container aria-current="page">
-              <motion.div layout>
+              <AnimatedLayout>
                 <QuickMenu />
                 <AnimatePresence mode='wait'>
                   <Component {...pageProps} />
@@ -109,7 +117,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                     { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
                   ]}
                 />
-              </motion.div>
+              </AnimatedLayout>
             </Container>
             <Affix position={{ bottom: 20, right: 20 }}>
               <Transition transition="slide-up" mounted={scroll.y > 320}>
@@ -129,7 +137,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Affix>
           </Input.Provider>
         </Query.Provider>
-        <Footer data={[{ title: "", links: [{ label: "Támogatás", link: "https://paypal.me/shie1bi" }] }]} />
+        <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>
     </MantineProvider>
   </>)

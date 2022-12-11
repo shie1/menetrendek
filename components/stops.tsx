@@ -5,6 +5,7 @@ import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, Ic
 import { isEqual } from "lodash";
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
+import { AnimatedLayout } from "../pages/_app";
 import { apiCall } from "./api";
 
 export interface Stop {
@@ -38,7 +39,9 @@ const Dropdown = ({ children, ...props }: any) => {
             maxHeight: 240,
             width: '100%',
         }}>
-        {children}
+        <AnimatedLayout>
+            {children}
+        </AnimatedLayout>
     </ScrollArea>)
 }
 
@@ -62,10 +65,22 @@ export type StopSetter = (a: Stop | undefined) => void
 export const StopInput = ({ variant, selection }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter } }) => {
     const [data, setData] = useState<Array<any>>([])
     const [input, setInput] = useState<string>("")
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'nerf-mode']);
     const { selected, setSelected } = selection
     const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
     const ref = useRef<HTMLInputElement | null>(null)
+
+    useEffect(() => {
+        if (cookies["nerf-mode"] === "true") {
+            if (!data.length) {
+                setData(stops)
+            }
+        } else {
+            if (data.length && isEqual(stops, data)) {
+                setData([])
+            }
+        }
+    }, [data, cookies])
 
     const load = (e: string) => {
         setSelected(undefined)

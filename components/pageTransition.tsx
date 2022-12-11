@@ -1,7 +1,10 @@
 import { motion } from "framer-motion"
+import { useCookies } from "react-cookie"
 
 const PageTransition = ({ children }: { children: any }) => {
-    return (<motion.div
+    const [cookies] = useCookies(["nerf-mode"])
+
+    return (cookies["nerf-mode"] === "true" ? children : <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}

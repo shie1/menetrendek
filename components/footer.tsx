@@ -1,5 +1,6 @@
 import { createStyles, Text, Container, ActionIcon, Group, Image } from '@mantine/core';
 import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
+import { useRouter } from 'next/router';
 import { Logo } from './brand';
 
 const useStyles = createStyles((theme) => ({
@@ -105,6 +106,7 @@ interface FooterLinksProps {
 
 export function Footer({ data }: FooterLinksProps) {
     const { classes } = useStyles();
+    const router = useRouter()
 
     const groups = data.map((group) => {
         const links = group.links.map((link, index) => (
@@ -113,10 +115,17 @@ export function Footer({ data }: FooterLinksProps) {
                 className={classes.link}
                 component="a"
                 href={link.link}
-                onClick={(event) => event.preventDefault()}
+                onClick={(event) => {
+                    event.preventDefault();
+                    if (link.link.search(location.origin) === -1) {
+                        window.open(link.link, "_blank")
+                    } else {
+                        router.push(link.link)
+                    }
+                }}
             >
                 {link.label}
-            </Text>
+            </Text >
         ));
 
         return (

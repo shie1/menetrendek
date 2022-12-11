@@ -62,7 +62,7 @@ export const QuickMenu = () => {
     const { input, setInput } = useContext(Input)
     const [from, setFrom] = [input ? input.from as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, from: e }) }]
     const [to, setTo] = [input ? input.to as Stop : undefined, (e: Stop | undefined) => { setInput({ ...input, to: e }) }]
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'nerf-mode']);
     const [date, setDate] = useState<Date | null>(null)
     const [time, setTime] = useState<Date | null>(null)
     const [stops, setStops] = useLocalStorage({ key: 'frequent-stops', defaultValue: [] })
@@ -96,28 +96,24 @@ export const QuickMenu = () => {
 
     return (<Stack mb="md">
         <Text size={30} weight={500}>Keresés</Text>
-        <Text mt={-20} color="dimmed" size={15} weight={500}>A hasznos utitárs, aki végig kísér.</Text>
+        <Text mt={-20} color="dimmed" size={15} weight={500}>A hasznos útitárs, aki végig kísér.</Text>
         <Group sx={{ display: 'flex', flexWrap: "wrap", '& *': { flex: 8 } }}>
             <StopInput selection={{ selected: from, setSelected: setFrom }} variant="from" />
             <StopInput selection={{ selected: to, setSelected: setTo }} variant="to" />
             <Button variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} onClick={search} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>Keresés</Button>
         </Group>
-        <Group position="center" my={-15}>
+        {cookies["nerf-mode"] === "true" ? <></> : <><Group position="center" my={-15}>
             <motion.div animate={{ rotateX: stopsOpen ? -180 : 0, }}>
                 <ActionIcon variant="transparent" size="md" onClick={() => setStopsOpen(!stopsOpen)}>
                     <IconChevronDown size={30} />
                 </ActionIcon>
             </motion.div>
         </Group>
-        {ua?.device.vendor === "Apple" ? <Transition mounted={stopsOpen && stops.length > 0} transition="scale-y" duration={300} timingFunction="ease">
-            {(styles) => (<div style={styles}>
-                <Stops stops={stops} setStops={setStops} />
-            </div>)}
-        </Transition> : <AnimatePresence>
-            {stopsOpen && stops.length &&
-                <motion.div transition={{ duration: .2, ease: "easeInOut" }} exit={{ height: 0, opacity: 0 }} animate={{ height: 'initial' }} initial={{ height: 0, opacity: 1 }}>
-                    <Stops stops={stops} setStops={setStops} />
-                </motion.div>}
-        </AnimatePresence>}
+            <AnimatePresence>
+                {stopsOpen && stops.length &&
+                    <motion.div transition={{ duration: .2, ease: "easeInOut" }} exit={{ height: 0, opacity: 0 }} animate={{ height: 'initial' }} initial={{ height: 0, opacity: 1 }}>
+                        <Stops stops={stops} setStops={setStops} />
+                    </motion.div>}
+            </AnimatePresence></>}
     </Stack>)
 }
