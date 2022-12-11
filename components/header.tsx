@@ -1,4 +1,4 @@
-import { createStyles, useMantineTheme, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, ThemeIcon, Box } from '@mantine/core';
+import { createStyles, useMantineTheme, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, Collapse, Box } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBus, IconChevronDown } from '@tabler/icons';
 import { useRouter } from 'next/router';
@@ -113,15 +113,15 @@ export function Header({ links }: HeaderSearchProps) {
     });
 
     return (<div style={{ overflow: 'hidden' }}>
-        <motion.div transition={{ ease: "easeInOut", duration: .2 }} style={{ position: 'absolute', bottom: 0, left: 0, overflow: 'hidden' }} animate={{ y: 56, height: opened ? '100vh' : 0 }} initial={{ y: '100%', height: '100%' }}>
+        <Collapse in={opened}>
             <MediaQuery styles={{ display: 'none' }} largerThan="sm">
-                <Paper sx={{ width: '100vw', height: '100vh', zIndex: 1 }}>
+                <Paper sx={{ width: '100vw' }}>
                     <Stack p="md" spacing="sm">
                         {items(true)}
                     </Stack>
                 </Paper>
             </MediaQuery>
-        </motion.div>
+        </Collapse>
         <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={120}>
             <Container>
                 <div className={classes.inner}>
