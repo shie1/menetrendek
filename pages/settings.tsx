@@ -14,7 +14,7 @@ const Settings: NextPage = () => {
         <Stack>
             <ContentCard icon={IconDiscount} title="Kedvezmény">
                 <Stack spacing={4}>
-                    <Text>Itt be tudod állítani, hogy hány százalékos Kedvezménnyel utazol.</Text>
+                    <Text>Itt be tudod állítani, hogy hány százalékos kedvezménnyel utazol.</Text>
                     <NumberInput
                         value={Number(cookies['discount-percentage']) || 0}
                         onChange={(e) => setCookie("discount-percentage", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
@@ -22,7 +22,7 @@ const Settings: NextPage = () => {
                     />
                 </Stack>
             </ContentCard>
-            <CheckboxCard checked={cookies["no-page-transitions"] === "false"} onChange={(e) => { setCookie("no-page-transitions", !e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }} title="Tartalomátmenetek" description={<Stack spacing={4}><Text>Ha zavarnak a tartalomátmenetek, itt kikapcsolhatod.</Text><Image sx={(theme) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })} src="https://i.imgur.com/tJv1MPE.gif" /></Stack>} />
+            <CheckboxCard checked={cookies["no-page-transitions"] === "false"} onChange={(e) => { setCookie("no-page-transitions", !e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }} title="Tartalomátmenetek" description={<Stack spacing={4}><Text>Ha zavarnak a tartalomátmenetek, itt kikapcsolhatod.</Text><Image sx={(theme) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })} alt="Tartalomátmenetek ki- és bekapcsolt állapotban" src="https://i.imgur.com/tJv1MPE.gif" /></Stack>} />
         </Stack>
     </PageTransition >)
 }
