@@ -39,9 +39,7 @@ const Dropdown = ({ children, ...props }: any) => {
             maxHeight: 240,
             width: '100%',
         }}>
-        <AnimatedLayout>
-            {children}
-        </AnimatedLayout>
+        {children}
     </ScrollArea>)
 }
 

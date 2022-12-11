@@ -34,9 +34,8 @@ export interface Query extends Input {
   },
   index?: number;
 }
-export type QuerySetter = (a: Query) => void
+export type QuerySetter = (a: Query | undefined) => void
 
-export const Query = createContext<{ query: Query | undefined; setQuery: QuerySetter }>({ query: undefined, setQuery: () => { } })
 export const Input = createContext<{ input: Input, setInput: InputSetter }>({ input: { from: undefined, to: undefined }, setInput: () => { } })
 
 export const AnimatedLayout = ({ children }: { children: any }) => {
@@ -93,50 +92,48 @@ function MyApp({ Component, pageProps }: AppProps) {
         </div>
         <div className='bg' />
         <Header links={[{ label: "Beállítások", link: "/settings" }]} />
-        <Query.Provider value={{ query, setQuery }}>
-          <Input.Provider value={{ input, setInput }}>
-            <Container aria-current="page">
-              <AnimatedLayout>
-                <QuickMenu />
-                <AnimatePresence mode='wait'>
-                  <Component {...pageProps} />
-                </AnimatePresence>
-                <Divider size="md" my="md" />
-                <Stack pb="xl" spacing={3}>
-                  <Title order={1} size={36}>Menetrendek</Title>
-                  <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                  <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
-                  <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-                </Stack>
-                <FeaturesGrid
-                  data={[
-                    { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                    { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                    { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                    { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                    { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
-                  ]}
-                />
-              </AnimatedLayout>
-            </Container>
-            <Affix position={{ bottom: 20, right: 20 }}>
-              <Transition transition="slide-up" mounted={scroll.y > 320}>
-                {(transitionStyles) => (
-                  <ActionIcon
-                    variant='filled'
-                    color="blue"
-                    radius="xl"
-                    size="lg"
-                    style={transitionStyles}
-                    onClick={() => scrollTo({ y: 0 })}
-                  >
-                    <IconArrowUp size={25} />
-                  </ActionIcon>
-                )}
-              </Transition>
-            </Affix>
-          </Input.Provider>
-        </Query.Provider>
+        <Input.Provider value={{ input, setInput }}>
+          <Container aria-current="page">
+            <AnimatedLayout>
+              <QuickMenu />
+              <AnimatePresence mode='wait'>
+                <Component {...pageProps} />
+              </AnimatePresence>
+              <Divider size="md" my="md" />
+              <Stack pb="xl" spacing={3}>
+                <Title order={1} size={36}>Menetrendek</Title>
+                <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+              </Stack>
+              <FeaturesGrid
+                data={[
+                  { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                  { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                  { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                  { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                  { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                ]}
+              />
+            </AnimatedLayout>
+          </Container>
+          <Affix position={{ bottom: 20, right: 20 }}>
+            <Transition transition="slide-up" mounted={scroll.y > 320}>
+              {(transitionStyles) => (
+                <ActionIcon
+                  variant='filled'
+                  color="blue"
+                  radius="xl"
+                  size="lg"
+                  style={transitionStyles}
+                  onClick={() => scrollTo({ y: 0 })}
+                >
+                  <IconArrowUp size={25} />
+                </ActionIcon>
+              )}
+            </Transition>
+          </Affix>
+        </Input.Provider>
         <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>
     </MantineProvider>

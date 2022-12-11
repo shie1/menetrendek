@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
-import { motion } from "framer-motion"
 import PageTransition from "../components/pageTransition";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Query } from "./_app";
 import { useRouter } from "next/router";
 import { dateString } from "../client";
@@ -14,17 +13,16 @@ import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timel
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 
-const Route = ({ item, val }: { item: any, val: any }) => {
+const Route = ({ item, val, query }: { item: any, val: any, query: Query | undefined }) => {
     const router = useRouter()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
-    const { query, setQuery } = useContext(Query)
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const [file, setFile] = useState<File | undefined>()
 
     useEffect(() => {
         setData(undefined)
-    }, [query])
+    }, [router])
 
     return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
         <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data} onClick={() => {
@@ -72,9 +70,9 @@ const Route = ({ item, val }: { item: any, val: any }) => {
 }
 
 const Routes: NextPage = () => {
-    const { query, setQuery } = useContext(Query)
     const router = useRouter()
     const date = new Date()
+    const [query, setQuery] = useState<Query | undefined>()
     const { classes, theme } = useMyAccordion()
     const [results, setResults] = useState<any>()
     const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks']);
@@ -83,7 +81,8 @@ const Routes: NextPage = () => {
     useEffect(() => {
         setValue(null)
         setResults(undefined)
-        if (router.query['fs']) {
+        setQuery(undefined)
+        if (router.query['fs'] && router.query['ts']) {
             const { from, to }: { from: Stop, to: Stop } = {
                 from: {
                     ls_id: Number(router.query['fl'] as string) || 0,
@@ -124,7 +123,7 @@ const Routes: NextPage = () => {
                 {results ?
                     Object.keys(results.results.talalatok).map(key => {
                         const item = results.results.talalatok[key]
-                        return (<Route val={key} key={key} item={item} />)
+                        return (<Route query={query} val={key} key={key} item={item} />)
                     }
                     ) : <>
                         {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
