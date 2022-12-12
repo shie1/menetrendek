@@ -31,6 +31,7 @@ export interface Query extends Input {
   user: {
     discount: number;
     networks: Array<number>;
+    actionTimelineType?: number
   },
   index?: number;
 }
@@ -47,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
   const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type']);
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => { //Initialize cookies
@@ -56,6 +57,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
     if (typeof cookies["no-page-transitions"] === 'undefined') {
       setCookie("no-page-transitions", ua?.device.vendor === "Apple" ? true : false, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    }
+    if (typeof cookies['action-timeline-type'] === 'undefined') {
+      setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
   }, [cookies, ua])
 

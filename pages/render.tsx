@@ -39,6 +39,7 @@ const Render: NextPage = () => {
             },
             user: {
                 networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
+                actionTimelineType: router.query['t'] ? Number(router.query['t'] as string) : 1
             },
             index: Number(router.query['i'] as string),
         })

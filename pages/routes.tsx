@@ -30,7 +30,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
                     const id = Date.now().toString()
-                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}`
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${query?.user.actionTimelineType || 1}`
                     const blob = await (await fetch(image)).blob()
                     setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
                 })
@@ -75,7 +75,7 @@ const Routes: NextPage = () => {
     const [query, setQuery] = useState<Query | undefined>()
     const { classes, theme } = useMyAccordion()
     const [results, setResults] = useState<any>()
-    const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks']);
+    const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks', 'action-timeline-type']);
     const [value, setValue] = useState<string | null>(null);
 
     useEffect(() => {
@@ -106,6 +106,7 @@ const Routes: NextPage = () => {
                 user: {
                     discount: Number(cookies["discount-percentage"]) || 0,
                     networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
+                    actionTimelineType: Number(cookies["action-timeline-type"])
                 }
             })
         }

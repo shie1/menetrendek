@@ -10,11 +10,13 @@ import {
     ThemeIcon,
     Timeline,
 } from "@mantine/core";
-import { IconWalk, IconCheck, IconAlertTriangle, IconWifi, IconInfoCircle } from "@tabler/icons";
+import { IconWalk, IconCheck, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBigDown } from "@tabler/icons";
 import Link from "next/link"
 import { useRouter } from "next/router"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
+import { useCookies } from "react-cookie";
+import { Query } from "../pages/_app";
 
 const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
@@ -22,15 +24,28 @@ const calcDisc = (fee: number, discount?: number) => {
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = ({ muvelet, network, size, ...props }: { muvelet?: string, network: number, size?: number }) => {
+export const ActionBullet = ({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: "átszállás" | "leszállás" | "felszállás", prev: any, network: number, size?: number }) => {
     if (!size) { size = 20 }
-    switch (muvelet) {
-        case 'átszállás':
-            return <IconWalk size={size} />
-        case 'leszállás':
-            return <IconCheck size={size} />
+    switch (type) {
+        case 1:
         default:
-            return <StopIcon size={size} network={network} />
+            switch (muvelet) {
+                case 'átszállás':
+                    return <StopIcon size={size} network={prev?.network} />
+                case 'leszállás':
+                    return <StopIcon size={size} network={prev?.network} />
+                case 'felszállás':
+                    return !prev ? <IconArrowBigDown size={size} /> : prev?.muvelet === "átszállás" ? <IconWalk size={size} /> : <StopIcon size={size} network={network} />
+            }
+        case 2:
+            switch (muvelet) {
+                case 'átszállás':
+                    return <IconWalk size={size} />
+                case 'leszállás':
+                    return <IconCheck size={size} />
+                default:
+                    return <StopIcon size={size} network={network} />
+            }
     }
 }
 
@@ -66,7 +81,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
-            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet size={iconSize} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet type={Number(query.user.actionTimelineType)} size={iconSize} prev={details.results[i - 1]} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                 <Stack spacing={0} sx={{ position: 'relative' }}>
                     <Group align="center">
                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
