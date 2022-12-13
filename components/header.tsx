@@ -149,7 +149,7 @@ export function Header({ links }: HeaderSearchProps) {
                     {!links.length ? <></> :
                         <Burger
                             opened={opened}
-                            onClick={toggle}
+                            onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' } as any), toggle() }}
                             className={classes.burger}
                             size="sm"
                             color="#fff"

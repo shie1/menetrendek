@@ -23,7 +23,6 @@ interface CheckboxCardProps {
     defaultChecked?: boolean;
     onChange?(checked: boolean): void;
     title: React.ReactNode;
-    description: React.ReactNode;
 }
 
 export function CheckboxCard({
@@ -31,10 +30,9 @@ export function CheckboxCard({
     defaultChecked,
     onChange,
     title,
-    description,
-    className,
+    children,
     ...others
-}: CheckboxCardProps & Omit<React.ComponentPropsWithoutRef<'button'>, keyof CheckboxCardProps>) {
+}: CheckboxCardProps & { title: React.ReactNode; children: any }) {
     const { classes, cx } = useStyles();
 
     const [value, handleChange] = useUncontrolled({
@@ -45,29 +43,30 @@ export function CheckboxCard({
     });
 
     return (
-        <UnstyledButton
+        <div
             {...others}
-            onClick={() => handleChange(!value)}
-            className={cx(classes.button, className)}
+            className={classes.button}
+            style={{ position: 'relative' }}
         >
-            <Checkbox
-                checked={value}
-                onChange={() => { }}
-                tabIndex={-1}
-                size="md"
-                mr="xl"
-                styles={{ input: { cursor: 'pointer' } }}
-            />
-
             <div>
+                <Checkbox
+                    checked={value}
+                    tabIndex={-1}
+                    onClick={() => handleChange(!value)}
+                    size="md"
+                    styles={{ input: { cursor: 'pointer' } }}
+                />
+            </div>
+            <Space w={20} />
+            <div style={{ width: '100%' }}>
                 <Text weight={500} mb={7} sx={{ lineHeight: 1 }}>
                     {title}
                 </Text>
                 <Text size="sm" color="dimmed">
-                    {description}
+                    {children}
                 </Text>
             </div>
-        </UnstyledButton>
+        </div>
     );
 }
 

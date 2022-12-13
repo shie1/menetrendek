@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
   const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit']);
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => { //Initialize cookies
@@ -56,7 +56,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
     if (typeof cookies["no-page-transitions"] === 'undefined') {
-      setCookie("no-page-transitions", ua?.device.vendor === "Apple" ? true : false, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      setCookie("no-page-transitions", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
     if (typeof cookies['action-timeline-type'] === 'undefined') {
       setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
@@ -64,7 +64,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     if (typeof cookies['route-limit'] === 'undefined') {
       setCookie("route-limit", '10', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
-  }, [cookies, ua])
+    if (typeof cookies['use-route-limit'] === 'undefined') {
+      setCookie("use-route-limit", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    }
+  }, [cookies])
 
   useEffect(() => {
     const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab" || e.key === "Alt") e.preventDefault() }
