@@ -80,7 +80,7 @@ export const StopInput = ({ variant, selection }: { variant: "from" | "to", sele
     const ref = useRef<HTMLInputElement | null>(null)
 
     useEffect(() => {
-        if (!data.length) {
+        if (!input) {
             setData(stops)
         }
     }, [data])
