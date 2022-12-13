@@ -3,12 +3,12 @@ import PageTransition from "../components/pageTransition"
 import { Stack, Text, Image, SegmentedControl, Center, NumberInput } from "@mantine/core"
 import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
-import { IconDiscount, IconWalk } from "@tabler/icons"
+import { IconArrowAutofitDown, IconDiscount, IconWalk } from "@tabler/icons"
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 
 const Settings: NextPage = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type'])
+    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit'])
 
     return (<PageTransition>
         <Stack>
@@ -18,6 +18,16 @@ const Settings: NextPage = () => {
                     <NumberInput
                         value={Number(cookies['discount-percentage']) || 0}
                         onChange={(e) => setCookie("discount-percentage", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
+                        min={0} max={100} size="md"
+                    />
+                </Stack>
+            </ContentCard>
+            <ContentCard icon={IconArrowAutofitDown} title="Útvonalterv limit">
+                <Stack spacing={4}>
+                    <Text>Itt be tudod állítani, hogy legfeljebb egyszerre hány útvonalterv jelenjen meg.<br />Az oldal annál gyorsabb, minél kevesebb jelenik meg egyszerre.</Text>
+                    <NumberInput
+                        value={Number(cookies['route-limit']) || 0}
+                        onChange={(e) => setCookie("route-limit", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
                         min={0} max={100} size="md"
                     />
                 </Stack>

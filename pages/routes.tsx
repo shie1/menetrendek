@@ -9,7 +9,7 @@ import { useCookies } from "react-cookie";
 import { apiCall } from "../components/api";
 import { showNotification } from "@mantine/notifications";
 import { IconDownload, IconShare, IconX } from "@tabler/icons";
-import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline } from "@mantine/core"
+import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider } from "@mantine/core"
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 
@@ -74,8 +74,10 @@ const Routes: NextPage = () => {
     const date = new Date()
     const [query, setQuery] = useState<Query | undefined>()
     const { classes, theme } = useMyAccordion()
+    const [time, setTime] = useState<number>()
     const [results, setResults] = useState<any>()
-    const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks', 'action-timeline-type']);
+    const [display, setDisplay] = useState<any>()
+    const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks', 'action-timeline-type', 'route-limit']);
     const [value, setValue] = useState<string | null>(null);
 
     useEffect(() => {
@@ -99,8 +101,8 @@ const Routes: NextPage = () => {
                 from,
                 to,
                 time: {
-                    hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
-                    minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
+                    hours: 0,
+                    minutes: 0,
                     date: router.query['d'] as string || dateString(new Date())
                 },
                 user: {
@@ -118,12 +120,38 @@ const Routes: NextPage = () => {
         }
     }, [query])
 
+    useEffect(() => {
+        if (results) {
+            let disp: any = []
+            setDisplay(Object.keys(results.results.talalatok).map((key) => {
+                const item = results.results.talalatok[key]
+                const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
+                const startmin = start[0] * 60 + start[1]
+                if (startmin <= time!) return
+                disp.push(key)
+            }))
+            setDisplay(disp)
+        }
+    }, [time, results])
+
+    const marks = () => {
+        let m: any = []
+        for (let i = 0; i < 25; i++) {
+            m.push({ label: i.toString().padStart(2, '0'), value: i * 60 })
+        }
+        return m
+    }
+
     return (<PageTransition>
-        <Container size="sm" p={0}>
+        <Slider onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />
+        <Container pt="md" size="sm" p={0}>
             <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                {results ?
-                    Object.keys(results.results.talalatok).map(key => {
+                {results && display ?
+                    display.map((key: any, i: any) => {
                         const item = results.results.talalatok[key]
+                        const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
+                        const startmin = start[0] * 60 + start[1]
+                        if (startmin <= time! || i > Number(cookies["route-limit"])) return <></>
                         return (<Route query={query} val={key} key={key} item={item} />)
                     }
                     ) : <>

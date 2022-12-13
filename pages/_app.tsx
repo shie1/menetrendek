@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
   const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit']);
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => { //Initialize cookies
@@ -60,6 +60,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
     if (typeof cookies['action-timeline-type'] === 'undefined') {
       setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    }
+    if (typeof cookies['route-limit'] === 'undefined') {
+      setCookie("route-limit", '10', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     }
   }, [cookies, ua])
 
