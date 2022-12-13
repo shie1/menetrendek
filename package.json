@@ -30,6 +30,7 @@
     "react": "18.2.0",
     "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",
+    "react-icons": "^4.7.1",
     "sanitize-filename": "^1.6.3",
     "sharp": "^0.31.1",
     "ua-parser-js": "^1.0.32"

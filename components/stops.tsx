@@ -1,12 +1,12 @@
-import { Autocomplete, ScrollArea, Group, Text } from "@mantine/core"
+import { Autocomplete, ScrollArea, Group, Text, Box } from "@mantine/core"
 import { SelectItemProps } from "@mantine/core/lib/Select";
 import { useLocalStorage } from "@mantine/hooks";
-import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons";
+import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual } from "@tabler/icons";
 import { isEqual } from "lodash";
 import { forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
-import { AnimatedLayout } from "../pages/_app";
 import { apiCall } from "./api";
+import { MdTram } from "react-icons/md"
 
 export interface Stop {
     value?: string
@@ -24,10 +24,21 @@ export const StopIcon = ({ network, size, ...props }: { network: Number, size?: 
         case 1: // Bus station
         case 10: // Bus stop (A)
         case 24: // Bus stop (B)
+        case 25: // Train replacement
             return <IconBus {...props} />
         case 2: // Train station (A)
-        case 14: // Train station (B)
             return <IconTrain {...props} />
+        case 14: // Metro
+            const style: any = { position: 'absolute' }
+            return <Box sx={{ overflow: 'hidden', width: (props as any).size, height: (props as any).size, position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <IconEqual style={style} {...props} size={(props as any).size * 10} />
+                <IconTrain style={style} {...props} size={(props as any).size} />
+            </Box>
+        case 3:
+            return <IconShip {...props} />
+        case 12: // Tram
+        case 13: // Trolley
+            return <MdTram {...props} />
         default:
             return <IconQuestionMark {...props} />
     }

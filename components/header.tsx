@@ -1,10 +1,22 @@
-import { createStyles, useMantineTheme, Header as MHeader, Menu, Group, Center, Burger, Container, Image, Text, MediaQuery, Paper, Stack, Collapse, Box } from '@mantine/core';
+import {
+    createStyles,
+    useMantineTheme,
+    Header as MHeader,
+    Menu,
+    Group,
+    Center,
+    Burger,
+    Container,
+    Text,
+    MediaQuery,
+    Paper,
+    Stack,
+    Collapse,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconBus, IconChevronDown } from '@tabler/icons';
+import { IconChevronDown } from '@tabler/icons';
 import { useRouter } from 'next/router';
-import { motion } from "framer-motion"
 import { useEffect } from 'react';
-import { interactive } from './styles';
 import { Logo } from './brand';
 
 const useStyles = createStyles((theme) => ({

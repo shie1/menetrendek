@@ -1,13 +1,13 @@
-import { Card, Container, Divider, Group, LoadingOverlay, Stack, Text, Timeline } from "@mantine/core";
+import { Card, Container, Group, Stack, Text, Timeline } from "@mantine/core";
 import { IconArrowBarRight, IconArrowBarToRight, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
 import useColors from "../components/colors";
-import { ActionBullet } from "../components/routes";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
+import { StopIcon } from "../components/stops";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -65,7 +65,7 @@ const Runs: NextPage = () => {
                                     <Text size='xs' mt={-4}>{item.start}-{item.end}</Text>
                                     <Timeline my='md' active={99}>
                                         {runs.custom[num].items.map((item: any, i: any) => {
-                                            return (<Timeline.Item bullet={<ActionBullet network={runs.results.network} />} title={item.departureStation} key={i}>
+                                            return (<Timeline.Item bullet={<StopIcon network={runs.results.network} />} title={item.departureStation} key={i}>
                                                 <Stack>
                                                     <Group spacing={6}>
                                                         {!item.erkezik ? <></> : <Group spacing={4}>

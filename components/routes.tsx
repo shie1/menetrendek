@@ -15,8 +15,6 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
-import { useCookies } from "react-cookie";
-import { Query } from "../pages/_app";
 
 const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
