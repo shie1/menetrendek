@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { Input } from "../pages/_app";
 import { isEqual } from "lodash";
 import { useUserAgent } from "./ua";
+import { DatePicker } from "@mantine/dates";
 
 const QuickStop = ({ value, network, ls_id, s_id, site_code, remove }: Stop & { remove: () => void }) => {
     const { input, setInput } = useContext(Input)
@@ -95,9 +96,10 @@ export const QuickMenu = () => {
     return (<Stack mb="md">
         <Text size={30} weight={500}>Keresés</Text>
         <Text mt={-20} color="dimmed" size={15} weight={500}>A hasznos útitárs, aki végig kísér.</Text>
-        <Group sx={{ display: 'flex', flexWrap: "wrap", '& *': { flex: 8 } }}>
+        <Group sx={{ display: 'flex', flexWrap: "wrap", '& *': { flex: 8 }, '& .searchInput': { minWidth: '16rem', } }}>
             <StopInput selection={{ selected: from, setSelected: setFrom }} variant="from" />
             <StopInput selection={{ selected: to, setSelected: setTo }} variant="to" />
+            <DatePicker className="searchInput" value={date || new Date()} onChange={setDate} />
             <Button variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} onClick={search} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>Keresés</Button>
         </Group>
     </Stack>)

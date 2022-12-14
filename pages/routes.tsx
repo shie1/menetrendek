@@ -8,7 +8,7 @@ import { Stop } from "../components/stops";
 import { useCookies } from "react-cookie";
 import { apiCall } from "../components/api";
 import { showNotification } from "@mantine/notifications";
-import { IconClock, IconDownload, IconShare, IconX } from "@tabler/icons";
+import { IconCalendarEvent, IconClock, IconDownload, IconShare, IconX } from "@tabler/icons";
 import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider } from "@mantine/core"
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
@@ -55,7 +55,31 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 </>
                     :
                     <><RouteExposition details={data} query={query} withInfoButton />
-                        <Group position="right">
+                        <Group spacing="sm" position="right">
+                            <ActionIcon onClick={() => {
+                                const icsDateString = (d: Date) => {
+                                    return `${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}T${(d.getHours() - 1 < 0 ? 24 + d.getHours() - 1 : d.getHours() - 1).toString().padStart(2, '0')}${d.getMinutes().toString().padStart(2, '0')}${d.getSeconds().toString().padStart(2, '0')}Z`
+                                }
+                                const start = new Date(`${query?.time.date} ${item.indulasi_ido}`)
+                                const end = new Date(`${query?.time.date} ${item.erkezesi_ido}`)
+                                let details: string[] = []
+                                for (let ri of Object.keys(data.results)) {
+                                    const action = data.results[ri]
+                                    const fb = action.muvelet === "felszállás" ? action.jaratinfo.FromBay ? `\nKocsiállás: ${action.jaratinfo.FromBay}` : '' : ''
+                                    const more = action.muvelet === "felszállás" ? `${fb}\n${action.jaratinfo.fare} Ft | ${action.jaratinfo.travelTime} perc | ${action.jaratszam}\n${action.vegallomasok}` : ''
+                                    details.push(`<li>${action.idopont} ${action.muvelet} ${action.allomas}${more}</li>`)
+                                }
+                                const eventbody = {
+                                    action: "TEMPLATE",
+                                    dates: `${icsDateString(start)}/${icsDateString(end)}`,
+                                    details: `<ul>${details.join("\n")}<ul>`,
+                                    location: data.results['1'].allomas,
+                                    text: `${item.departureCity} - ${item.arrivalCity}`
+                                }
+                                window.open(`https://calendar.google.com/calendar/render?${(new URLSearchParams(eventbody)).toString()}`)
+                            }}>
+                                <IconCalendarEvent />
+                            </ActionIcon>
                             {!file ? <Loader size={28} /> :
                                 <ActionIcon onClick={() => {
                                     navigator.share({ files: [file] })
@@ -71,13 +95,12 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
 
 const Routes: NextPage = () => {
     const router = useRouter()
-    const date = new Date()
     const [query, setQuery] = useState<Query | undefined>()
     const { classes, theme } = useMyAccordion()
     const [time, setTime] = useState<number | null>(null)
     const [sliderVal, setSliderVal] = useState<number>()
     const [results, setResults] = useState<any>()
-    const [display, setDisplay] = useState<any>()
+    const [display, setDisplay] = useState<any>([])
     const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks', 'action-timeline-type', 'route-limit', 'use-route-limit']);
     const [value, setValue] = useState<string | null>();
 
@@ -122,7 +145,7 @@ const Routes: NextPage = () => {
     }, [query])
 
     useEffect(() => {
-        if (time === null) setTime((new Date()).getHours() * 60 + (new Date()).getMinutes())
+        if (time === null && query?.time.date === dateString(new Date())) setTime((new Date()).getHours() * 60 + (new Date()).getMinutes())
     }, [time])
 
     useEffect(() => {
@@ -140,7 +163,7 @@ const Routes: NextPage = () => {
                     if (startmin <= time!) return
                     disp.push(key)
                 }))
-                setDisplay(disp)
+                setDisplay(disp.length ? disp : [-1])
             } else {
                 setDisplay([...Array(100).keys()].map(e => e.toString()))
             }
@@ -159,7 +182,7 @@ const Routes: NextPage = () => {
         {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
         <Container pt="md" size="sm" p={0}>
             <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                {results && display ?
+                {results && display.length ?
                     display.map((key: any, i: any) => {
                         const item = results.results.talalatok[key]
                         if (!item) return <></>

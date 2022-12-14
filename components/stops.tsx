@@ -3,7 +3,7 @@ import { SelectItemProps } from "@mantine/core/lib/Select";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual } from "@tabler/icons";
 import { isEqual } from "lodash";
-import { forwardRef, useEffect, useRef, useState } from "react"
+import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
 import { apiCall } from "./api";
 import { MdTram } from "react-icons/md"
@@ -57,7 +57,7 @@ const Dropdown = ({ children, ...props }: any) => {
 const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     ({ value, network, ls_id, s_id, site_code, ...others }: SelectItemProps & Stop, ref) => (
         <div key={`${ls_id}-${s_id}-${site_code}`} ref={ref} {...others}>
-            <Group align="center" noWrap>
+            <Group align="left">
                 <div style={{ zIndex: '99 !important' }}>
                     <StopIcon network={network!} />
                 </div>
@@ -71,7 +71,7 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
 
 export type StopSetter = (a: Stop | undefined) => void
 
-export const StopInput = ({ variant, selection }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter } }) => {
+export const StopInput = ({ variant, selection, style }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter, }, style?: CSSProperties }) => {
     const [data, setData] = useState<Array<any>>([])
     const [input, setInput] = useState<string>("")
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions']);
@@ -103,10 +103,11 @@ export const StopInput = ({ variant, selection }: { variant: "from" | "to", sele
 
     return (<Autocomplete
         icon={selected ? <StopIcon network={selected.network!} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
-        style={{ minWidth: '15rem' }}
+        style={style}
         data={data}
         ref={ref}
         size="md"
+        className="searchInput"
         variant="unstyled"
         sx={{ borderBottom: '3px solid #373A40' }}
         filter={() => true}
