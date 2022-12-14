@@ -146,7 +146,7 @@ const Routes: NextPage = () => {
 
     useEffect(() => {
         if (time === null && query?.time.date === dateString(new Date())) setTime((new Date()).getHours() * 60 + (new Date()).getMinutes())
-    }, [time])
+    }, [time, query])
 
     useEffect(() => {
         setSliderVal(time!)

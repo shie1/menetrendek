@@ -89,7 +89,7 @@ export const QuickMenu = () => {
             ts: sto!.s_id.toString(),
             ...(sto!.site_code ? { tc: sto!.site_code } : {}),
             ...(time ? { h: time.getHours().toString(), m: time.getMinutes().toString() } : {}),
-            ...(date ? { d: dateString(date) } : {})
+            ...(date ? dateString(date) === dateString(new Date()) ? {} : { d: dateString(date) } : {})
         })).toString()}`)
     }
 
@@ -99,7 +99,7 @@ export const QuickMenu = () => {
         <Group sx={{ display: 'flex', flexWrap: "wrap", '& *': { flex: 8 }, '& .searchInput': { minWidth: '16rem', } }}>
             <StopInput selection={{ selected: from, setSelected: setFrom }} variant="from" />
             <StopInput selection={{ selected: to, setSelected: setTo }} variant="to" />
-            <DatePicker className="searchInput" value={date || new Date()} onChange={setDate} />
+            <DatePicker className="searchInput" value={date || new Date()} clearable={false} onChange={setDate} />
             <Button variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} onClick={search} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>Keresés</Button>
         </Group>
     </Stack>)
