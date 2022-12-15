@@ -24,8 +24,8 @@ export type InputSetter = (a: Input) => void
 
 export interface Query extends Input {
   time: {
-    hours: number;
-    minutes: number;
+    hours: number | undefined;
+    minutes: number | undefined;
     date: string;
   }
   user: {

@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { Query } from "./_app";
 import { useRouter } from "next/router";
 import { dateString } from "../client";
@@ -13,19 +13,25 @@ import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timel
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 
+const AccordionCtx = createContext<any>({})
+const TimeCtx = createContext<number>(0)
+
 const Route = ({ item, val, query }: { item: any, val: any, query: Query | undefined }) => {
     const router = useRouter()
     const [data, setData] = useState<any>()
     const [open, setOpen] = useState<boolean>(false)
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const [file, setFile] = useState<File | undefined>()
+    const [body, setBody] = useState<any>()
+    const { value, setValue } = useContext(AccordionCtx)
+    const time = useContext(TimeCtx)
 
     useEffect(() => {
         setData(undefined)
     }, [router])
 
-    return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
-        <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data} onClick={() => {
+    useEffect(() => {
+        if (val === value) {
             if (!data) {
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
@@ -35,7 +41,35 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                     setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
                 })
             }
-        }}>
+        }
+    }, [val, value, data])
+
+    useEffect(() => {
+        if (!body && data) {
+            const icsDateString = (d: Date) => {
+                return `${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}T${(d.getHours() - 1 < 0 ? 24 + d.getHours() - 1 : d.getHours() - 1).toString().padStart(2, '0')}${d.getMinutes().toString().padStart(2, '0')}${d.getSeconds().toString().padStart(2, '0')}Z`
+            }
+            const start = new Date(`${query?.time.date} ${item.indulasi_ido}`)
+            const end = new Date(`${query?.time.date} ${item.erkezesi_ido}`)
+            let details: string[] = []
+            for (let ri of Object.keys(data.results)) {
+                const action = data.results[ri]
+                const fb = action.muvelet === "felszállás" ? action.jaratinfo.FromBay ? `\nKocsiállás: ${action.jaratinfo.FromBay}` : '' : ''
+                const more = action.muvelet === "felszállás" ? `${fb}\n${action.jaratinfo.fare} Ft | ${action.jaratinfo.travelTime} perc | ${action.jaratszam}\n${action.vegallomasok}` : ''
+                details.push(`<li>${action.idopont} ${action.muvelet} ${action.allomas}${more}</li>`)
+            }
+            setBody({
+                action: "TEMPLATE",
+                dates: `${icsDateString(start)}/${icsDateString(end)}`,
+                details: `<ul>${details.join("\n")}<ul>`,
+                location: data.results['1'].allomas,
+                text: `${item.departureCity} - ${item.arrivalCity}`
+            })
+        }
+    }, [body, query, data])
+
+    return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
+        <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data}>
             <RouteSummary item={item} query={query} />
         </Accordion.Control>
         <Accordion.Panel>
@@ -57,32 +91,23 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                     <><RouteExposition details={data} query={query} withInfoButton />
                         <Group spacing="sm" position="right">
                             <ActionIcon onClick={() => {
-                                const icsDateString = (d: Date) => {
-                                    return `${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}T${(d.getHours() - 1 < 0 ? 24 + d.getHours() - 1 : d.getHours() - 1).toString().padStart(2, '0')}${d.getMinutes().toString().padStart(2, '0')}${d.getSeconds().toString().padStart(2, '0')}Z`
-                                }
-                                const start = new Date(`${query?.time.date} ${item.indulasi_ido}`)
-                                const end = new Date(`${query?.time.date} ${item.erkezesi_ido}`)
-                                let details: string[] = []
-                                for (let ri of Object.keys(data.results)) {
-                                    const action = data.results[ri]
-                                    const fb = action.muvelet === "felszállás" ? action.jaratinfo.FromBay ? `\nKocsiállás: ${action.jaratinfo.FromBay}` : '' : ''
-                                    const more = action.muvelet === "felszállás" ? `${fb}\n${action.jaratinfo.fare} Ft | ${action.jaratinfo.travelTime} perc | ${action.jaratszam}\n${action.vegallomasok}` : ''
-                                    details.push(`<li>${action.idopont} ${action.muvelet} ${action.allomas}${more}</li>`)
-                                }
-                                const eventbody = {
-                                    action: "TEMPLATE",
-                                    dates: `${icsDateString(start)}/${icsDateString(end)}`,
-                                    details: `<ul>${details.join("\n")}<ul>`,
-                                    location: data.results['1'].allomas,
-                                    text: `${item.departureCity} - ${item.arrivalCity}`
-                                }
-                                window.open(`https://calendar.google.com/calendar/render?${(new URLSearchParams(eventbody)).toString()}`)
+                                window.open(`https://calendar.google.com/calendar/render?${(new URLSearchParams(body)).toString()}`)
                             }}>
                                 <IconCalendarEvent />
                             </ActionIcon>
                             {!file ? <Loader size={28} /> :
                                 <ActionIcon onClick={() => {
-                                    navigator.share({ files: [file] })
+                                    const params: any = {
+                                        ...(query?.from!.ls_id ? { fl: query?.from!.ls_id.toString() } : {}),
+                                        fs: query?.from!.s_id.toString(),
+                                        ...(query?.from!.site_code ? { fc: query?.from!.site_code } : {}),
+                                        ...(query?.to!.ls_id ? { tl: query?.to!.ls_id.toString() } : {}),
+                                        ts: query?.to!.s_id.toString(),
+                                        ...(query?.to!.site_code ? { tc: query?.to!.site_code } : {}),
+                                        d: query?.time.date || dateString(new Date()),
+                                        i: val,
+                                    }
+                                    navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body.text, "text": body.details })
                                 }}>
                                     <IconShare />
                                 </ActionIcon>}
@@ -125,15 +150,15 @@ const Routes: NextPage = () => {
                 from,
                 to,
                 time: {
-                    hours: 0,
-                    minutes: 0,
+                    hours: typeof router.query['h'] !== 'undefined' ? Number(router.query['h'] as string) : undefined,
+                    minutes: typeof router.query['m'] !== 'undefined' ? Number(router.query['m'] as string) : undefined,
                     date: router.query['d'] as string || dateString(new Date())
                 },
                 user: {
                     discount: Number(cookies["discount-percentage"]) || 0,
                     networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
                     actionTimelineType: Number(cookies["action-timeline-type"])
-                }
+                },
             })
         }
     }, [router])
@@ -145,7 +170,9 @@ const Routes: NextPage = () => {
     }, [query])
 
     useEffect(() => {
-        if (time === null && query?.time.date === dateString(new Date())) setTime((new Date()).getHours() * 60 + (new Date()).getMinutes())
+        if (query) {
+            if (time === null && query?.time.date === dateString(new Date())) setTime(typeof query.time.hours !== 'undefined' && typeof query.time.minutes !== 'undefined' ? (query.time.hours * 60 + query.time.minutes) : ((new Date()).getHours() * 60 + (new Date()).getMinutes()))
+        }
     }, [time, query])
 
     useEffect(() => {
@@ -179,23 +206,27 @@ const Routes: NextPage = () => {
     }
 
     return (<PageTransition>
-        {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
-        <Container pt="md" size="sm" p={0}>
-            <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                {results && display.length ?
-                    display.map((key: any, i: any) => {
-                        const item = results.results.talalatok[key]
-                        if (!item) return <></>
-                        const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
-                        const startmin = start[0] * 60 + start[1]
-                        if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
-                        return (<Route query={query} val={key} key={key} item={item} />)
-                    }
-                    ) : <>
-                        {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
-                    </>}
-            </Accordion>
-        </Container>
+        <AccordionCtx.Provider value={{ value, setValue }}>
+            <TimeCtx.Provider value={time || 0}>
+                {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
+                <Container pt="md" size="sm" p={0}>
+                    <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
+                        {results && display.length ?
+                            display.map((key: any, i: any) => {
+                                const item = results.results.talalatok[key]
+                                if (!item) return <></>
+                                const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
+                                const startmin = start[0] * 60 + start[1]
+                                if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
+                                return (<Route query={query} val={key} key={key} item={item} />)
+                            }
+                            ) : <>
+                                {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
+                            </>}
+                    </Accordion>
+                </Container>
+            </TimeCtx.Provider>
+        </AccordionCtx.Provider>
     </PageTransition>)
 }
 
