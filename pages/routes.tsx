@@ -107,7 +107,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                                         d: query?.time.date || dateString(new Date()),
                                         i: val,
                                     }
-                                    navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body.text, "text": body.details })
+                                    navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body.text })
                                 }}>
                                     <IconShare />
                                 </ActionIcon>}
