@@ -3,6 +3,7 @@ import { Head, NextScript, Main, Html } from "next/document";
 import { useMantineTheme } from "@mantine/core";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from "react";
+import Script from "next/script";
 
 const appName = "Menetrendek - A modern menetrend kereső"
 const appDesc = "MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART"
@@ -46,6 +47,13 @@ const Document: NextPage = () => {
                 <meta property="og:image" content={appThumb} />
                 <meta property="twitter:image" content={appThumb} />
             </>}
+
+            <Script // Adsense
+                id="Adsense-id"
+                async
+                strategy="beforeInteractive"
+                src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3057716180157458"
+            />
         </Head>
         <body>
             <Main />
