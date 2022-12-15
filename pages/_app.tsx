@@ -37,6 +37,12 @@ export interface Query extends Input {
 }
 export type QuerySetter = (a: Query | undefined) => void
 
+export interface MyWindow extends Window {
+  dataLayer: {
+    push: (...a: any) => true
+  }
+}
+
 export const Input = createContext<{ input: Input, setInput: InputSetter }>({ input: { from: undefined, to: undefined }, setInput: () => { } })
 
 export const AnimatedLayout = ({ children }: { children: any }) => {

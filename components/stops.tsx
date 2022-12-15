@@ -7,6 +7,7 @@ import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
 import { apiCall } from "./api";
 import { MdTram } from "react-icons/md"
+import { MyWindow } from "../pages/_app";
 
 export interface Stop {
     value?: string
@@ -78,6 +79,12 @@ export const StopInput = ({ variant, selection, style }: { variant: "from" | "to
     const { selected, setSelected } = selection
     const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
     const ref = useRef<HTMLInputElement | null>(null)
+
+    useEffect(() => {
+        if (selected && typeof window !== 'undefined') {
+            (window as unknown as MyWindow).dataLayer.push({ event: "stopinput-select", ...selected })
+        }
+    }, [selected])
 
     useEffect(() => {
         if (!input) {
