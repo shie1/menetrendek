@@ -3,7 +3,6 @@ import type { AppProps } from 'next/app'
 import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, ActionIcon, Transition } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import Head from 'next/head';
-import Script from "next/script"
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
 import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconArrowUp } from '@tabler/icons';

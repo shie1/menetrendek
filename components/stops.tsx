@@ -48,7 +48,7 @@ export const StopIcon = ({ network, size, ...props }: { network: Number, size?: 
 const Dropdown = ({ children, ...props }: any) => {
     return (<ScrollArea
         sx={{
-            maxHeight: 240,
+            maxHeight: '25vh',
             width: '100%',
         }}>
         {children}
@@ -116,7 +116,7 @@ export const StopInput = ({ variant, selection, style }: { variant: "from" | "to
         size="md"
         className="searchInput"
         variant="unstyled"
-        sx={{ borderBottom: '3px solid #373A40' }}
+        sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
         filter={() => true}
         dropdownComponent={Dropdown}
         itemComponent={AutoCompleteItem}
