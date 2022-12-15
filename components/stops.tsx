@@ -116,6 +116,8 @@ export const StopInput = ({ variant, selection, style }: { variant: "from" | "to
         size="md"
         className="searchInput"
         variant="unstyled"
+        transition="scale-y"
+        transitionDuration={200}
         sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
         filter={() => true}
         dropdownComponent={Dropdown}
