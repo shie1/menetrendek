@@ -88,18 +88,6 @@ function MyApp({ Component, pageProps }: AppProps) {
       fontFamily: 'Sora, sans-serif',
     }} >
       <NotificationsProvider>
-        <div id='google-analytics-container'>
-          <Script strategy='afterInteractive' src='https://www.googletagmanager.com/gtag/js?id=G-7E6FQCCW4D' />
-          <Script id='google-analytics' strategy='afterInteractive'>
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-          
-              gtag('config', 'G-7E6FQCCW4D');
-            `}
-          </Script>
-        </div>
         <div className='bg' />
         <Header links={[{ label: "Beállítások", link: "/settings" }]} />
         <Input.Provider value={{ input, setInput }}>
