@@ -120,22 +120,6 @@ function MyApp({ Component, pageProps }: AppProps) {
               />
             </AnimatedLayout>
           </Container>
-          <Affix position={{ bottom: 20, right: 20 }}>
-            <Transition transition="slide-up" mounted={scroll.y > 320}>
-              {(transitionStyles) => (
-                <ActionIcon
-                  variant='filled'
-                  color="blue"
-                  radius="xl"
-                  size="lg"
-                  style={transitionStyles}
-                  onClick={() => scrollTo({ y: 0 })}
-                >
-                  <IconArrowUp size={25} />
-                </ActionIcon>
-              )}
-            </Transition>
-          </Affix>
         </Input.Provider>
         <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>

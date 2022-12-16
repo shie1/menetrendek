@@ -159,3 +159,13 @@ export const runsDelay = async (runId: number) => {
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
+
+export const geoInfo = async (nativeData: any, fieldvalue: any, date: string) => {
+    const body = {
+        "query": "getGeomC",
+        "datum": date,
+        nativeData,
+        fieldvalue
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}

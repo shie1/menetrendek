@@ -15,14 +15,15 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
+import { memo } from "react";
 
-const calcDisc = (fee: number, discount?: number) => {
+export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
 }
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = ({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: "átszállás" | "leszállás" | "felszállás", prev: any, network: number, size?: number }) => {
+export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: "átszállás" | "leszállás" | "felszállás", prev: any, network: number, size?: number }) => {
     if (!size) { size = 20 }
     switch (type) {
         case 1:
@@ -45,9 +46,9 @@ export const ActionBullet = ({ type, muvelet, prev, network, size, ...props }: {
                     return <StopIcon size={size} network={network} />
             }
     }
-}
+})
 
-export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
+export const RouteSummary = memo(({ item, query }: { item: any, query: any }) => {
     const { warning } = useColors()
     return (<Stack spacing={0}>
         <Grid>
@@ -72,9 +73,9 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
             <Text size="sm">{item.ossztav}</Text>
         </Group>
     </Stack>)
-}
+})
 
-export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
+export const RouteExposition = memo(({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
     const router = useRouter()
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
@@ -122,4 +123,4 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
             </Timeline.Item>)
         })}
     </Timeline >)
-}
+})

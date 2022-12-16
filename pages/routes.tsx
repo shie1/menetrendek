@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { Suspense, createContext, memo, useContext, useEffect, useState } from "react";
 import { Query } from "./_app";
 import { useRouter } from "next/router";
 import { dateString } from "../client";
@@ -8,41 +8,41 @@ import { Stop } from "../components/stops";
 import { useCookies } from "react-cookie";
 import { apiCall } from "../components/api";
 import { showNotification } from "@mantine/notifications";
-import { IconCalendarEvent, IconClock, IconDownload, IconShare, IconX } from "@tabler/icons";
-import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider } from "@mantine/core"
+import { IconCalendarEvent, IconClock, IconDownload, IconListDetails, IconMap, IconShare, IconX } from "@tabler/icons";
+import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider, Button } from "@mantine/core"
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
+import dynamic from "next/dynamic"
 
-const AccordionCtx = createContext<any>({})
-const TimeCtx = createContext<number>(0)
+const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
+
+const RMP = memo((props: any) => {
+    if (typeof window === 'undefined') return <></>
+    const RouteMapView = dynamic(() => import('../components/routeMap'), {
+        suspense: true
+    })
+    return <Suspense fallback={''}><RouteMapView {...props} /></Suspense>
+})
 
 const Route = ({ item, val, query }: { item: any, val: any, query: Query | undefined }) => {
     const router = useRouter()
+    const [mapView, setMapView] = useState<boolean>(false)
     const [data, setData] = useState<any>()
-    const [open, setOpen] = useState<boolean>(false)
+    const [geoInfo, setGeoInfo] = useState<any>()
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
     const [file, setFile] = useState<File | undefined>()
     const [body, setBody] = useState<any>()
-    const { value, setValue } = useContext(AccordionCtx)
-    const time = useContext(TimeCtx)
+    const { value, setValue } = useContext(AccordionController)
+
+    useEffect(() => {
+        if (val !== value) {
+            setMapView(false)
+        }
+    }, [val, value])
 
     useEffect(() => {
         setData(undefined)
     }, [router])
-
-    useEffect(() => {
-        if (val === value) {
-            if (!data) {
-                apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
-                    setData(e)
-                    const id = Date.now().toString()
-                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${query?.user.actionTimelineType || 1}`
-                    const blob = await (await fetch(image)).blob()
-                    setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
-                })
-            }
-        }
-    }, [val, value, data])
 
     useEffect(() => {
         if (!body && data) {
@@ -69,11 +69,26 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     }, [body, query, data])
 
     return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
-        <Accordion.Control sx={(theme) => ({ padding: '16px' })} disabled={open && !data}>
+        <Accordion.Control onClick={() => {
+            if (!data) {
+                apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
+                    setData(e)
+                    const id = Date.now().toString()
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${query?.user.actionTimelineType || 1}`
+                    const blob = await (await fetch(image)).blob()
+                    setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
+                })
+            }
+            if (!geoInfo) {
+                apiCall("POST", "/api/geoInfo", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
+                    setGeoInfo(e)
+                })
+            }
+        }} sx={(theme) => ({ padding: '16px' })}>
             <RouteSummary item={item} query={query} />
         </Accordion.Control>
         <Accordion.Panel>
-            <Skeleton p="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
+            <Skeleton px="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
                 {!data ? <><Timeline>
                     {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((item: any, i: any) => {
                         return <Timeline.Item title="Lorem" key={i}>
@@ -88,7 +103,11 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                     </Group>
                 </>
                     :
-                    <><RouteExposition details={data} query={query} withInfoButton />
+                    <>
+                        <Button onClick={() => setMapView(!mapView)} leftIcon={!mapView ? <IconMap /> : <IconListDetails />} variant="light" color="indigo" size="sm" sx={{ width: '100%' }} mb="md">
+                            {!mapView ? "Térkép nézet" : "Idővonal nézet"}
+                        </Button>
+                        {!mapView ? <RouteExposition details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
                         <Group spacing="sm" position="right">
                             <ActionIcon onClick={() => {
                                 window.open(`https://calendar.google.com/calendar/render?${(new URLSearchParams(body)).toString()}`)
@@ -115,7 +134,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                     </>}
             </Skeleton>
         </Accordion.Panel>
-    </Accordion.Item>)
+    </Accordion.Item >)
 }
 
 const Routes: NextPage = () => {
@@ -206,27 +225,25 @@ const Routes: NextPage = () => {
     }
 
     return (<PageTransition>
-        <AccordionCtx.Provider value={{ value, setValue }}>
-            <TimeCtx.Provider value={time || 0}>
-                {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
-                <Container pt="md" size="sm" p={0}>
-                    <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                        {results && display.length ?
-                            display.map((key: any, i: any) => {
-                                const item = results.results.talalatok[key]
-                                if (!item) return <></>
-                                const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
-                                const startmin = start[0] * 60 + start[1]
-                                if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
-                                return (<Route query={query} val={key} key={key} item={item} />)
-                            }
-                            ) : <>
-                                {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
-                            </>}
-                    </Accordion>
-                </Container>
-            </TimeCtx.Provider>
-        </AccordionCtx.Provider>
+        {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
+        <Container pt="md" size="sm" p={0}>
+            <AccordionController.Provider value={{ value, setValue }}>
+                <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
+                    {results && display.length ?
+                        display.map((key: any, i: any) => {
+                            const item = results.results.talalatok[key]
+                            if (!item) return <></>
+                            const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
+                            const startmin = start[0] * 60 + start[1]
+                            if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
+                            return (<Route query={query} val={key} key={key} item={item} />)
+                        }
+                        ) : <>
+                            {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
+                        </>}
+                </Accordion>
+            </AccordionController.Provider>
+        </Container>
     </PageTransition>)
 }
 
