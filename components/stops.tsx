@@ -1,4 +1,4 @@
-import { Autocomplete, ScrollArea, Group, Text, Box, ActionIcon, Menu } from "@mantine/core"
+import { Autocomplete, ScrollArea, Group, Text, Box, ActionIcon, Menu, Transition } from "@mantine/core"
 import { SelectItemProps } from "@mantine/core/lib/Select";
 import { useLocalStorage } from "@mantine/hooks";
 import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual, IconX, IconDots, IconRefresh, IconClearAll } from "@tabler/icons";
@@ -128,33 +128,34 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         variant="unstyled"
         transition="scale-y"
         transitionDuration={200}
-        rightSection={<Menu position="bottom-end">
-            <Menu.Target>
-                <ActionIcon variant="transparent">
-                    <IconDots />
-                </ActionIcon>
-            </Menu.Target>
-            <Menu.Dropdown>
-                <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
-                <Menu.Item onClick={() => {
-                    setInput("")
-                    setSelected(undefined)
-                }} color="red" icon={<IconX />}>
-                    Mező kiürítése
-                </Menu.Item>
-                <Menu.Divider />
-                <Menu.Label>Minden mező</Menu.Label>
-                <Menu.Item onClick={swap} icon={<IconRefresh />}>
-                    Mezők felcserélése
-                </Menu.Item>
-                <Menu.Item onClick={() => {
-                    i.setInput({ from: "", to: "" })
-                    i.setSelection({ from: undefined, to: undefined })
-                }} color="red" icon={<IconClearAll />}>
-                    Minden mező kiürítése
-                </Menu.Item>
-            </Menu.Dropdown>
-        </Menu>}
+        rightSection={<Transition transition="scale-x" timingFunction="ease" mounted={typeof selected !== 'undefined' || input.length !== 0}>{(styles) => (<div style={styles}>
+            <Menu position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
+                <Menu.Target>
+                    <ActionIcon variant="transparent">
+                        <IconDots />
+                    </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown>
+                    <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
+                    <Menu.Item onClick={() => {
+                        setInput("")
+                        setSelected(undefined)
+                    }} color="red" icon={<IconX />}>
+                        Mező kiürítése
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Label>Minden mező</Menu.Label>
+                    <Menu.Item onClick={swap} icon={<IconRefresh />}>
+                        Mezők felcserélése
+                    </Menu.Item>
+                    <Menu.Item onClick={() => {
+                        i.setInput({ from: "", to: "" })
+                        i.setSelection({ from: undefined, to: undefined })
+                    }} color="red" icon={<IconClearAll />}>
+                        Minden mező kiürítése
+                    </Menu.Item>
+                </Menu.Dropdown>
+            </Menu></div>)}</Transition>}
         sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
         filter={() => true}
         dropdownComponent={Dropdown}
