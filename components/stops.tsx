@@ -128,7 +128,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         variant="unstyled"
         transition="scale-y"
         transitionDuration={200}
-        rightSection={<Transition transition="scale-x" timingFunction="ease" mounted={typeof selected !== 'undefined' || input.length !== 0}>{(styles) => (<div style={styles}>
+        rightSection={typeof selected === 'undefined' && input.length === 0 ? <></> :
             <Menu position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
                 <Menu.Target>
                     <ActionIcon variant="transparent">
@@ -155,7 +155,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
                         Minden mező kiürítése
                     </Menu.Item>
                 </Menu.Dropdown>
-            </Menu></div>)}</Transition>}
+            </Menu>}
         sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
         filter={() => true}
         dropdownComponent={Dropdown}
