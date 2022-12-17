@@ -60,12 +60,12 @@ const Dropdown = ({ children, ...props }: any) => {
 const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     ({ value, network, ls_id, s_id, site_code, ...others }: SelectItemProps & Stop, ref) => (
         <div key={`${ls_id}-${s_id}-${site_code}`} ref={ref} {...others}>
-            <Group align="left">
+            <Group noWrap align="left">
                 <div style={{ zIndex: '99 !important' }}>
                     <StopIcon network={network!} />
                 </div>
                 <div>
-                    <Text>{value}</Text>
+                    <Text sx={{ wordWrap: 'break-word', whitespace: 'pre-wrap' }}>{value}</Text>
                 </div>
             </Group>
         </div >
