@@ -50,7 +50,7 @@ export const QuickMenu = () => {
         <Group sx={{ display: 'flex', flexWrap: "wrap", '& > *': { flex: 8 }, '& .searchInput': { minWidth: '16rem', } }}>
             <StopInput variant="from" />
             <StopInput variant="to" />
-            <DatePicker styles={{ wrapper: { zIndex: -1 } }} transition="scale-y" transitionDuration={200} sx={(theme) => ({ '& .mantine-DatePicker-dropdown': { borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, display: 'flex', alignItems: 'center', input: { fontSize: 16, border: 'unset', background: 'transparent' }, borderBottom: '3px solid #373A40', minHeight: 45 })} className="searchInput" value={date || new Date()} clearable={false} onChange={setDate} />
+            <DatePicker styles={{ wrapper: { zIndex: -1 }, root: { '&:hover': { zIndex: 1 } } }} transition="scale-y" transitionDuration={200} sx={(theme) => ({ '& .mantine-DatePicker-dropdown': { borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, display: 'flex', alignItems: 'center', input: { fontSize: 16, border: 'unset', background: 'transparent' }, borderBottom: '3px solid #373A40', minHeight: 45 })} className="searchInput" value={date || new Date()} clearable={false} onChange={setDate} />
             <Button style={{ zIndex: -1 }} variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} onClick={search} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>Keresés</Button>
         </Group>
     </Stack>)
