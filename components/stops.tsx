@@ -1,13 +1,15 @@
-import { Autocomplete, ScrollArea, Group, Text, Box } from "@mantine/core"
+import { Autocomplete, ScrollArea, Group, Text, Box, ActionIcon, Menu } from "@mantine/core"
 import { SelectItemProps } from "@mantine/core/lib/Select";
 import { useLocalStorage } from "@mantine/hooks";
-import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual } from "@tabler/icons";
+import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual, IconX, IconDots, IconRefresh, IconClearAll } from "@tabler/icons";
 import { isEqual } from "lodash";
 import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
 import { apiCall } from "./api";
 import { MdTram } from "react-icons/md"
-import { MyWindow } from "../pages/_app";
+import { Input, MyWindow } from "../pages/_app";
+import { useCallback } from "react";
+import { useContext } from "react";
 
 export interface Stop {
     value?: string
@@ -72,13 +74,21 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
 
 export type StopSetter = (a: Stop | undefined) => void
 
-export const StopInput = ({ variant, selection, style }: { variant: "from" | "to", selection: { selected: Stop | undefined, setSelected: StopSetter, }, style?: CSSProperties }) => {
+export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: CSSProperties }) => {
     const [data, setData] = useState<Array<any>>([])
-    const [input, setInput] = useState<string>("")
+    const i = useContext(Input)
+    const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
+    const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
     const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions']);
-    const { selected, setSelected } = selection
     const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
     const ref = useRef<HTMLInputElement | null>(null)
+
+    const swap = useCallback(() => {
+        const s = i.selection
+        const inp = i.input
+        i.setSelection({ from: s.to, to: s.from })
+        i.setInput({ from: inp.to, to: inp.from })
+    }, [i])
 
     useEffect(() => {
         if (selected && typeof window !== 'undefined') {
@@ -118,6 +128,33 @@ export const StopInput = ({ variant, selection, style }: { variant: "from" | "to
         variant="unstyled"
         transition="scale-y"
         transitionDuration={200}
+        rightSection={<Menu position="bottom-end">
+            <Menu.Target>
+                <ActionIcon variant="transparent">
+                    <IconDots />
+                </ActionIcon>
+            </Menu.Target>
+            <Menu.Dropdown>
+                <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
+                <Menu.Item onClick={() => {
+                    setInput("")
+                    setSelected(undefined)
+                }} color="red" icon={<IconX />}>
+                    Mező kiürítése
+                </Menu.Item>
+                <Menu.Divider />
+                <Menu.Label>Minden mező</Menu.Label>
+                <Menu.Item onClick={swap} icon={<IconRefresh />}>
+                    Mezők felcserélése
+                </Menu.Item>
+                <Menu.Item onClick={() => {
+                    i.setInput({ from: "", to: "" })
+                    i.setSelection({ from: undefined, to: undefined })
+                }} color="red" icon={<IconClearAll />}>
+                    Minden mező kiürítése
+                </Menu.Item>
+            </Menu.Dropdown>
+        </Menu>}
         sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
         filter={() => true}
         dropdownComponent={Dropdown}

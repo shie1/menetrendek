@@ -15,13 +15,19 @@ import { useWindowScroll } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
 import { useUserAgent } from '../components/ua';
 
-export interface Input {
+export interface Selection {
   from: Stop | undefined;
   to: Stop | undefined;
 }
+export type SelectionSetter = (a: Selection) => void
+
+export interface Input {
+  from: string;
+  to: string;
+}
 export type InputSetter = (a: Input) => void
 
-export interface Query extends Input {
+export interface Query extends Selection {
   time: {
     hours: number | undefined;
     minutes: number | undefined;
@@ -42,7 +48,7 @@ export interface MyWindow extends Window {
   }
 }
 
-export const Input = createContext<{ input: Input, setInput: InputSetter }>({ input: { from: undefined, to: undefined }, setInput: () => { } })
+export const Input = createContext<{ selection: Selection, setSelection: SelectionSetter, input: Input, setInput: InputSetter }>({ selection: { from: undefined, to: undefined }, setSelection: () => { }, input: { from: "", to: "" }, setInput: () => { } })
 
 export const AnimatedLayout = ({ children }: { children: any }) => {
   const [cookies] = useCookies(["no-page-transitions"])
@@ -52,7 +58,8 @@ export const AnimatedLayout = ({ children }: { children: any }) => {
 function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const [query, setQuery] = useState<Query | undefined>()
-  const [input, setInput] = useState<Input>({ to: undefined, from: undefined })
+  const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
+  const [input, setInput] = useState<Input>({ to: "", from: "" })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit']);
   const [scroll, scrollTo] = useWindowScroll();
 
@@ -95,7 +102,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <NotificationsProvider>
         <div className='bg' />
         <Header links={[{ label: "Beállítások", link: "/settings" }]} />
-        <Input.Provider value={{ input, setInput }}>
+        <Input.Provider value={{ selection, setSelection, input, setInput }}>
           <Container aria-current="page">
             <AnimatedLayout>
               <QuickMenu />
