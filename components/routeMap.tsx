@@ -70,7 +70,6 @@ const RouteMapView = ({ id, details, exposition, query }: { id: any, details: an
         });
         const [inside, outside] = [new L.FeatureGroup(), new L.FeatureGroup()]
         for (let feature of details.results.features) {
-            if (feature.geometry.type === "MultiPoint") { continue }
             const geoJson: any = {
                 ...feature,
                 ...crs
@@ -84,6 +83,8 @@ const RouteMapView = ({ id, details, exposition, query }: { id: any, details: an
                     if (feature.properties.inside) { elem.addTo(inside) } else { elem.addTo(outside) }
                     inside.setStyle({ color: color })
                     outside.setStyle({ color: theme.colors.gray[7], dashArray: [10, 5] })
+                    break
+                case 'MultiPoint':
                     break
                 default:
                     break
