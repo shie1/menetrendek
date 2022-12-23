@@ -60,26 +60,31 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [query, setQuery] = useState<Query | undefined>()
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service']);
   const [scroll, scrollTo] = useWindowScroll();
 
   useEffect(() => { //Initialize cookies
-    if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
-      setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    if (typeof ua !== 'undefined') {
+      if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
+        setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies["no-page-transitions"] === 'undefined') {
+        setCookie("no-page-transitions", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['action-timeline-type'] === 'undefined') {
+        setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['route-limit'] === 'undefined') {
+        setCookie("route-limit", '10', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['use-route-limit'] === 'undefined') {
+        setCookie("use-route-limit", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['calendar-service'] === 'undefined') {
+        setCookie('calendar-service', ua?.device.vendor === "Apple" ? '5' : '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
     }
-    if (typeof cookies["no-page-transitions"] === 'undefined') {
-      setCookie("no-page-transitions", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-    }
-    if (typeof cookies['action-timeline-type'] === 'undefined') {
-      setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-    }
-    if (typeof cookies['route-limit'] === 'undefined') {
-      setCookie("route-limit", '10', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-    }
-    if (typeof cookies['use-route-limit'] === 'undefined') {
-      setCookie("use-route-limit", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-    }
-  }, [cookies])
+  }, [cookies, ua])
 
   useEffect(() => {
     const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab" || e.key === "Alt") e.preventDefault() }

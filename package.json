@@ -22,6 +22,7 @@
     "@types/proj4leaflet": "^1.0.6",
     "@types/sharp": "^0.31.0",
     "@types/ua-parser-js": "^0.7.36",
+    "calendar-link": "^2.4.0",
     "dayjs": "^1.11.5",
     "framer-motion": "^7.6.4",
     "leaflet": "^1.9.3",

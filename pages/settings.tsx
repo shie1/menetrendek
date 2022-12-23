@@ -3,13 +3,15 @@ import PageTransition from "../components/pageTransition"
 import { Stack, Text, Image, SegmentedControl, Center, NumberInput } from "@mantine/core"
 import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
-import { IconArrowAutofitDown, IconDiscount, IconWalk } from "@tabler/icons"
+import { IconDiscount, IconWalk, IconCalendar } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
+import { useUserAgent } from "../components/ua"
 
 const Settings: NextPage = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit'])
+    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service'])
     const img = (theme: any) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })
+    const ua = useUserAgent()
 
     return (<PageTransition>
         <Stack>
@@ -21,6 +23,15 @@ const Settings: NextPage = () => {
                         onChange={(e) => setCookie("discount-percentage", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
                         min={0} max={100} size="md"
                     />
+                </Stack>
+            </ContentCard>
+            <ContentCard icon={IconCalendar} title="Naptár szolgáltatás">
+                <Stack spacing={4}>
+                    <Text size="md">Itt kiválaszthatod, hogy melyik naptár szolgáltást használod.</Text>
+                    <Text mt={-4} size="sm">Készülékedhez javasolt: {ua?.device.vendor === "Apple" ? "Egyéb (ICS)" : "Bármely"}</Text>
+                    <Stack justify="center">
+                        <SegmentedControl value={cookies["calendar-service"] || '1'} onChange={(e) => setCookie("calendar-service", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })} data={[{ label: "Google Calendar", value: '1' }, { label: "Outlook", value: '2' }, { label: "Office 365", value: '3' }, { label: "Yahoo", value: '4' }, { label: "Egyéb (ICS)", value: '5' }]} />
+                    </Stack>
                 </Stack>
             </ContentCard>
             <CheckboxCard title="Útvonalterv limit" checked={cookies["use-route-limit"] === "true"} onChange={(e) => { setCookie("use-route-limit", e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }}>
@@ -41,7 +52,7 @@ const Settings: NextPage = () => {
                 <Stack spacing={4}>
                     <Text size="md">2 féle módon tudjuk neked ábrázolni az átszállásokat, válaszd ki azt amelyik számodra logikusabb.</Text>
                     <Stack justify="center">
-                        <SegmentedControl data={[{ label: "A", value: '1' }, { label: "B", value: '2' }]} value={cookies["action-timeline-type"] ? cookies["action-timeline-type"] : "1"} onChange={(e) => setCookie("action-timeline-type", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })} />
+                        <SegmentedControl data={[{ label: "A", value: '1' }, { label: "B", value: '2' }]} value={cookies["action-timeline-type"] || "1"} onChange={(e) => setCookie("action-timeline-type", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })} />
                         <Center p="sm">
                             <RouteExposition details={transferExample} query={{ user: { discount: 0, actionTimelineType: Number(cookies["action-timeline-type"]) } }} withInfoButton={false} />
                         </Center>

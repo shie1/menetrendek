@@ -8,11 +8,12 @@ import { Stop } from "../components/stops";
 import { useCookies } from "react-cookie";
 import { apiCall } from "../components/api";
 import { showNotification } from "@mantine/notifications";
-import { IconCalendarEvent, IconClock, IconDownload, IconListDetails, IconMap, IconShare, IconX } from "@tabler/icons";
-import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider, Button } from "@mantine/core"
+import { IconBrandGoogle, IconCalendarEvent, IconClock, IconDownload, IconListDetails, IconMap, IconShare, IconX } from "@tabler/icons";
+import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider, Button, Menu } from "@mantine/core"
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 import dynamic from "next/dynamic"
+import { yahoo, office365, google, ics, outlook } from "calendar-link";
 
 const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
 
@@ -29,7 +30,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     const [mapView, setMapView] = useState<boolean>(false)
     const [data, setData] = useState<any>()
     const [geoInfo, setGeoInfo] = useState<any>()
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks']);
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'calendar-service']);
     const [file, setFile] = useState<File | undefined>()
     const [body, setBody] = useState<any>()
     const { value, setValue } = useContext(AccordionController)
@@ -46,9 +47,6 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
 
     useEffect(() => {
         if (!body && data) {
-            const icsDateString = (d: Date) => {
-                return `${d.getFullYear()}${(d.getMonth() + 1).toString().padStart(2, '0')}${d.getDate().toString().padStart(2, '0')}T${(d.getHours() - 1 < 0 ? 24 + d.getHours() - 1 : d.getHours() - 1).toString().padStart(2, '0')}${d.getMinutes().toString().padStart(2, '0')}${d.getSeconds().toString().padStart(2, '0')}Z`
-            }
             const start = new Date(`${query?.time.date} ${item.indulasi_ido}`)
             const end = new Date(`${query?.time.date} ${item.erkezesi_ido}`)
             let details: string[] = []
@@ -56,17 +54,35 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 const action = data.results[ri]
                 const fb = action.muvelet === "felszállás" ? action.jaratinfo.FromBay ? `\nKocsiállás: ${action.jaratinfo.FromBay}` : '' : ''
                 const more = action.muvelet === "felszállás" ? `${fb}\n${action.jaratinfo.fare} Ft | ${action.jaratinfo.travelTime} perc | ${action.jaratszam}\n${action.vegallomasok}` : ''
-                details.push(`<li>${action.idopont} ${action.muvelet} ${action.allomas}${more}</li>`)
+                details.push(`- ${action.idopont} ${action.muvelet} ${action.allomas}${more}\n`)
             }
             setBody({
-                action: "TEMPLATE",
-                dates: `${icsDateString(start)}/${icsDateString(end)}`,
-                details: `<ul>${details.join("\n")}<ul>`,
+                start,
+                end,
+                description: `${details.join("\n")}`,
                 location: data.results['1'].allomas,
-                text: `${item.departureCity} - ${item.arrivalCity}`
+                title: `${item.departureCity} - ${item.arrivalCity}`
             })
         }
     }, [body, query, data])
+
+    const cal = (service: number) => {
+        window.open((() => {
+            switch (service) {
+                case 1:
+                    return google(body)
+                case 2:
+                    return outlook(body)
+                case 3:
+                    return office365(body)
+                case 4:
+                    return yahoo(body)
+                case 5:
+                default:
+                    return ics(body)
+            }
+        })(), "_blank")
+    }
 
     return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
         <Accordion.Control onClick={() => {
@@ -109,9 +125,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                         </Button>
                         {!mapView ? <RouteExposition details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
                         <Group spacing="sm" position="right">
-                            <ActionIcon onClick={() => {
-                                window.open(`https://calendar.google.com/calendar/render?${(new URLSearchParams(body)).toString()}`)
-                            }}>
+                            <ActionIcon onClick={() => cal(Number(cookies["calendar-service"]))}>
                                 <IconCalendarEvent />
                             </ActionIcon>
                             {!file ? <Loader size={28} /> :
