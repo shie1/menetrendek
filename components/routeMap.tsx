@@ -180,7 +180,7 @@ export const MapView = () => {
         const map = L.map(`map-main`).setView(bp, 13);
         (window as any).map = map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 16,
+            maxZoom: 15.5,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
