@@ -175,13 +175,12 @@ export const MapView = () => {
     const gps = geo ? geo.coords.accuracy < 150 : false
     const tracking = useRef<any>({})
     const [cookies] = useCookies(["blip-limit"])
-    const [focusPos, setFocusPos] = useState(false)
 
     useEffect(() => {
         const map = L.map(`map-main`).setView(bp, 13);
         (window as any).map = map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 16,
+            maxZoom: 19,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
 
@@ -202,7 +201,7 @@ export const MapView = () => {
 
         const update = setInterval(() => {
             let checked: Array<any> = []
-            const bounds = (window as any).map.getBounds()
+            const bounds = (window as any).map.getBounds().pad(.5)
             const a = bounds.getNorthWest()
             const b = bounds.getSouthEast()
             const extent = [a.lng, a.lat, b.lng, b.lat]
