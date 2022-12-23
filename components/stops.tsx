@@ -100,10 +100,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         if (!input) {
             setData(stops)
         }
-        if (!selected && input && data[0].value === input) {
-            setSelected(data[0])
-        }
-    }, [input, selected, data, stops])
+    }, [input, stops])
 
     const load = (e: string) => {
         setSelected(undefined)

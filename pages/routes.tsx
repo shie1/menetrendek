@@ -40,10 +40,10 @@ const AccordionController = createContext<{ value: string | null | undefined, se
 
 const RMP = memo((props: any) => {
     if (typeof window === 'undefined') return <></>
-    const RouteMapView = dynamic(() => import('../components/routeMap'), {
-        suspense: true
+    const RouteMapView = dynamic(() => import('../components/routeMap').then((mod) => mod.RouteMapView), {
+        ssr: false
     })
-    return <Suspense fallback={''}><RouteMapView {...props} /></Suspense>
+    return <RouteMapView {...props} />
 })
 
 const Route = ({ item, val, query }: { item: any, val: any, query: Query | undefined }) => {

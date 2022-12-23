@@ -1,14 +1,17 @@
 import { ActionIcon, Avatar, Box, Card, Group, LoadingOverlay, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core"
 import * as L from "leaflet"
 import 'leaflet/dist/leaflet.css'
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import proj4 from "proj4";
-import { IconArrowBigTop, IconInfoCircle, IconWifi, IconQuestionMark, IconArrowBigDown, IconCheck, IconRefresh } from "@tabler/icons";
+import { IconArrowBigTop, IconInfoCircle, IconWifi, IconQuestionMark, IconArrowBigDown, IconCheck, IconRefresh, IconArrowLeft, IconBus } from "@tabler/icons";
 import Link from "next/link";
 import router from "next/router";
 import { currency, calcDisc, ActionBullet } from "./routes";
-import { useCookies } from "react-cookie";
 import { renderToStaticMarkup } from 'react-dom/server'
+import { useGeoLocation } from "./geolocation";
+import { apiCall } from "./api";
+import { StopIcon } from "./stops";
+import { useCookies } from "react-cookie";
 require("proj4leaflet")
 require("leaflet.markercluster")
 
@@ -21,8 +24,9 @@ const crs = {
         }
     }
 }
+const bp: L.LatLngExpression = [47.4979, 19.0402]
 
-const RouteMapView = ({ id, details, exposition, query }: { id: any, details: any, exposition: any, query: any }) => {
+export const RouteMapView = ({ id, details, exposition, query }: { id: any, details: any, exposition: any, query: any }) => {
     const [cookies] = useCookies(["action-timeline-type"])
     const stops = !details ? undefined : (details.results.features as Array<any>).filter((item) => item.geometry.type === "Point")
     const theme = useMantineTheme()
@@ -30,7 +34,7 @@ const RouteMapView = ({ id, details, exposition, query }: { id: any, details: an
     const iconProps = { size: 25 }
 
     useEffect(() => {
-        const map = L.map(`map-${id}`).setView([51.59, -0.09], 13);
+        const map = L.map(`map-${id}`).setView(bp, 13);
         (window as any).map = map
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -166,4 +170,84 @@ const RouteMapView = ({ id, details, exposition, query }: { id: any, details: an
     </Box>)
 }
 
-export default RouteMapView;
+export const MapView = () => {
+    const geo = useGeoLocation()
+    const gps = geo ? geo.coords.accuracy < 150 : false
+    const tracking = useRef<any>({})
+    const [cookies] = useCookies(["blip-limit"])
+    const [focusPos, setFocusPos] = useState(false)
+
+    useEffect(() => {
+        const map = L.map(`map-main`).setView(bp, 13);
+        (window as any).map = map
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 16,
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+
+        return () => { map.off(); map.remove(); (window as any).map = undefined }
+    }, [])
+
+    useEffect(() => {
+        const runMarkers = new L.FeatureGroup()
+
+        const mapPin = (network: number) => L.divIcon({
+            html: renderToStaticMarkup(<ThemeIcon radius="xl">{(() => {
+                return <StopIcon network={network} />
+            })()}</ThemeIcon>),
+            className: "map-pin-marker",
+            iconSize: [20, 20],
+            iconAnchor: [10, 20],
+        });
+
+        const update = setInterval(() => {
+            let checked: Array<any> = []
+            const bounds = (window as any).map.getBounds()
+            const a = bounds.getNorthWest()
+            const b = bounds.getSouthEast()
+            const extent = [a.lng, a.lat, b.lng, b.lat]
+            apiCall("POST", "/api/map", { extent, max: cookies["blip-limit"] }).then((e) => {
+                checked.push(e["run_id"])
+                e.runs.map((run: any) => {
+                    checked.push(run["run_id"])
+                    if (typeof tracking.current[run["run_id"]] !== 'undefined') {
+                        const items = tracking.current[run["run_id"]]
+                        for (const item of items) {
+                            item.setLatLng([run.geomWgs.coordinates[1], run.geomWgs.coordinates[0]])
+                        }
+                    } else {
+                        const item = (new L.Proj.GeoJSON(run.geomWgs, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: mapPin(run["network_id"]) }) }))
+                        tracking.current[run["run_id"]] = item.getLayers()
+                        item.bindPopup(renderToStaticMarkup(<Stack justify="center" spacing={0}>
+                            <Group position="center" align="center" spacing={2} noWrap>
+                                <Box p={2} sx={(theme) => ({ background: theme.colors.yellow[4] })}>{run["Domain_code"]}</Box>
+                                <Box p={2}>{run.regnum}</Box>
+                                <Box p={2}>{run.delay}</Box>
+                            </Group>
+                            <Group position="center" align="center">
+                                <Box p={2}>{run.f_settle_name} - {run.l_settle_name}</Box>
+                            </Group>
+                        </Stack>))
+                        item.addTo(runMarkers)
+                    }
+                })
+                for (const key of Object.keys(tracking.current)) {
+                    const items: any = tracking.current[key]
+                    if (checked.findIndex((e: any) => e == key) === -1) {
+                        for (const item of items) {
+                            item.off()
+                            item.remove()
+                        }
+                    }
+                }
+                runMarkers.addTo((window as any).map)
+            })
+        }, 500);
+        (window as any).runMarkers = runMarkers
+        return () => { clearInterval(update); runMarkers.off(); runMarkers.remove(); (window as any).runMarkers = undefined }
+    }, [])
+
+    return (<>
+        <Box id="map-main" sx={({ minHeight: 'calc(100vh - 56px)', fontFamily: 'unset !important', })} />
+    </>)
+}

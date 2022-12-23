@@ -63,7 +63,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [query, setQuery] = useState<Query | undefined>()
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service']);
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit']);
   const [scroll, scrollTo] = useWindowScroll();
   const [appUrl, setAppUrl] = useState(appRoot)
 
@@ -91,6 +91,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       if (typeof cookies['calendar-service'] === 'undefined') {
         setCookie('calendar-service', ua?.device.vendor === "Apple" ? '5' : '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
       }
+      if (typeof cookies['blip-limit'] === 'undefined') {
+        setCookie("blip-limit", '25', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
     }
   }, [cookies, ua])
 
@@ -100,7 +103,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       window.addEventListener("keydown", handler)
     }
     return () => window.removeEventListener("keydown", handler)
-  })
+  }, [])
 
   return (<>
     <HelmetProvider>
@@ -140,30 +143,32 @@ function MyApp({ Component, pageProps }: AppProps) {
       }} >
         <NotificationsProvider>
           <div className='bg' />
-          <Header links={[{ label: "Beállítások", link: "/settings" }]} />
+          <Header links={[{ label: "Térkép", link: "/map" }, { label: "Beállítások", link: "/settings" }]} />
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
-            <Container aria-current="page">
+            <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
               <AnimatedLayout>
-                <QuickMenu />
+                {router.pathname === "/map" ? <></> : <QuickMenu />}
                 <AnimatePresence mode='wait'>
                   <Component {...pageProps} />
                 </AnimatePresence>
-                <Divider size="md" my="md" />
-                <Stack pb="xl" spacing={3}>
-                  <Title order={1} size={36}>Menetrendek</Title>
-                  <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                  <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
-                  <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-                </Stack>
-                <FeaturesGrid
-                  data={[
-                    { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                    { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                    { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                    { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                    { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
-                  ]}
-                />
+                {router.pathname === "/map" ? <></> : <>
+                  <Divider size="md" my="md" />
+                  <Stack pb="xl" spacing={3}>
+                    <Title order={1} size={36}>Menetrendek</Title>
+                    <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                    <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+                  </Stack>
+                  <FeaturesGrid
+                    data={[
+                      { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                      { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                      { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                      { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                      { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                    ]}
+                  />
+                </>}
               </AnimatedLayout>
             </Container>
           </Input.Provider>

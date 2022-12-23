@@ -169,3 +169,24 @@ export const geoInfo = async (nativeData: any, fieldvalue: any, date: string) =>
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
+
+export const map = async (extent: Array<number>, max: number = 50) => {
+    const body = {
+        "query": "getRunsByExtent",
+        "networks": [
+            1,
+            2,
+            3,
+            10,
+            11,
+            12,
+            13,
+            14,
+            24,
+            25
+        ],
+        "maxCount": max,
+        "wgsExtent": extent
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}

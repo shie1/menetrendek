@@ -134,7 +134,7 @@ export function Header({ links }: HeaderSearchProps) {
                 </Paper>
             </MediaQuery>
         </Collapse>
-        <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={120}>
+        <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
             <Container>
                 <div className={classes.inner}>
                     <Group sx={{ cursor: 'pointer' }} onClick={() => router.push("/")} spacing='xs' noWrap>

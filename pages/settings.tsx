@@ -3,7 +3,7 @@ import PageTransition from "../components/pageTransition"
 import { Stack, Text, Image, SegmentedControl, Center, NumberInput, Divider } from "@mantine/core";
 import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
-import { IconDiscount, IconWalk, IconCalendar } from "@tabler/icons";
+import { IconDiscount, IconWalk, IconCalendar, IconMap2 } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
@@ -11,7 +11,7 @@ import { Helmet } from "react-helmet-async"
 import { appShortName } from "./_document";
 
 const Settings: NextPage = () => {
-    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service'])
+    const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit'])
     const img = (theme: any) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })
     const ua = useUserAgent()
 
@@ -58,6 +58,17 @@ const Settings: NextPage = () => {
                     <Image sx={img} alt="Útvonalterv limit" src="/api/img/route-limit.png" />
                 </Stack>
             </CheckboxCard>
+            <ContentCard icon={IconMap2} title="Térképen megjelenő járat limit">
+                <Stack spacing={4}>
+                    <Text size="md">Korlátozza, hogy hány ikon jelenhet meg a térképen egyszerre.</Text>
+                    <NumberInput
+                        value={Number(cookies['blip-limit']) || 0}
+                        placeholder="25"
+                        onChange={(e) => setCookie("blip-limit", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })}
+                        min={10} max={50} size="md"
+                    />
+                </Stack>
+            </ContentCard>
             <ContentCard icon={IconWalk} title="Idővonal megjelenése">
                 <Stack spacing={4}>
                     <Text size="md">2 féle módon tudjuk neked ábrázolni az átszállásokat, válaszd ki azt amelyik számodra logikusabb.</Text>
