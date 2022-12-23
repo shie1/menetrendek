@@ -14,6 +14,7 @@ const Render: NextPage = () => {
     const [done, setDone] = useState(false)
     const [query, setQuery] = useState<any>()
     const router = useRouter()
+    const date = new Date()
 
     useEffect(() => {
         const { from, to }: { from: Stop, to: Stop } = {
@@ -31,11 +32,16 @@ const Render: NextPage = () => {
         setQuery({
             from,
             to,
-            hours: Number(router.query['h'] as string),
-            minutes: Number(router.query['m'] as string),
+            time: {
+                hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
+                minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
+                date: router.query['d'] as string || dateString(new Date())
+            },
+            user: {
+                networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
+                actionTimelineType: router.query['t'] ? Number(router.query['t'] as string) : 1
+            },
             index: Number(router.query['i'] as string),
-            networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
-            date: router.query['d'] as string || dateString(new Date())
         })
     }, [router])
 
@@ -57,8 +63,8 @@ const Render: NextPage = () => {
 
     return (<MantineProvider withGlobalStyles withNormalizeCSS theme={{
         colorScheme: 'dark',
-        primaryColor: 'grape',
-        primaryShade: 8,
+        primaryColor: 'indigo',
+        primaryShade: 7,
         fontFamily: 'Sora, sans-serif',
         fontSizes: {
             "xs": 18,
@@ -78,7 +84,7 @@ const Render: NextPage = () => {
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
-                    <Text size={15}>menetrendek.info</Text>
+                    <Text size={15}>{typeof window !== 'undefined' && location.origin.split("://")[1]}</Text>
                 </Group>
             </Box>
         </Center>

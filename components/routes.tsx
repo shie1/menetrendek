@@ -1,32 +1,54 @@
-import { ActionIcon, Avatar, Divider, Grid, Group, Paper, Space, Stack, Text, ThemeIcon, Timeline } from "@mantine/core"
-import { IconWalk, IconCheck, IconTrain, IconBus, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons"
+import {
+    ActionIcon,
+    Avatar,
+    Divider,
+    Grid,
+    Group,
+    Space,
+    Stack,
+    Text,
+    ThemeIcon,
+    Timeline,
+} from "@mantine/core";
+import { IconWalk, IconCheck, IconAlertTriangle, IconWifi, IconInfoCircle, IconArrowBigDown } from "@tabler/icons";
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useContext, useState } from "react"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
-import { Dev } from "../pages/_app"
-import { parseKozlekedik } from "../client"
+import { memo } from "react";
 
-const calcDisc = (fee: number, discount?: number) => {
+export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
 }
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = ({ muvelet, network, size, ...props }: { muvelet?: string, network: number, size?: number }) => {
+export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: "átszállás" | "leszállás" | "felszállás", prev: any, network: number, size?: number }) => {
     if (!size) { size = 20 }
-    switch (muvelet) {
-        case 'átszállás':
-            return <IconWalk size={size} />
-        case 'leszállás':
-            return <IconCheck size={size} />
+    switch (type) {
+        case 1:
         default:
-            return <StopIcon size={size} network={network} />
+            switch (muvelet) {
+                case 'átszállás':
+                    return <StopIcon size={size} network={prev?.network} />
+                case 'leszállás':
+                    return <StopIcon size={size} network={prev?.network} />
+                case 'felszállás':
+                    return !prev ? <IconArrowBigDown size={size} /> : prev?.muvelet === "átszállás" ? <IconWalk size={size} /> : <StopIcon size={size} network={network} />
+            }
+        case 2:
+            switch (muvelet) {
+                case 'átszállás':
+                    return <IconWalk size={size} />
+                case 'leszállás':
+                    return <IconCheck size={size} />
+                default:
+                    return <StopIcon size={size} network={network} />
+            }
     }
-}
+})
 
-export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
+export const RouteSummary = memo(({ item, query }: { item: any, query: any }) => {
     const { warning } = useColors()
     return (<Stack spacing={0}>
         <Grid>
@@ -47,19 +69,18 @@ export const RouteSummary = ({ item, query }: { item: any, query: any }) => {
         <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
         <Group position="center" spacing='sm'>
             <Text size="sm">{item.osszido}</Text>
-            {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.discount))}</Text> : <></>}
+            {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.user.discount))}</Text> : <></>}
             <Text size="sm">{item.ossztav}</Text>
         </Group>
     </Stack>)
-}
+})
 
-export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
+export const RouteExposition = memo(({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
     const router = useRouter()
-    const [dev] = useContext(Dev)
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
-            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet size={iconSize} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet type={Number(query.user.actionTimelineType)} size={iconSize} prev={details.results[i - 1]} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                 <Stack spacing={0} sx={{ position: 'relative' }}>
                     <Group align="center">
                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
@@ -76,7 +97,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                         </Group>}
                         <Group spacing={10}>
                             {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare < 0 ? <></> :
-                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.discount))}</Text>}
+                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.user.discount))}</Text>}
                             {!dataItem.jaratinfo.travelTime ? <></> :
                                 <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
                             {!dataItem.jaratszam ? <></> :
@@ -85,7 +106,7 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
                         {!dataItem.vegallomasok ? <></> :
                             <Text size="sm">{dataItem.vegallomasok}</Text>}
                         {!dataItem.jaratinfo.kozlekedik ? <></> :
-                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik} {!dev ? <></> : `(${parseKozlekedik(dataItem.jaratinfo.kozlekedik)})`}</Text>}
+                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
                         {!dataItem.jaratinfo.ToBay ? <></> :
                             <Text size="sm">Kocsiállás érkezéskor: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />
@@ -102,4 +123,4 @@ export const RouteExposition = ({ details, query, iconSize, withInfoButton }: { 
             </Timeline.Item>)
         })}
     </Timeline >)
-}
+})

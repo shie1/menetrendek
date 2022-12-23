@@ -1,4 +1,5 @@
 import { Stop } from "./components/stops"
+import { Query } from "./pages/_app"
 
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
@@ -64,29 +65,21 @@ export const stationsNear = async (query: any) => {
 }
 
 export const routes = async (query: any) => {
-    const rb: {
-        from: Stop;
-        to: Stop;
-        hours: number;
-        minutes: number;
-        discount: number;
-        networks: Array<number>;
-        date: string
-    } = query
-    const date = new Date(rb.date)
+    const rb: Query = query
+    const date = new Date(rb.time.date)
     const body = {
         "func": "getRoutes",
         "params": {
             "datum": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
             "ext_settings": "block",
-            "honnan_ls_id": rb.from.ls_id,
-            "honnan_settlement_id": rb.from.s_id,
-            "honnan_site_code": rb.from.site_code,
-            "hour": date.getHours(),
-            "min": date.getMinutes(),
-            "hova_ls_id": rb.to.ls_id,
-            "hova_settlement_id": rb.to.s_id,
-            "hova_site_code": rb.to.site_code,
+            "honnan_ls_id": rb.from!.ls_id,
+            "honnan_settlement_id": rb.from!.s_id,
+            "honnan_site_code": rb.from!.site_code,
+            "hour": rb.time.hours || 0,
+            "min": rb.time.minutes || 0,
+            "hova_ls_id": rb.to!.ls_id,
+            "hova_settlement_id": rb.to!.s_id,
+            "hova_site_code": rb.to!.site_code,
             "maxatszallas": '5',
             "maxwalk": 1000,
             "timeWindow": 0,
@@ -100,7 +93,7 @@ export const routes = async (query: any) => {
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            "networks": rb.networks,
+            "networks": rb.user.networks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
@@ -163,6 +156,37 @@ export const runsDelay = async (runId: number) => {
                 runId
             ]
         }
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
+
+export const geoInfo = async (nativeData: any, fieldvalue: any, date: string) => {
+    const body = {
+        "query": "getGeomC",
+        "datum": date,
+        nativeData,
+        fieldvalue
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
+
+export const map = async (extent: Array<number>, max: number = 50) => {
+    const body = {
+        "query": "getRunsByExtent",
+        "networks": [
+            1,
+            2,
+            3,
+            10,
+            11,
+            12,
+            13,
+            14,
+            24,
+            25
+        ],
+        "maxCount": max,
+        "wgsExtent": extent
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }

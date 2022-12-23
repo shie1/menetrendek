@@ -7,14 +7,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    const rb: {
-        from: Stop;
-        to: Stop;
-        hours: number;
-        minutes: number;
-        discount: number;
-        networks: Array<number>;
-        date: string
-    } = JSON.parse(req.body)
+    const rb = JSON.parse(req.body)
     res.status(200).json(await routes(rb))
 }

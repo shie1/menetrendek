@@ -20,6 +20,7 @@ export default function handler(
         const imgPath = path.join(process.cwd(), "/img/", sanitize(image as string))
         if (!fs.existsSync(imgPath)) { return resolve(res.status(404).send("")) }
         res.setHeader("Content-Type", `image/${sanitize(image as string).split(".")[sanitize(image as string).split(".").length - 1]}`)
+        res.setHeader("Cache-Control", "public, max-age=604800, immutable")
         if (s) {
             return resolve(sharp(imgPath).resize(typeof s === 'number' ? s : (s[0], s[1])).pipe(res))
         } else {

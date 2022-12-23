@@ -1,140 +1,181 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import {
-  MantineProvider,
-  Box,
-  Card,
-  Center,
-  Container,
-  Group,
-  Title,
-  ActionIcon,
-  Stack,
-  Divider,
-} from '@mantine/core';
-import { useHotkeys, useLocalStorage } from '@mantine/hooks';
-import { IconChevronUp } from '@tabler/icons';
-import { useMantineTheme } from '@mantine/styles';
+import { MantineProvider, Container, Divider, Stack, Title, Text } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import Link from 'next/link';
-import { interactive } from '../components/styles';
-import Head from 'next/head';
+import { Footer } from '../components/footer';
+import { Header } from '../components/header';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from '@tabler/icons';
+import { FeaturesGrid } from '../components/hello';
+import { QuickMenu } from '../components/menu';
+import { motion, AnimatePresence } from "framer-motion"
 import { createContext, useEffect, useState } from 'react';
-import { useCookies } from 'react-cookie';
-import { useRouter } from 'next/dist/client/router';
-import Script from "next/script"
-import { SearchSection } from '../components/menu';
 import { Stop } from '../components/stops';
-import { AnimatePresence, motion } from "framer-motion";
+import { useWindowScroll } from '@mantine/hooks';
+import { useCookies } from 'react-cookie';
+import { useUserAgent } from '../components/ua';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { appDesc, appName, appRoot, appShortName, appThumb } from './_document';
+import { useRouter } from 'next/dist/client/router';
 
-export const Dev = createContext<Array<boolean | any>>([false, () => { }])
-export const Time = createContext<any>([null, () => { }])
-export const Input = createContext<any>([])
-export const GeoPerms = createContext<any>(false)
+export interface Selection {
+  from: Stop | undefined;
+  to: Stop | undefined;
+}
+export type SelectionSetter = (a: Selection) => void
+
+export interface Input {
+  from: string;
+  to: string;
+}
+export type InputSetter = (a: Input) => void
+
+export interface Query extends Selection {
+  time: {
+    hours: number | undefined;
+    minutes: number | undefined;
+    date: string;
+  }
+  user: {
+    discount: number;
+    networks: Array<number>;
+    actionTimelineType?: number
+  },
+  index?: number;
+}
+export type QuerySetter = (a: Query | undefined) => void
+
+export interface MyWindow extends Window {
+  dataLayer: {
+    push: (...a: any) => true
+  }
+}
+
+export const Input = createContext<{ selection: Selection, setSelection: SelectionSetter, input: Input, setInput: InputSetter }>({ selection: { from: undefined, to: undefined }, setSelection: () => { }, input: { from: "", to: "" }, setInput: () => { } })
+
+export const AnimatedLayout = ({ children }: { children: any }) => {
+  const [cookies] = useCookies(["no-page-transitions"])
+  return (cookies["no-page-transitions"] === "true" ? children : <motion.div layout>{children}</motion.div>)
+}
 
 function MyApp({ Component, pageProps }: AppProps) {
-  const theme = useMantineTheme()
-  const [input, setInput] = useState<{ from: Stop; to: Stop; }>()
-  const [dev, setDev] = useLocalStorage({ defaultValue: false, key: 'developer-mode' })
-  const [time, setTime] = useState<any>(null)
-  const [geoPerms, setGeoPerms] = useState(false)
+  const ua = useUserAgent()
   const router = useRouter()
-  const [search, setSearch] = useState(true)
-
-  useHotkeys([
-    ['ctrl+D', () => setDev(!dev)],
-    ['Enter', () => window.dispatchEvent(new Event("search-trigger"))],
-    ['ctrl+K', () => setSearch(!search)]
-  ])
+  const [query, setQuery] = useState<Query | undefined>()
+  const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
+  const [input, setInput] = useState<Input>({ to: "", from: "" })
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit']);
+  const [scroll, scrollTo] = useWindowScroll();
+  const [appUrl, setAppUrl] = useState(appRoot)
 
   useEffect(() => {
+    setAppUrl(appRoot + router.pathname)
+  }, [router])
+
+  useEffect(() => { //Initialize cookies
+    if (typeof ua !== 'undefined') {
+      if (!cookies["selected-networks"] || cookies["selected-networks"].findIndex((item: string) => item === '10,24') !== -1) {
+        setCookie("selected-networks", ['1', '2', '25', '3', '10', '24', '13', '12', '11', '14'], { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies["no-page-transitions"] === 'undefined') {
+        setCookie("no-page-transitions", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['action-timeline-type'] === 'undefined') {
+        setCookie("action-timeline-type", '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['route-limit'] === 'undefined') {
+        setCookie("route-limit", '10', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['use-route-limit'] === 'undefined') {
+        setCookie("use-route-limit", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['calendar-service'] === 'undefined') {
+        setCookie('calendar-service', ua?.device.vendor === "Apple" ? '5' : '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+      if (typeof cookies['blip-limit'] === 'undefined') {
+        setCookie("blip-limit", '25', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
+    }
+  }, [cookies, ua])
+
+  useEffect(() => {
+    const handler = (e: any) => { if (e.key === "Shift" || e.key === "Tab" || e.key === "Alt") e.preventDefault() }
     if (typeof window !== 'undefined') {
-      navigator.permissions.query({ name: 'geolocation' }).then(geo => {
-        geo.addEventListener("change", (e) => {
-          setGeoPerms((e.currentTarget as PermissionStatus).state === "granted")
-        })
-        if (geo.state !== 'granted') {
-          navigator.geolocation.getCurrentPosition(() => { })
-        } else {
-          setGeoPerms(true)
-        }
-      })
+      window.addEventListener("keydown", handler)
     }
-    return () => {
-      navigator.permissions.query({ name: 'geolocation' }).then(geo => {
-        geo.removeEventListener("change", (e) => {
-          setGeoPerms((e.currentTarget as PermissionStatus).state === "granted")
-        })
-      })
-    }
+    return () => window.removeEventListener("keydown", handler)
   }, [])
 
   return (<>
-    <Head>
-      <title>Menetrendek</title>
-    </Head>
-    <MantineProvider withNormalizeCSS withGlobalStyles theme={{
-      colorScheme: 'dark',
-      primaryColor: 'grape',
-      primaryShade: 8,
-      fontFamily: 'Sora, sans-serif',
-    }} >
-      <NotificationsProvider>
-        <Dev.Provider value={[dev, setDev]}>
-          <Time.Provider value={[time, setTime]}>
-            <Input.Provider value={[input, setInput]}>
-              <GeoPerms.Provider value={geoPerms}>
-                <div id='google-analytics-container'>
-                  <Script strategy='afterInteractive' src='https://www.googletagmanager.com/gtag/js?id=G-7E6FQCCW4D' />
-                  <Script id='google-analytics' strategy='afterInteractive'>
-                    {`
-                    window.dataLayer = window.dataLayer || [];
-                    function gtag(){dataLayer.push(arguments);}
-                    gtag('js', new Date());
-                  
-                    gtag('config', 'G-7E6FQCCW4D');
-                  `}
-                  </Script>
-                </div>
-                <div className='bg' />
-                <Container aria-current="page" sx={{ height: '100vh' }}>
-                  <Center sx={{ height: '-webkit-fill-available' }}>
-                    <Box p='sm' sx={{ width: 500, height: '-webkit-fill-available' }}>
-                      <Card p="md" radius="lg" shadow='xl' sx={{ height: '-webkit-fill-available', position: 'relative', display: 'flex', flexDirection: 'column' }}>
-                        <Group id='app-header' position='apart' mb='md'>
-                          <Link href="/"><Group sx={interactive}><Title order={router.pathname === "/" ? 2 : 1} size={32}>Menetrendek</Title></Group></Link>
-                          <Group position="center">
-                            <motion.div style={{ height: '100%', display: 'flex', flexDirection: 'column' }} animate={{ rotate: search ? 0 : 180 }}>
-                              <ActionIcon onClick={() => setSearch(!search)} variant="filled" color={theme.primaryColor} size="lg" radius="xl">
-                                <IconChevronUp size={50} />
-                              </ActionIcon>
-                            </motion.div>
-                          </Group>
-                        </Group>
-                        <Stack id='app-main' sx={{ overflow: 'visible', display: 'flex', height: '100%' }}>
-                          <AnimatePresence>
-                            {search &&
-                              <motion.div animate={{ opacity: 1, transform: 'scaleY(100%) translateY(0%)' }} exit={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} initial={{ opacity: 0, transform: 'scaleY(0%) translateY(-50%)' }} transition={{ duration: .2 }}>
-                                <Stack sx={{ width: '-webkit-fill-available' }}>
-                                  <SearchSection />
-                                  <Divider size="md" />
-                                </Stack>
-                              </motion.div>}
-                          </AnimatePresence>
-                          <Stack sx={{ flexGrow: 1, marginBottom: '14%', overflowY: 'auto' }}>
-                            <Component {...pageProps} />
-                          </Stack>
-                        </Stack>
-                      </Card>
-                    </Box>
-                  </Center>
-                </Container>
-              </GeoPerms.Provider>
-            </Input.Provider>
-          </Time.Provider>
-        </Dev.Provider>
-      </NotificationsProvider>
-    </MantineProvider>
+    <HelmetProvider>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
+        <link rel='icon' type="image/x-icon" href='/favicon.ico' />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="manifest" href="/api/manifest.webmanifest" />
+        <meta name="theme-color" content="#396be1" />
+        <link rel='canonical' href={appUrl} />
+
+        <meta name="title" content={appName} />
+        <meta name="description" content={appDesc} />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={appUrl} />
+        <meta property="og:title" content={appName} />
+        <meta property="og:description" content={appDesc} />
+
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={appUrl} />
+        <meta property="twitter:title" content={appName} />
+        <meta property="twitter:description" content={appDesc} />
+
+        {!appThumb ? <></> : <>
+          <meta property="og:image" content={appThumb} />
+          <meta property="twitter:image" content={appThumb} />
+        </>}
+      </Helmet>
+      <MantineProvider withNormalizeCSS withGlobalStyles theme={{
+        colorScheme: 'dark',
+        primaryColor: 'indigo',
+        primaryShade: 7,
+        fontFamily: 'Sora, sans-serif',
+      }} >
+        <NotificationsProvider>
+          <div className='bg' />
+          <Header links={[{ label: "Térkép", link: "/map" }, { label: "Beállítások", link: "/settings" }]} />
+          <Input.Provider value={{ selection, setSelection, input, setInput }}>
+            <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
+              <AnimatedLayout>
+                {router.pathname === "/map" ? <></> : <QuickMenu />}
+                <AnimatePresence mode='wait'>
+                  <Component {...pageProps} />
+                </AnimatePresence>
+                {router.pathname === "/map" ? <></> : <>
+                  <Divider size="md" my="md" />
+                  <Stack pb="xl" spacing={3}>
+                    <Title order={1} size={36}>Menetrendek</Title>
+                    <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                    <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+                  </Stack>
+                  <FeaturesGrid
+                    data={[
+                      { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                      { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                      { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                      { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                      { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                    ]}
+                  />
+                </>}
+              </AnimatedLayout>
+            </Container>
+          </Input.Provider>
+          <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
+        </NotificationsProvider>
+      </MantineProvider>
+    </HelmetProvider>
   </>)
 }
 
