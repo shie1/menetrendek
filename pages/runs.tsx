@@ -8,6 +8,8 @@ import useColors from "../components/colors";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
+import { appShortName } from "./_document";
+import { Helmet } from "react-helmet-async";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -47,6 +49,9 @@ const Runs: NextPage = () => {
     }, [query])
 
     return (<PageTransition>
+        <Helmet>
+            {typeof runs === 'undefined' ? <></> : runs.status !== 'success' ? <></> : <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>}
+        </Helmet>
         <Container size="xs" p={0}>
             <Card radius="lg" shadow="md" withBorder>
                 <Stack my="md" spacing='sm'>

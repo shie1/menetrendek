@@ -52,7 +52,7 @@ export function CheckboxCard({
                 <Checkbox
                     checked={value}
                     tabIndex={-1}
-                    onClick={() => handleChange(!value)}
+                    onChange={() => handleChange(!value)}
                     size="md"
                     styles={{ input: { cursor: 'pointer' } }}
                 />

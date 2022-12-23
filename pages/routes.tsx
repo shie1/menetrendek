@@ -8,12 +8,33 @@ import { Stop } from "../components/stops";
 import { useCookies } from "react-cookie";
 import { apiCall } from "../components/api";
 import { showNotification } from "@mantine/notifications";
-import { IconBrandGoogle, IconCalendarEvent, IconClock, IconDownload, IconListDetails, IconMap, IconShare, IconX } from "@tabler/icons";
-import { Accordion, ActionIcon, Container, Group, Loader, Skeleton, Space, Timeline, Slider, Button, Menu } from "@mantine/core"
+import {
+    IconCalendarEvent,
+    IconClock,
+    IconDownload,
+    IconListDetails,
+    IconMap,
+    IconShare,
+    IconX,
+} from "@tabler/icons";
+import {
+    Accordion,
+    ActionIcon,
+    Container,
+    Group,
+    Loader,
+    Skeleton,
+    Space,
+    Timeline,
+    Slider,
+    Button,
+} from "@mantine/core";
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 import dynamic from "next/dynamic"
 import { yahoo, office365, google, ics, outlook } from "calendar-link";
+import { Helmet } from "react-helmet-async";
+import { appShortName } from "./_document";
 
 const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
 
@@ -240,6 +261,9 @@ const Routes: NextPage = () => {
 
     return (<PageTransition>
         {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
+        <Helmet>
+            {typeof results === 'undefined' ? <></> : results.status !== 'success' ? <></> : <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>}
+        </Helmet>
         <Container pt="md" size="sm" p={0}>
             <AccordionController.Provider value={{ value, setValue }}>
                 <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>

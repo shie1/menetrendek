@@ -1,11 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, ActionIcon, Transition } from '@mantine/core';
+import { MantineProvider, Container, Divider, Stack, Title, Text } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
-import Head from 'next/head';
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconArrowUp } from '@tabler/icons';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from '@tabler/icons';
 import { FeaturesGrid } from '../components/hello';
 import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
@@ -14,6 +13,9 @@ import { Stop } from '../components/stops';
 import { useWindowScroll } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
 import { useUserAgent } from '../components/ua';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+import { appDesc, appName, appRoot, appShortName, appThumb } from './_document';
+import { useRouter } from 'next/dist/client/router';
 
 export interface Selection {
   from: Stop | undefined;
@@ -57,11 +59,17 @@ export const AnimatedLayout = ({ children }: { children: any }) => {
 
 function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
+  const router = useRouter()
   const [query, setQuery] = useState<Query | undefined>()
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service']);
   const [scroll, scrollTo] = useWindowScroll();
+  const [appUrl, setAppUrl] = useState(appRoot)
+
+  useEffect(() => {
+    setAppUrl(appRoot + router.pathname)
+  }, [router])
 
   useEffect(() => { //Initialize cookies
     if (typeof ua !== 'undefined') {
@@ -95,47 +103,74 @@ function MyApp({ Component, pageProps }: AppProps) {
   })
 
   return (<>
-    <Head>
-      <title>Menetrendek</title>
-    </Head>
-    <MantineProvider withNormalizeCSS withGlobalStyles theme={{
-      colorScheme: 'dark',
-      primaryColor: 'indigo',
-      primaryShade: 7,
-      fontFamily: 'Sora, sans-serif',
-    }} >
-      <NotificationsProvider>
-        <div className='bg' />
-        <Header links={[{ label: "Beállítások", link: "/settings" }]} />
-        <Input.Provider value={{ selection, setSelection, input, setInput }}>
-          <Container aria-current="page">
-            <AnimatedLayout>
-              <QuickMenu />
-              <AnimatePresence mode='wait'>
-                <Component {...pageProps} />
-              </AnimatePresence>
-              <Divider size="md" my="md" />
-              <Stack pb="xl" spacing={3}>
-                <Title order={1} size={36}>Menetrendek</Title>
-                <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
-                <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-              </Stack>
-              <FeaturesGrid
-                data={[
-                  { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                  { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                  { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                  { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                  { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
-                ]}
-              />
-            </AnimatedLayout>
-          </Container>
-        </Input.Provider>
-        <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
-      </NotificationsProvider>
-    </MantineProvider>
+    <HelmetProvider>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+        <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
+        <link rel='icon' type="image/x-icon" href='/favicon.ico' />
+        <meta name="twitter:card" content="summary_large_image" />
+        <link rel="manifest" href="/api/manifest.webmanifest" />
+        <meta name="theme-color" content="#396be1" />
+        <link rel='canonical' href={appUrl} />
+
+        <meta name="title" content={appName} />
+        <meta name="description" content={appDesc} />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={appUrl} />
+        <meta property="og:title" content={appName} />
+        <meta property="og:description" content={appDesc} />
+
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content={appUrl} />
+        <meta property="twitter:title" content={appName} />
+        <meta property="twitter:description" content={appDesc} />
+
+        {!appThumb ? <></> : <>
+          <meta property="og:image" content={appThumb} />
+          <meta property="twitter:image" content={appThumb} />
+        </>}
+      </Helmet>
+      <MantineProvider withNormalizeCSS withGlobalStyles theme={{
+        colorScheme: 'dark',
+        primaryColor: 'indigo',
+        primaryShade: 7,
+        fontFamily: 'Sora, sans-serif',
+      }} >
+        <NotificationsProvider>
+          <div className='bg' />
+          <Header links={[{ label: "Beállítások", link: "/settings" }]} />
+          <Input.Provider value={{ selection, setSelection, input, setInput }}>
+            <Container aria-current="page">
+              <AnimatedLayout>
+                <QuickMenu />
+                <AnimatePresence mode='wait'>
+                  <Component {...pageProps} />
+                </AnimatePresence>
+                <Divider size="md" my="md" />
+                <Stack pb="xl" spacing={3}>
+                  <Title order={1} size={36}>Menetrendek</Title>
+                  <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                  <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                  <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+                </Stack>
+                <FeaturesGrid
+                  data={[
+                    { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                    { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                    { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                    { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                    { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                  ]}
+                />
+              </AnimatedLayout>
+            </Container>
+          </Input.Provider>
+          <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
+        </NotificationsProvider>
+      </MantineProvider>
+    </HelmetProvider>
   </>)
 }
 

@@ -1,12 +1,14 @@
 import type { NextPage } from "next"
 import PageTransition from "../components/pageTransition"
-import { Stack, Text, Image, SegmentedControl, Center, NumberInput } from "@mantine/core"
+import { Stack, Text, Image, SegmentedControl, Center, NumberInput, Divider } from "@mantine/core";
 import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
 import { IconDiscount, IconWalk, IconCalendar } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
+import { Helmet } from "react-helmet-async"
+import { appShortName } from "./_document";
 
 const Settings: NextPage = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service'])
@@ -14,7 +16,11 @@ const Settings: NextPage = () => {
     const ua = useUserAgent()
 
     return (<PageTransition>
+        <Helmet>
+            <title>Beállítások | {appShortName}</title>
+        </Helmet>
         <Stack>
+            <Divider label={<Text size="md">Alapvető preferenciák</Text>} size="lg" />
             <ContentCard icon={IconDiscount} title="Kedvezmény">
                 <Stack spacing={4}>
                     <Text size="md">Itt be tudod állítani, hogy hány százalékos kedvezménnyel utazol.</Text>
@@ -34,6 +40,10 @@ const Settings: NextPage = () => {
                     </Stack>
                 </Stack>
             </ContentCard>
+            <Stack spacing={0}>
+                <Divider label={<Text size="md">További beállítások</Text>} size="lg" />
+                <Text size="sm">Ezekkel a beállításokkal jelentősebben befolyásolhatod az oldal működését.</Text>
+            </Stack>
             <CheckboxCard title="Útvonalterv limit" checked={cookies["use-route-limit"] === "true"} onChange={(e) => { setCookie("use-route-limit", e, { path: '/', maxAge: 60 * 60 * 24 * 365 }) }}>
                 <Stack spacing={4}>
                     <Text size="md">Az egyszerre megjelenített útvonaltervek korlátozva vannak és egy időcsúszkával tudsz böngészni.</Text>
