@@ -27,6 +27,7 @@
     "framer-motion": "^7.6.4",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
+    "loader-utils": "^2.0.4",
     "lz-string": "^1.4.4",
     "moment": "^2.29.4",
     "next": "12.3.1",
