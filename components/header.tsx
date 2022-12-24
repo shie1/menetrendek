@@ -142,7 +142,7 @@ export function Header({ links }: HeaderSearchProps) {
         <MHeader role="banner" sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
             <Container>
                 <div className={classes.inner}>
-                    <Link href='/' role="link" aria-label="Főoldal" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); router.push("/") }}>
+                    <Link href='/' role="link" aria-label="Főoldal" style={{ cursor: 'pointer' }}>
                         <Group spacing='xs' noWrap>
                             <Logo size={40} />
                             <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
