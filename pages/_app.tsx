@@ -142,9 +142,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                         { label: "MAHART", link: "https://mahart.hu" },
                         { label: "BAHART", link: "https://bahart.hu" }
                       ].map((item, i, arr) => {
-                        return (<a key={i} rel='external noopener' role="link" aria-label={item.label} href={item.link} target="_blank">
-                          {item.label}{i + 1 !== arr.length ? ", " : ""}
-                        </a>)
+                        return (<><a key={i} rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
+                          {item.label}
+                        </a>{i + 1 !== arr.length ? ", " : ""}</>)
                       })}
                     </Title>
                     <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
