@@ -1,13 +1,11 @@
-import { MantineProvider, Center, Paper, Space, Group, Box, Text, Container, LoadingOverlay } from "@mantine/core"
-import { IconLink } from "@tabler/icons"
+import { Paper, Space, Container, LoadingOverlay } from "@mantine/core";
 import type { NextPage } from "next"
-import { useRouter } from "next/router"
-import { useState, useEffect } from "react"
 import { dateString } from "../client"
 import { apiCall } from "../components/api"
 import { Stop } from "../components/stops"
-import { useCookies } from "react-cookie"
 import dynamic from "next/dynamic"
+import { appShortName } from "./_document"
+import { SEO } from "../components/seo"
 
 const RouteSummary = dynamic(() => import('../components/routes').then((mod) => mod.RouteSummary), {
     ssr: false
@@ -20,6 +18,12 @@ const Route: NextPage = (props: any) => {
     const { results, details, query } = props
 
     return (<>
+        <SEO
+            title={`${results.departureCity} - ${results.arrivalCity}`}
+            image={`https://menetrendek.info${props.asPath.replace('/route?', '/render?')}`}
+        >
+            <title>{results.departureCity} - {results.arrivalCity} | {appShortName}</title>
+        </SEO>
         <Container pt="md" size="sm" p={0}>
             <Paper sx={(theme) => ({
                 border: '1px solid transparent',
@@ -66,6 +70,7 @@ Route.getInitialProps = async (ctx) => {
     }
     props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
     props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
+    props.asPath = ctx.asPath
     return props
 }
 
