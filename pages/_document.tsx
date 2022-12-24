@@ -18,6 +18,8 @@ const Document: NextPage = () => {
 
     return (<Html lang="hu">
         <Head>
+            <title>{appShortName}</title>
+        
             <meta charSet="utf-8" />
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
             <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
