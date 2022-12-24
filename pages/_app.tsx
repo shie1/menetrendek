@@ -54,7 +54,7 @@ export const Input = createContext<{ selection: Selection, setSelection: Selecti
 
 export const AnimatedLayout = ({ children }: { children: any }) => {
   const [cookies] = useCookies(["no-page-transitions"])
-  return (cookies["no-page-transitions"] === "true" ? children : <motion.div layout>{children}</motion.div>)
+  return (cookies["no-page-transitions"] === "true" ? <main role="main">{children}</main> : <main role="main"><motion.div layout>{children}</motion.div></main>)
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -128,12 +128,25 @@ function MyApp({ Component, pageProps }: AppProps) {
                 <AnimatePresence mode='wait'>
                   <Component {...pageProps} />
                 </AnimatePresence>
-                {router.pathname === "/map" ? <></> : <>
+                {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
                   <Divider size="md" my="md" />
                   <Stack pb="xl" spacing={3}>
                     <Title order={1} size={36}>Menetrendek</Title>
                     <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART</Title>
+                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >
+                      {[
+                        { label: "MÁV", link: "https://mav.hu" },
+                        { label: "Volánbusz", link: "https://volanbusz.hu" },
+                        { label: "BKK", link: "https://bkk.hu" },
+                        { label: "GYSEV", link: "https://gysev.hu" },
+                        { label: "MAHART", link: "https://mahart.hu" },
+                        { label: "BAHART", link: "https://bahart.hu" }
+                      ].map((item, i, arr) => {
+                        return (<a rel='external' role="link" aria-label={item.label} href={item.link} target="_blank">
+                          {item.label}{i + 1 !== arr.length ? ", " : ""}
+                        </a>)
+                      })}
+                    </Title>
                     <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
                   </Stack>
                   <FeaturesGrid
@@ -145,7 +158,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
                     ]}
                   />
-                </>}
+                </div>}
               </AnimatedLayout>
             </Container>
           </Input.Provider>

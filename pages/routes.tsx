@@ -106,7 +106,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     }
 
     return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
-        <Accordion.Control onClick={() => {
+        <Accordion.Control role="button" aria-label="Járat kifejtése" onClick={() => {
             if (!data) {
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
@@ -126,7 +126,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
         </Accordion.Control>
         <Accordion.Panel>
             <Skeleton px="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
-                {!data ? <><Timeline>
+                {!data ? <div><Timeline>
                     {Array.from({ length: item.kifejtes_postjson.runcount * 2 }).map((item: any, i: any) => {
                         return <Timeline.Item title="Lorem" key={i}>
                             <Space h={50} />
@@ -138,7 +138,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                             <IconDownload />
                         </ActionIcon>
                     </Group>
-                </>
+                </div>
                     :
                     <>
                         <Button onClick={() => setMapView(!mapView)} leftIcon={!mapView ? <IconMap /> : <IconListDetails />} variant="light" color="indigo" size="sm" sx={{ width: '100%' }} mb="md">
@@ -146,11 +146,11 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                         </Button>
                         {!mapView ? <RouteExposition details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
                         <Group spacing="sm" position="right">
-                            <ActionIcon onClick={() => cal(Number(cookies["calendar-service"]))}>
+                            <ActionIcon role="button" aria-label="Mentés naptárba" onClick={() => cal(Number(cookies["calendar-service"]))}>
                                 <IconCalendarEvent />
                             </ActionIcon>
                             {!file ? <Loader size={28} /> :
-                                <ActionIcon onClick={() => {
+                                <ActionIcon role="button" aria-label="Megosztás" onClick={() => {
                                     const params: any = {
                                         ...(query?.from!.ls_id ? { fl: query?.from!.ls_id.toString() } : {}),
                                         fs: query?.from!.s_id.toString(),

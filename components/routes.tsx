@@ -90,7 +90,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton 
                     {!dataItem.jaratinfo ? <></> : <>
                         {!withInfoButton ? <></> : <Group position="right">
                             <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}${!router.query['d'] ? '' : '&d=' + router.query['d']}`}>
-                                <ActionIcon sx={{ position: 'absolute', top: 0 }}>
+                                <ActionIcon role="button" aria-label="Összes megálló megtekintése" sx={{ position: 'absolute', top: 0 }}>
                                     <IconInfoCircle />
                                 </ActionIcon>
                             </Link>
@@ -111,7 +111,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton 
                             <Text size="sm">Kocsiállás érkezéskor: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />
                         {!dataItem.jaratinfo.wifi ? <></> :
-                            <ThemeIcon size="lg" variant="light" radius="xl">
+                            <ThemeIcon role="status" aria-label="Wi-Fi elérés" size="lg" variant="light" radius="xl">
                                 <IconWifi size={25} />
                             </ThemeIcon>
                         }

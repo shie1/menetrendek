@@ -87,7 +87,7 @@ export function Header({ links }: HeaderSearchProps) {
         const openAction = (event: any, url: string) => { event.preventDefault(); router.push(url); if (burger) toggle() }
 
         const menuItems = link.links?.map((item) => (
-            <Menu.Item key={item.link}>{item.label}</Menu.Item>
+            <Menu.Item role="link" aria-label={item.label} key={item.link}>{item.label}</Menu.Item>
         ));
 
         if (menuItems) {
@@ -95,6 +95,8 @@ export function Header({ links }: HeaderSearchProps) {
                 <Menu key={link.label} trigger="hover" exitTransitionDuration={0}>
                     <Menu.Target>
                         <a
+                            role="link"
+                            aria-label={link.label}
                             href={link.link}
                             className={classes.link}
                             onClick={(event) => openAction(event, link.link)}
@@ -112,6 +114,8 @@ export function Header({ links }: HeaderSearchProps) {
 
         return (
             <a
+                role="link"
+                aria-label={link.label}
                 key={link.label}
                 href={link.link}
                 className={classes.link}
@@ -128,22 +132,24 @@ export function Header({ links }: HeaderSearchProps) {
         <Collapse in={opened}>
             <MediaQuery styles={{ display: 'none' }} largerThan="sm">
                 <Paper sx={{ width: '100vw' }}>
-                    <Stack p="md" spacing="sm">
+                    <Stack role="navigation" p="md" spacing="sm">
                         {items(true)}
                     </Stack>
                 </Paper>
             </MediaQuery>
         </Collapse>
-        <MHeader sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
+        <MHeader role="banner" sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
             <Container>
                 <div className={classes.inner}>
-                    <Group sx={{ cursor: 'pointer' }} onClick={() => router.push("/")} spacing='xs' noWrap>
-                        <Logo size={40} />
-                        <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
-                            <Text size={22} weight={550}>Menetrendek.info</Text>
-                        </MediaQuery>
-                    </Group>
-                    <Group spacing={5} className={classes.links}>
+                    <a href='/' role="link" aria-label="Főoldal" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); router.push("/") }}>
+                        <Group spacing='xs' noWrap>
+                            <Logo size={40} />
+                            <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
+                                <Text size={22} weight={550}>Menetrendek.info</Text>
+                            </MediaQuery>
+                        </Group>
+                    </a>
+                    <Group role="navigation" spacing={5} className={classes.links}>
                         {items()}
                     </Group>
                     {!links.length ? <></> :

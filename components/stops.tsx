@@ -123,6 +123,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         style={style}
         data={data}
         ref={ref}
+        switchDirectionOnFlip={false}
         size="md"
         className="searchInput"
         variant="unstyled"
@@ -135,20 +136,20 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
                         <IconDots />
                     </ActionIcon>
                 </Menu.Target>
-                <Menu.Dropdown>
+                <Menu.Dropdown role="menu">
                     <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
-                    <Menu.Item onClick={() => {
+                    <Menu.Item role="menuitem" onClick={() => {
                         setInput("")
                         setSelected(undefined)
                     }} color="red" icon={<IconX />}>
                         Mező kiürítése
                     </Menu.Item>
-                    <Menu.Divider />
+                    <Menu.Divider role="separator" />
                     <Menu.Label>Minden mező</Menu.Label>
-                    <Menu.Item onClick={swap} icon={<IconRefresh />}>
+                    <Menu.Item role="menuitem" onClick={swap} icon={<IconRefresh />}>
                         Mezők felcserélése
                     </Menu.Item>
-                    <Menu.Item onClick={() => {
+                    <Menu.Item role="menuitem" onClick={() => {
                         i.setInput({ from: "", to: "" })
                         i.setSelection({ from: undefined, to: undefined })
                     }} color="red" icon={<IconClearAll />}>

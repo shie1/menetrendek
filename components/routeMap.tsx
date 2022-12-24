@@ -102,7 +102,7 @@ export const RouteMapView = ({ id, details, exposition, query }: { id: any, deta
 
     return (<Box sx={{ minHeight: '20rem', position: 'relative', display: 'flex', flexWrap: 'wrap', '& > *': { flex: '40%', minWidth: '20rem' } }} mb="sm">
         <LoadingOverlay visible={!details} />
-        <Box id={`map-${id}`} sx={({ minHeight: '20rem', fontFamily: 'unset !important' })} />
+        <Box aria-label="Térkép" id={`map-${id}`} sx={({ minHeight: '20rem', fontFamily: 'unset !important' })} />
         <Card sx={(theme) => ({ borderRadius: 0 })}>
             <Timeline active={Infinity}>
                 {!stops ? <></> : stops.map((stop: any, i: any) => {
@@ -247,6 +247,6 @@ export const MapView = () => {
     }, [])
 
     return (<>
-        <Box id="map-main" sx={({ minHeight: 'calc(100vh - 56px)', fontFamily: 'unset !important', })} />
+        <Box aria-label="Térkép" id="map-main" sx={({ minHeight: 'calc(100vh - 56px)', fontFamily: 'unset !important', })} />
     </>)
 }

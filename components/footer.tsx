@@ -138,7 +138,7 @@ export function Footer({ data }: FooterLinksProps) {
     if (router.pathname === "/map") { return <></> }
 
     return (
-        <footer className={classes.footer} style={{ marginTop: router.pathname === "/map" ? 0 : 120 }}>
+        <footer role="contentinfo" className={classes.footer} style={{ marginTop: router.pathname === "/map" ? 0 : 120 }}>
             <Container className={classes.inner}>
                 <div className={classes.logo}>
                     <Logo size={30} />
