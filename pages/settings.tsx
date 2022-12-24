@@ -15,7 +15,7 @@ const Settings: NextPage = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit'])
     const img = (theme: any) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })
     const ua = useUserAgent()
-    const segmentedBreak = useMediaQuery('(max-width: 580px)');
+    const segmentedBreak = useMediaQuery('(max-width: 640px)');
 
     return (<PageTransition>
         <Helmet>
@@ -75,7 +75,7 @@ const Settings: NextPage = () => {
                 <Stack spacing={4}>
                     <Text size="md">2 féle módon tudjuk neked ábrázolni az átszállásokat, válaszd ki azt amelyik számodra logikusabb.</Text>
                     <Stack justify="center">
-                        <SegmentedControl data={[{ label: "A", value: '1' }, { label: "B", value: '2' }]} value={cookies["action-timeline-type"] || "1"} onChange={(e) => setCookie("action-timeline-type", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })} />
+                        <SegmentedControl fullWidth data={[{ label: "A", value: '1' }, { label: "B", value: '2' }]} value={cookies["action-timeline-type"] || "1"} onChange={(e) => setCookie("action-timeline-type", e, { path: '/', maxAge: 60 * 60 * 24 * 365 })} />
                         <Center p="sm">
                             <RouteExposition details={transferExample} query={{ user: { discount: 0, actionTimelineType: Number(cookies["action-timeline-type"]) } }} withInfoButton={false} />
                         </Center>
