@@ -108,32 +108,9 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (<>
     <HelmetProvider>
       <Helmet>
-        <meta charSet="utf-8" />
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-        <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
-        <link rel='icon' type="image/x-icon" href='/favicon.ico' />
-        <meta name="twitter:card" content="summary_large_image" />
-        <link rel="manifest" href="/api/manifest.webmanifest" />
-        <meta name="theme-color" content="#396be1" />
         <link rel='canonical' href={appUrl} />
-
-        <meta name="title" content={appName} />
-        <meta name="description" content={appDesc} />
-
-        <meta property="og:type" content="website" />
         <meta property="og:url" content={appUrl} />
-        <meta property="og:title" content={appName} />
-        <meta property="og:description" content={appDesc} />
-
-        <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content={appUrl} />
-        <meta property="twitter:title" content={appName} />
-        <meta property="twitter:description" content={appDesc} />
-
-        {!appThumb ? <></> : <>
-          <meta property="og:image" content={appThumb} />
-          <meta property="twitter:image" content={appThumb} />
-        </>}
       </Helmet>
       <MantineProvider withNormalizeCSS withGlobalStyles theme={{
         colorScheme: 'dark',
