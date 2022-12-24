@@ -8,7 +8,7 @@ export const appShortName = "Menetrendek"
 export const appName = "Menetrendek - A modern menetrend kereső"
 export const appDesc = "MÁV, Volánbusz, BKK, GYSEV, MAHART és BAHART menetrendek."
 export const appRoot = "https://menetrendek.info"
-export const appThumb = ""
+export const appThumb = "https://menetrendek.info/api/img/thumbnail.png"
 
 const Document: NextPage = () => {
     const theme = useMantineTheme()

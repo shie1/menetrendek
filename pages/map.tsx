@@ -17,7 +17,7 @@ const Map: NextPage = () => {
     return (<PageTransition>
         <SEO
             title="Valós idejű tömegközlekedési térkép"
-            description="Tekintse meg magyarország valós idejű tömegközlekedési térképét a menetrendek.info-n!"
+            description="Tekintse meg magyarország valós idejű tömegközlekedési térképét."
         >
             <title>Térkép | {appShortName}</title>
             <Canonical url="https://menetrendek.info/map" />
