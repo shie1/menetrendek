@@ -8,8 +8,8 @@ import useColors from "../components/colors";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
-import { appShortName } from "./_document";
-import { SEO } from "../components/seo";
+import { appDesc, appShortName } from "./_document";
+import { Canonical, SEO } from "../components/seo";
 
 const format = "YYYY-MM-DD HH:mm"
 
@@ -32,8 +32,12 @@ const Runs: NextPage = (props: any) => {
     }, [query])
 
     return (<PageTransition>
-        <SEO>
-            {typeof runs === 'undefined' ? <></> : runs.status !== 'success' ? <></> : <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>}
+        <SEO
+            title={`${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()} járat megállói`}
+            description={appDesc}
+        >
+            <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>
+            <Canonical url="https://menetrendek.info/runs" />
         </SEO>
         <Container size="xs" p={0}>
             <Card radius="lg" shadow="md" withBorder>

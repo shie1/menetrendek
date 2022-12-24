@@ -4,8 +4,8 @@ import { dateString } from "../client"
 import { apiCall } from "../components/api"
 import { Stop } from "../components/stops"
 import dynamic from "next/dynamic"
-import { appShortName } from "./_document"
-import { SEO } from "../components/seo"
+import { appDesc, appShortName } from "./_document"
+import { Canonical, SEO } from "../components/seo"
 
 const RouteSummary = dynamic(() => import('../components/routes').then((mod) => mod.RouteSummary), {
     ssr: false
@@ -19,10 +19,11 @@ const Route: NextPage = (props: any) => {
 
     return (<>
         <SEO
-            title={`${results.departureCity} - ${results.arrivalCity}`}
-            image={`https://menetrendek.info/api${props.asPath.replace('/route?', '/render?')}`}
+            title={`Tömegközlekedési útvonal: ${results.departureCity} - ${results.arrivalCity}`}
+            description={appDesc}
         >
             <title>{results.departureCity} - {results.arrivalCity} | {appShortName}</title>
+            <Canonical url="https://menetrendek.info/route" />
         </SEO>
         <Container pt="md" size="sm" p={0}>
             <Paper sx={(theme) => ({

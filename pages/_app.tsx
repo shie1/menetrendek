@@ -107,9 +107,6 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (<>
     <SEO>
       <title>{appShortName}</title>
-      <link rel='canonical' href={appUrl} />
-      <meta property="og:url" content={appUrl} />
-      <meta property="twitter:url" content={appUrl} />
     </SEO>
     <MantineProvider withNormalizeCSS withGlobalStyles theme={{
       colorScheme: 'dark',

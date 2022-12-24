@@ -3,7 +3,7 @@ import PageTransition from "../components/pageTransition";
 import { appShortName } from "./_document";
 import { memo } from "react";
 import dynamic from "next/dynamic"
-import { SEO } from "../components/seo";
+import { Canonical, SEO } from "../components/seo";
 
 const MP = memo((props: any) => {
     if (typeof window === 'undefined') return <></>
@@ -15,8 +15,12 @@ const MP = memo((props: any) => {
 
 const Map: NextPage = () => {
     return (<PageTransition>
-        <SEO>
+        <SEO
+            title="Valós idejű tömegközlekedési térkép"
+            description="Tekintse meg magyarország valós idejű tömegközlekedési térképét a menetrendek.info-n!"
+        >
             <title>Térkép | {appShortName}</title>
+            <Canonical url="https://menetrendek.info/map" />
         </SEO>
         <MP />
     </PageTransition>)

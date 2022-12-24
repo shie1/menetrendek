@@ -20,9 +20,10 @@ const Document: NextPage = () => {
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
             <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
             <link rel='icon' type="image/x-icon" href='/favicon.ico' />
-            <meta name="twitter:card" content="summary_large_image" />
             <link rel="manifest" href="/api/manifest.webmanifest" />
             <meta name="theme-color" content="#396be1" />
+            <meta property="og:type" content="website" />
+            <meta property="twitter:card" content="summary_large_image" />
 
             <Script // Adsense
                 id="Adsense-id"

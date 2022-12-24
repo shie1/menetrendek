@@ -34,8 +34,8 @@ import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 import dynamic from "next/dynamic"
 import { yahoo, office365, google, ics, outlook } from "calendar-link";
-import { appShortName } from "./_document";
-import { SEO } from "../components/seo";
+import { appDesc, appShortName } from "./_document";
+import { Canonical, SEO } from "../components/seo";
 
 const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
 
@@ -241,8 +241,12 @@ const Routes: NextPage = (props: any) => {
 
     return (<PageTransition>
         {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal || 0} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
-        <SEO>
-            {typeof results === 'undefined' ? <></> : results.status !== 'success' ? <></> : <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>}
+        <SEO
+            title={`Járatok ${results.nativeResults.Params["FromSettle:"].toString()} és ${results.nativeResults.Params["ToSettle:"].toString()} között`}
+            description={appDesc}
+        >
+            <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>
+            <Canonical url="https://menetrendek.info/routes" />
         </SEO>
         <Container pt="md" size="sm" p={0}>
             <AccordionController.Provider value={{ value, setValue }}>

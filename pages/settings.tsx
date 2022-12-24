@@ -7,9 +7,9 @@ import { IconDiscount, IconWalk, IconCalendar, IconMap2 } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
-import { appShortName } from "./_document";
+import { appDesc, appShortName } from "./_document";
 import { useMediaQuery } from "@mantine/hooks";
-import { SEO } from "../components/seo";
+import { Canonical, SEO } from "../components/seo";
 
 const Settings: NextPage = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit'])
@@ -18,8 +18,12 @@ const Settings: NextPage = () => {
     const segmentedBreak = useMediaQuery('(max-width: 640px)');
 
     return (<PageTransition>
-        <SEO>
+        <SEO
+            title={appShortName}
+            description={appDesc}
+        >
             <title>Beállítások | {appShortName}</title>
+            <Canonical url="https://menetrendek.info/settings" />
         </SEO>
         <Stack>
             <Divider label={<Text size="md">Alapvető preferenciák</Text>} size="lg" />
