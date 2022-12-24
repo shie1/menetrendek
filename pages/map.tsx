@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { appShortName } from "./_document";
+import { appShortName, appThumb } from "./_document";
 import { memo } from "react";
 import dynamic from "next/dynamic"
 import { Canonical, SEO } from "../components/seo";
@@ -18,6 +18,7 @@ const Map: NextPage = () => {
         <SEO
             title="Valós idejű tömegközlekedési térkép"
             description="Tekintse meg magyarország valós idejű tömegközlekedési térképét."
+            image={appThumb}
         >
             <title>Térkép | {appShortName}</title>
             <Canonical url="https://menetrendek.info/map" />

@@ -7,7 +7,7 @@ import { IconDiscount, IconWalk, IconCalendar, IconMap2 } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
-import { appDesc, appShortName } from "./_document";
+import { appDesc, appShortName, appThumb } from "./_document";
 import { useMediaQuery } from "@mantine/hooks";
 import { Canonical, SEO } from "../components/seo";
 
@@ -21,6 +21,7 @@ const Settings: NextPage = () => {
         <SEO
             title={appShortName}
             description={appDesc}
+            image={appThumb}
         >
             <title>Beállítások | {appShortName}</title>
             <Canonical url="https://menetrendek.info/settings" />

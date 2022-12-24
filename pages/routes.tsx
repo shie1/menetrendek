@@ -34,7 +34,7 @@ import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
 import dynamic from "next/dynamic"
 import { yahoo, office365, google, ics, outlook } from "calendar-link";
-import { appDesc, appShortName } from "./_document";
+import { appDesc, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 
 const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
@@ -244,6 +244,7 @@ const Routes: NextPage = (props: any) => {
         <SEO
             title={`Járatok ${results.nativeResults.Params["FromSettle:"].toString()} és ${results.nativeResults.Params["ToSettle:"].toString()} között`}
             description={appDesc}
+            image={appThumb}
         >
             <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>
             <Canonical url="https://menetrendek.info/routes" />

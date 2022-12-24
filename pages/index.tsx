@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { appDesc, appName, appShortName } from "./_document";
+import { appDesc, appName, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 
 const Home: NextPage = () => {
@@ -8,6 +8,7 @@ const Home: NextPage = () => {
         <SEO
             title={appName}
             description={appDesc}
+            image={appThumb}
         >
             <title>{appShortName}</title>
             <Canonical url="https://menetrendek.info/" />

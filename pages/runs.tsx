@@ -1,25 +1,18 @@
 import { Card, Container, Group, Stack, Text, Timeline } from "@mantine/core";
 import { IconArrowBarRight, IconArrowBarToRight, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { apiCall } from "../components/api";
-import useColors from "../components/colors";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
-import { appDesc, appShortName } from "./_document";
+import { appDesc, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
-
-const format = "YYYY-MM-DD HH:mm"
 
 const Runs: NextPage = (props: any) => {
     const { query, runs } = props
     const [delay, setDelay] = useState<any>(props.delay)
-    const [loading, setLoading] = useState(false)
     const [cityState, setCityState] = useState(-1)
-    const { warning } = useColors()
-    const router = useRouter()
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -35,6 +28,7 @@ const Runs: NextPage = (props: any) => {
         <SEO
             title={`${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()} járat megállói`}
             description={appDesc}
+            image={appThumb}
         >
             <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>
             <Canonical url="https://menetrendek.info/runs" />
