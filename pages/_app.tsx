@@ -1,16 +1,16 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { MantineProvider, Container, Divider, Stack, Title, Text } from '@mantine/core';
+import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, Alert, Button, Group, Transition } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise } from '@tabler/icons';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconDownload } from '@tabler/icons';
 import { FeaturesGrid } from '../components/hello';
 import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
 import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
-import { useWindowScroll } from '@mantine/hooks';
+import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
 import { useUserAgent } from '../components/ua';
 import { appRoot, appShortName } from './_document';
@@ -59,16 +59,12 @@ export const AnimatedLayout = ({ children }: { children: any }) => {
 function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const router = useRouter()
-  const [query, setQuery] = useState<Query | undefined>()
+  const [dlVisible, setDlVisible] = useState(false)
+  const [prompt, setPropmt] = useState<Event & any | undefined>()
+  const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
-  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit']);
-  const [scroll, scrollTo] = useWindowScroll();
-  const [appUrl, setAppUrl] = useState(appRoot)
-
-  useEffect(() => {
-    setAppUrl(appRoot + router.pathname)
-  }, [router])
+  const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit', "install-declined"]);
 
   useEffect(() => { //Initialize cookies
     if (typeof ua !== 'undefined') {
@@ -93,6 +89,9 @@ function MyApp({ Component, pageProps }: AppProps) {
       if (typeof cookies['blip-limit'] === 'undefined') {
         setCookie("blip-limit", '25', { path: '/', maxAge: 60 * 60 * 24 * 365 })
       }
+      if (typeof cookies['install-declined'] === 'undefined') {
+        setCookie("install-declined", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+      }
     }
   }, [cookies, ua])
 
@@ -103,6 +102,25 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
     return () => window.removeEventListener("keydown", handler)
   }, [])
+
+  useEffect(() => {
+    const handler = (e: Event & any) => {
+      e.preventDefault()
+      setPropmt(e)
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener("beforeinstallprompt", handler)
+      setDlVisible(true)
+    }
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler)
+    }
+  }, [])
+
+  pageProps = {
+    ...pageProps,
+    prompt
+  }
 
   return (<>
     <SEO>
@@ -158,6 +176,34 @@ function MyApp({ Component, pageProps }: AppProps) {
               </div>}
             </AnimatedLayout>
           </Container>
+          <Affix sx={{ width: '100vw' }}>
+            <Transition transition="slide-up" mounted={dlVisible && prompt && touchscreen && cookies["install-declined"] === "false"}>
+              {(styles) => (<Alert role="alert" p="lg"
+                styles={{
+                  root: { border: 0 },
+                  closeButton: { scale: '1.5', top: 20 }
+                }}
+                radius={0} onClose={() => {
+                  setDlVisible(false)
+                  setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+                }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
+                <Stack>
+                  <Text>
+                    Töltsd le a Menetrendek alkalmazást, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
+                  </Text>
+                  <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
+                    prompt.prompt().then(({ outcome }: any) => {
+                      if (outcome === "accepted") {
+                        setDlVisible(false)
+                      }
+                    })
+                  }} leftIcon={<IconDownload />}>
+                    Letöltés
+                  </Button>
+                </Stack>
+              </Alert>)}
+            </Transition>
+          </Affix>
         </Input.Provider>
         <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>

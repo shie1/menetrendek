@@ -1,9 +1,9 @@
 import type { NextPage } from "next"
 import PageTransition from "../components/pageTransition"
-import { Stack, Text, Image, SegmentedControl, Center, NumberInput, Divider } from "@mantine/core";
+import { Stack, Text, Image, SegmentedControl, Center, NumberInput, Divider, Group, Button } from "@mantine/core";
 import { CheckboxCard, ContentCard } from "../components/checkCard"
 import { useCookies } from "react-cookie"
-import { IconDiscount, IconWalk, IconCalendar, IconMap2 } from "@tabler/icons";
+import { IconDiscount, IconWalk, IconCalendar, IconMap2, IconDownload } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
@@ -11,11 +11,12 @@ import { appDesc, appShortName, appThumb } from "./_document";
 import { useMediaQuery } from "@mantine/hooks";
 import { Canonical, SEO } from "../components/seo";
 
-const Settings: NextPage = () => {
+const Settings: NextPage = (props: any) => {
     const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit'])
     const img = (theme: any) => ({ '& img': { boxShadow: theme.shadows.lg, borderRadius: theme.radius.lg, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, })
     const ua = useUserAgent()
     const segmentedBreak = useMediaQuery('(max-width: 640px)');
+    const dlBreak = useMediaQuery('(max-width: 810px)');
 
     return (<PageTransition>
         <SEO
@@ -27,6 +28,20 @@ const Settings: NextPage = () => {
             <Canonical url="https://menetrendek.info/settings" />
         </SEO>
         <Stack>
+            {!props.prompt ? <></> :
+                <ContentCard icon={IconDownload} title="Alkalmazás letöltése">
+                    <Stack sx={{ position: 'relative' }}>
+                        <Text size="md" sx={{ maxWidth: dlBreak ? 'unset' : 'calc(100% - 130px)' }}>
+                            Még nem töltötted le az alkalmazást? Töltsd le most, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
+                        </Text>
+                        <Group sx={dlBreak ? {} : { position: 'absolute', bottom: 0, right: 0 }} position="right">
+                            <Button onClick={(e) => { props.prompt.prompt() }} leftIcon={<IconDownload />}>
+                                Letöltés
+                            </Button>
+                        </Group>
+                    </Stack>
+                </ContentCard>
+            }
             <Divider label={<Text size="md">Alapvető preferenciák</Text>} size="lg" />
             <ContentCard icon={IconDiscount} title="Kedvezmény">
                 <Stack spacing={4}>
