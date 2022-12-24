@@ -18,6 +18,7 @@ import { IconChevronDown } from '@tabler/icons';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Logo } from './brand';
+import Link from "next/link"
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -141,14 +142,14 @@ export function Header({ links }: HeaderSearchProps) {
         <MHeader role="banner" sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
             <Container>
                 <div className={classes.inner}>
-                    <a href='/' role="link" aria-label="Főoldal" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); router.push("/") }}>
+                    <Link href='/' role="link" aria-label="Főoldal" style={{ cursor: 'pointer' }} onClick={(e) => { e.preventDefault(); router.push("/") }}>
                         <Group spacing='xs' noWrap>
                             <Logo size={40} />
                             <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>
                                 <Text size={22} weight={550}>Menetrendek.info</Text>
                             </MediaQuery>
                         </Group>
-                    </a>
+                    </Link>
                     <Group role="navigation" spacing={5} className={classes.links}>
                         {items()}
                     </Group>
