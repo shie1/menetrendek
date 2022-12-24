@@ -2,8 +2,6 @@ import type { NextPage } from "next";
 import { NextScript, Main, Html, Head } from "next/document";
 import { useMantineTheme } from "@mantine/core";
 import { useRouter } from 'next/router';
-import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import Script from "next/script";
 
 export const appShortName = "Menetrendek"
@@ -25,22 +23,6 @@ const Document: NextPage = () => {
             <meta name="twitter:card" content="summary_large_image" />
             <link rel="manifest" href="/api/manifest.webmanifest" />
             <meta name="theme-color" content="#396be1" />
-
-            <meta name="title" content={appName} />
-            <meta name="description" content={appDesc} />
-
-            <meta property="og:type" content="website" />
-            <meta property="og:title" content={appName} />
-            <meta property="og:description" content={appDesc} />
-
-            <meta property="twitter:card" content="summary_large_image" />
-            <meta property="twitter:title" content={appName} />
-            <meta property="twitter:description" content={appDesc} />
-
-            {!appThumb ? <></> : <>
-                <meta property="og:image" content={appThumb} />
-                <meta property="twitter:image" content={appThumb} />
-            </>}
 
             <Script // Adsense
                 id="Adsense-id"

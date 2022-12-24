@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { Helmet } from "react-helmet-async";
 import { appShortName } from "./_document";
 import { memo } from "react";
 import dynamic from "next/dynamic"
+import { SEO } from "../components/seo";
 
 const MP = memo((props: any) => {
     if (typeof window === 'undefined') return <></>
@@ -15,9 +15,9 @@ const MP = memo((props: any) => {
 
 const Map: NextPage = () => {
     return (<PageTransition>
-        <Helmet>
+        <SEO>
             <title>Térkép | {appShortName}</title>
-        </Helmet>
+        </SEO>
         <MP />
     </PageTransition>)
 }

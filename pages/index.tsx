@@ -1,13 +1,25 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { Helmet } from "react-helmet-async";
-import { appShortName } from "./_document";
+import { appDesc, appName, appShortName } from "./_document";
+import { SEO } from "../components/seo";
 
 const Home: NextPage = () => {
     return (<PageTransition>
-        <Helmet>
+        <SEO>
             <title>{appShortName}</title>
-        </Helmet>
+
+            <meta name="title" content={appName} />
+            <meta name="description" content={appDesc} />
+
+            <meta property="og:type" content="website" />
+            <meta property="og:title" content={appName} />
+            <meta property="og:description" content={appDesc} />
+
+            <meta property="twitter:card" content="summary_large_image" />
+            <meta property="twitter:title" content={appName} />
+            <meta property="twitter:description" content={appDesc} />
+
+        </SEO>
     </PageTransition>)
 }
 

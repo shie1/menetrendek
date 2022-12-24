@@ -1,7 +1,7 @@
-import { Helmet } from "react-helmet-async"
+import Head from "next/head"
 
 export const SEO = ({ title, description, image, children }: { title?: string, description?: string, image?: string, children?: any }) => {
-    return <Helmet>
+    return <Head>
         {!title ? <></> : <>
             <meta name="title" content={title} />
             <meta property="og:title" content={title} />
@@ -20,5 +20,5 @@ export const SEO = ({ title, description, image, children }: { title?: string, d
         </>}
 
         {children}
-    </Helmet>
+    </Head>
 }

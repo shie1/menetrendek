@@ -7,9 +7,9 @@ import { IconDiscount, IconWalk, IconCalendar, IconMap2 } from "@tabler/icons";
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
-import { Helmet } from "react-helmet-async"
 import { appShortName } from "./_document";
 import { useMediaQuery } from "@mantine/hooks";
+import { SEO } from "../components/seo";
 
 const Settings: NextPage = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['no-page-transitions', 'discount-percentage', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit'])
@@ -18,9 +18,9 @@ const Settings: NextPage = () => {
     const segmentedBreak = useMediaQuery('(max-width: 640px)');
 
     return (<PageTransition>
-        <Helmet>
+        <SEO>
             <title>Beállítások | {appShortName}</title>
-        </Helmet>
+        </SEO>
         <Stack>
             <Divider label={<Text size="md">Alapvető preferenciák</Text>} size="lg" />
             <ContentCard icon={IconDiscount} title="Kedvezmény">

@@ -13,10 +13,9 @@ import { Stop } from '../components/stops';
 import { useWindowScroll } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
 import { useUserAgent } from '../components/ua';
-import { Helmet, HelmetProvider } from 'react-helmet-async';
-import { appDesc, appName, appRoot, appShortName, appThumb } from './_document';
+import { appRoot, appShortName } from './_document';
 import { useRouter } from 'next/dist/client/router';
-import Head from 'next/head';
+import { SEO } from '../components/seo';
 
 export interface Selection {
   from: Stop | undefined;
@@ -106,68 +105,66 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   return (<>
-    <HelmetProvider>
-      <Helmet>
-        <title>{appShortName}</title>
-        <link rel='canonical' href={appUrl} />
-        <meta property="og:url" content={appUrl} />
-        <meta property="twitter:url" content={appUrl} />
-      </Helmet>
-      <MantineProvider withNormalizeCSS withGlobalStyles theme={{
-        colorScheme: 'dark',
-        primaryColor: 'indigo',
-        primaryShade: 7,
-        fontFamily: 'Sora, sans-serif',
-      }} >
-        <NotificationsProvider>
-          <div className='bg' />
-          <Header links={[{ label: "Térkép", link: "/map" }, { label: "Beállítások", link: "/settings" }]} />
-          <Input.Provider value={{ selection, setSelection, input, setInput }}>
-            <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
-              <AnimatedLayout>
-                {router.pathname === "/map" ? <></> : <QuickMenu />}
-                <AnimatePresence mode='wait'>
-                  <Component {...pageProps} />
-                </AnimatePresence>
-                {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
-                  <Divider size="md" my="md" />
-                  <Stack pb="xl" spacing={3}>
-                    <Title order={1} size={36}>Menetrendek</Title>
-                    <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >
-                      {[
-                        { label: "MÁV", link: "https://mav.hu" },
-                        { label: "Volánbusz", link: "https://volanbusz.hu" },
-                        { label: "BKK", link: "https://bkk.hu" },
-                        { label: "GYSEV", link: "https://gysev.hu" },
-                        { label: "MAHART", link: "https://mahart.hu" },
-                        { label: "BAHART", link: "https://bahart.hu" }
-                      ].map((item, i, arr) => {
-                        return (<span key={i}><a rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
-                          {item.label}
-                        </a>{i === arr.length - 2 ? " és " : i + 1 !== arr.length ? ", " : " "}</span>)
-                      })}
-                      menetrendek
-                    </Title>
-                    <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-                  </Stack>
-                  <FeaturesGrid
-                    data={[
-                      { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                      { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                      { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                      { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                      { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
-                    ]}
-                  />
-                </div>}
-              </AnimatedLayout>
-            </Container>
-          </Input.Provider>
-          <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
-        </NotificationsProvider>
-      </MantineProvider>
-    </HelmetProvider>
+    <SEO>
+      <title>{appShortName}</title>
+      <link rel='canonical' href={appUrl} />
+      <meta property="og:url" content={appUrl} />
+      <meta property="twitter:url" content={appUrl} />
+    </SEO>
+    <MantineProvider withNormalizeCSS withGlobalStyles theme={{
+      colorScheme: 'dark',
+      primaryColor: 'indigo',
+      primaryShade: 7,
+      fontFamily: 'Sora, sans-serif',
+    }} >
+      <NotificationsProvider>
+        <div className='bg' />
+        <Header links={[{ label: "Térkép", link: "/map" }, { label: "Beállítások", link: "/settings" }]} />
+        <Input.Provider value={{ selection, setSelection, input, setInput }}>
+          <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
+            <AnimatedLayout>
+              {router.pathname === "/map" ? <></> : <QuickMenu />}
+              <AnimatePresence mode='wait'>
+                <Component {...pageProps} />
+              </AnimatePresence>
+              {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
+                <Divider size="md" my="md" />
+                <Stack pb="xl" spacing={3}>
+                  <Title order={1} size={36}>Menetrendek</Title>
+                  <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                  <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >
+                    {[
+                      { label: "MÁV", link: "https://mav.hu" },
+                      { label: "Volánbusz", link: "https://volanbusz.hu" },
+                      { label: "BKK", link: "https://bkk.hu" },
+                      { label: "GYSEV", link: "https://gysev.hu" },
+                      { label: "MAHART", link: "https://mahart.hu" },
+                      { label: "BAHART", link: "https://bahart.hu" }
+                    ].map((item, i, arr) => {
+                      return (<span key={i}><a rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
+                        {item.label}
+                      </a>{i === arr.length - 2 ? " és " : i + 1 !== arr.length ? ", " : " "}</span>)
+                    })}
+                    menetrendek
+                  </Title>
+                  <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+                </Stack>
+                <FeaturesGrid
+                  data={[
+                    { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                    { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                    { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                    { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                    { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek, a hibák folyamatosan keresve és javítva vannak." }
+                  ]}
+                />
+              </div>}
+            </AnimatedLayout>
+          </Container>
+        </Input.Provider>
+        <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
+      </NotificationsProvider>
+    </MantineProvider>
   </>)
 }
 
