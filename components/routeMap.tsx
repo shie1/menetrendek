@@ -206,7 +206,6 @@ export const MapView = () => {
             const b = bounds.getSouthEast()
             const extent = [a.lng, a.lat, b.lng, b.lat]
             apiCall("POST", "/api/map", { extent, max: cookies["blip-limit"] }).then((e) => {
-                checked.push(e["run_id"])
                 e.runs.map((run: any) => {
                     checked.push(run["run_id"])
                     if (typeof tracking.current[run["run_id"]] !== 'undefined') {
@@ -236,6 +235,7 @@ export const MapView = () => {
                         for (const item of items) {
                             item.off()
                             item.remove()
+                            delete tracking.current[key]
                         }
                     }
                 }
