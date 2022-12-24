@@ -51,12 +51,12 @@ interface FeatureProps {
 export function Feature({ icon: Icon, title, description }: FeatureProps) {
     const theme = useMantineTheme();
     return (
-        <div>
+        <div role="figure" aria-label={title?.toString()}>
             <ThemeIcon variant="gradient" gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} size={40} radius={40}>
                 <Icon size={25} stroke={2.2} />
             </ThemeIcon>
-            <Text style={{ marginTop: theme.spacing.sm, marginBottom: 7 }}>{title}</Text>
-            <Text size="sm" color="dimmed" style={{ lineHeight: 1.6 }}>
+            <Text component='h4' style={{ marginTop: theme.spacing.sm, marginBottom: 7, fontWeight: 'normal', }}>{title}</Text>
+            <Text component='p' size="sm" color="dimmed" style={{ lineHeight: 1.6, margin: 0 }}>
                 {description}
             </Text>
         </div>
