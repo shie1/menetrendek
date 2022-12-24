@@ -61,7 +61,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const [dlVisible, setDlVisible] = useState(false)
   const [prompt, setPropmt] = useState<Event & any | undefined>()
-  const touchscreen = useMediaQuery("(hover: none) and (pointer: coarse)")
+  const touchscreen = useMediaQuery("(max-width: 580px)")
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit', "install-declined"]);
@@ -104,13 +104,18 @@ function MyApp({ Component, pageProps }: AppProps) {
   }, [])
 
   useEffect(() => {
+    if (prompt && cookies["install-declined"] === "false") {
+      setDlVisible(true)
+    }
+  }, [prompt, cookies])
+
+  useEffect(() => {
     const handler = (e: Event & any) => {
       e.preventDefault()
       setPropmt(e)
     }
     if (typeof window !== 'undefined') {
       window.addEventListener("beforeinstallprompt", handler)
-      setDlVisible(true)
     }
     return () => {
       window.removeEventListener("beforeinstallprompt", handler)
@@ -177,7 +182,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </AnimatedLayout>
           </Container>
           <Affix sx={{ width: '100vw' }}>
-            <Transition transition="slide-up" mounted={dlVisible && prompt && touchscreen && cookies["install-declined"] === "false"}>
+            <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
               {(styles) => (<Alert role="alert" p="lg"
                 styles={{
                   root: { border: 0 },

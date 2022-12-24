@@ -30,7 +30,7 @@ const Settings: NextPage = (props: any) => {
         <Stack>
             {!props.prompt ? <></> :
                 <ContentCard icon={IconDownload} title="Alkalmazás letöltése">
-                    <Stack sx={{ position: 'relative' }}>
+                    <Stack spacing={4} sx={{ position: 'relative' }}>
                         <Text size="md" sx={{ maxWidth: dlBreak ? 'unset' : 'calc(100% - 130px)' }}>
                             Még nem töltötted le az alkalmazást? Töltsd le most, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
                         </Text>
