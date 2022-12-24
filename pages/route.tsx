@@ -20,7 +20,7 @@ const Route: NextPage = (props: any) => {
     return (<>
         <SEO
             title={`${results.departureCity} - ${results.arrivalCity}`}
-            image={`https://menetrendek.info${props.asPath.replace('/route?', '/render?')}`}
+            image={`https://menetrendek.info/api${props.asPath.replace('/route?', '/render?')}`}
         >
             <title>{results.departureCity} - {results.arrivalCity} | {appShortName}</title>
         </SEO>
