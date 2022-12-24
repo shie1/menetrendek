@@ -35,7 +35,7 @@ const Settings: NextPage = (props: any) => {
                             Még nem töltötted le az alkalmazást? Töltsd le most, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
                         </Text>
                         <Group sx={dlBreak ? {} : { position: 'absolute', bottom: 0, right: 0 }} position="right">
-                            <Button onClick={(e) => { props.prompt.prompt() }} leftIcon={<IconDownload />}>
+                            <Button onClick={() => { props.prompt.prompt() }} leftIcon={<IconDownload />}>
                                 Letöltés
                             </Button>
                         </Group>
