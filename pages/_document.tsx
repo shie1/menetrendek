@@ -8,7 +8,7 @@ import Script from "next/script";
 
 export const appShortName = "Menetrendek"
 export const appName = "Menetrendek - A modern menetrend kereső"
-export const appDesc = "MÁV, Volánbusz, BKK, GYSEV, MAHART, BAHART"
+export const appDesc = "MÁV, Volánbusz, BKK, GYSEV, MAHART és BAHART menetrendek."
 export const appRoot = "https://menetrendek.info"
 export const appThumb = ""
 
@@ -18,8 +18,6 @@ const Document: NextPage = () => {
 
     return (<Html lang="hu">
         <Head>
-            <title>{appShortName}</title>
-        
             <meta charSet="utf-8" />
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
             <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />

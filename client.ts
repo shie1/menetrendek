@@ -3,6 +3,19 @@ import { Query } from "./pages/_app"
 
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
+const allNetworks = [
+    1,
+    2,
+    3,
+    10,
+    11,
+    12,
+    13,
+    14,
+    24,
+    25
+]
+
 export const dateString = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
 }
@@ -33,7 +46,7 @@ export const parseKozlekedik = (kozlekedik: string) => {
 }
 
 export const autocomplete = async (query: any) => {
-    const { input, networks } = query
+    const { input } = query
     const date = new Date()
     const body = {
         "func": "getStationOrAddrByTextC",
@@ -44,14 +57,14 @@ export const autocomplete = async (query: any) => {
             ],
             "searchDate": dateString(date),
             "maxResults": 50,
-            networks: networks,
+            networks: allNetworks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
 export const stationsNear = async (query: any) => {
-    const { latitude, longitude, networks } = query
+    const { latitude, longitude } = query
     const date = new Date()
     const body = {
         "query": "get_lsid_by_coordsC",
@@ -59,7 +72,7 @@ export const stationsNear = async (query: any) => {
         "wgslat": latitude,
         "wgslon": longitude,
         "radius": 1500,
-        "networks": networks
+        "networks": allNetworks
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
@@ -93,7 +106,7 @@ export const routes = async (query: any) => {
             "lang": "hu",
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
-            "networks": rb.user.networks,
+            "networks": allNetworks,
         }
     }
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
@@ -173,18 +186,7 @@ export const geoInfo = async (nativeData: any, fieldvalue: any, date: string) =>
 export const map = async (extent: Array<number>, max: number = 50) => {
     const body = {
         "query": "getRunsByExtent",
-        "networks": [
-            1,
-            2,
-            3,
-            10,
-            11,
-            12,
-            13,
-            14,
-            24,
-            25
-        ],
+        "networks": allNetworks,
         "maxCount": max,
         "wgsExtent": extent
     }

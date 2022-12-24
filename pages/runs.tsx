@@ -13,32 +13,15 @@ import { Helmet } from "react-helmet-async";
 
 const format = "YYYY-MM-DD HH:mm"
 
-const Runs: NextPage = () => {
-    const [query, setQuery] = useState<any>()
-    const [runs, setRuns] = useState<any>()
-    const [delay, setDelay] = useState<any>()
+const Runs: NextPage = (props: any) => {
+    const { query, runs } = props
+    const [delay, setDelay] = useState<any>(props.delay)
     const [loading, setLoading] = useState(false)
     const [cityState, setCityState] = useState(-1)
     const { warning } = useColors()
     const router = useRouter()
 
     useEffect(() => {
-        setLoading(true)
-        if (router.query['id']) {
-            setQuery({
-                id: Number(router.query['id'] as string),
-                sls: Number(router.query['s'] as string),
-                els: Number(router.query['e'] as string),
-                date: router.query['d'] as string || dateString(new Date())
-            })
-        }
-    }, [router])
-
-    useEffect(() => {
-        if (query) {
-            apiCall("POST", "/api/runs", query).then((e) => { setRuns(e); setLoading(false) })
-            apiCall("POST", "/api/runsDelay", query).then((e) => { setDelay(e) })
-        }
         const interval = setInterval(() => {
             if (query) {
                 apiCall("POST", "/api/runsDelay", query).then((e) => { setDelay(e) })
@@ -93,6 +76,23 @@ const Runs: NextPage = () => {
             </Card>
         </Container>
     </PageTransition>)
+}
+
+Runs.getInitialProps = async (ctx) => {
+    let props: any = {}
+    if (ctx.query['id']) {
+        props.query = {
+            id: Number(ctx.query['id'] as string),
+            sls: Number(ctx.query['s'] as string),
+            els: Number(ctx.query['e'] as string),
+            date: ctx.query['d'] as string || dateString(new Date())
+        }
+    }
+    if (props.query) {
+        props.runs = await apiCall("POST", "/api/runs", props.query)
+        props.delay = await apiCall("POST", "/api/runsDelay", props.query)
+    }
+    return props
 }
 
 export default Runs

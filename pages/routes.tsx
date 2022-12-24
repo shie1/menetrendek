@@ -28,6 +28,7 @@ import {
     Timeline,
     Slider,
     Button,
+    Text,
 } from "@mantine/core";
 import { useMyAccordion } from "../components/styles";
 import { RouteSummary, RouteExposition } from "../components/routes";
@@ -51,7 +52,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     const [mapView, setMapView] = useState<boolean>(false)
     const [data, setData] = useState<any>()
     const [geoInfo, setGeoInfo] = useState<any>()
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'calendar-service']);
+    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'calendar-service', "action-timeline-type"]);
     const [file, setFile] = useState<File | undefined>()
     const [body, setBody] = useState<any>()
     const { value, setValue } = useContext(AccordionController)
@@ -111,7 +112,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
                     const id = Date.now().toString()
-                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${query?.user.actionTimelineType || 1}`
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${cookies["action-timeline-type"] || 1}`
                     const blob = await (await fetch(image)).blob()
                     setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
                 })
@@ -172,56 +173,35 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     </Accordion.Item >)
 }
 
-const Routes: NextPage = () => {
+const Routes: NextPage = (props: any) => {
     const router = useRouter()
-    const [query, setQuery] = useState<Query | undefined>()
+    const query = props.query
     const { classes, theme } = useMyAccordion()
     const [time, setTime] = useState<number | null>(null)
-    const [sliderVal, setSliderVal] = useState<number>()
-    const [results, setResults] = useState<any>()
+    const [sliderVal, setSliderVal] = useState<number | undefined>()
+    const results = props.results
     const [display, setDisplay] = useState<any>([])
     const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'selected-networks', 'action-timeline-type', 'route-limit', 'use-route-limit']);
     const [value, setValue] = useState<string | null>();
 
     useEffect(() => {
-        setValue(null)
-        setResults(undefined)
-        setQuery(undefined)
-        if (router.query['fs'] && router.query['ts']) {
-            const { from, to }: { from: Stop, to: Stop } = {
-                from: {
-                    ls_id: Number(router.query['fl'] as string) || 0,
-                    s_id: Number(router.query['fs'] as string) || 0,
-                    site_code: router.query['fc'] as string || ''
-                },
-                to: {
-                    ls_id: Number(router.query['tl'] as string) || 0,
-                    s_id: Number(router.query['ts'] as string) || 0,
-                    site_code: router.query['tc'] as string || ''
-                }
-            }
-            setQuery({
-                from,
-                to,
-                time: {
-                    hours: typeof router.query['h'] !== 'undefined' ? Number(router.query['h'] as string) : undefined,
-                    minutes: typeof router.query['m'] !== 'undefined' ? Number(router.query['m'] as string) : undefined,
-                    date: router.query['d'] as string || dateString(new Date())
-                },
-                user: {
-                    discount: Number(cookies["discount-percentage"]) || 0,
-                    networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
-                    actionTimelineType: Number(cookies["action-timeline-type"])
-                },
-            })
+        props.query.user = {
+            discount: Number(cookies["discount-percentage"]) || 0,
+            networks: router.query['n'] ? (router.query['n'] as string).split(',') : cookies["selected-networks"],
+            actionTimelineType: Number(cookies["action-timeline-type"])
         }
+    }, [router, cookies, props])
+
+    useEffect(() => {
+        setValue(null)
     }, [router])
 
     useEffect(() => {
-        if (query) {
-            apiCall("POST", "/api/routes", query).then(resp => { if (resp.status === 'success') { setResults(resp) } else { router.push('/'); showNotification({ title: 'Nincs járat!', message: 'Nem találtunk egy jártatot sem a keresés alapján!', color: 'red', icon: <IconX /> }) } })
+        if (results.status !== 'success') {
+            router.push('/')
+            showNotification({ title: 'Nincs járat!', message: 'Nem találtunk egy jártatot sem a keresés alapján!', color: 'red', icon: <IconX />, id: "error-no-routes" })
         }
-    }, [query])
+    }, [results])
 
     useEffect(() => {
         if (query) {
@@ -234,7 +214,7 @@ const Routes: NextPage = () => {
     }, [time])
 
     useEffect(() => {
-        if (results) {
+        if (results.status === "success") {
             if (cookies["use-route-limit"] === "true") {
                 let disp: any = []
                 setDisplay(Object.keys(results.results.talalatok).map((key) => {
@@ -244,7 +224,7 @@ const Routes: NextPage = () => {
                     if (startmin <= time!) return
                     disp.push(key)
                 }))
-                setDisplay(disp.length ? disp : [-1])
+                setDisplay(disp)
             } else {
                 setDisplay([...Array(100).keys()].map(e => e.toString()))
             }
@@ -260,14 +240,14 @@ const Routes: NextPage = () => {
     }
 
     return (<PageTransition>
-        {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
+        {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal || 0} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
         <Helmet>
             {typeof results === 'undefined' ? <></> : results.status !== 'success' ? <></> : <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>}
         </Helmet>
         <Container pt="md" size="sm" p={0}>
             <AccordionController.Provider value={{ value, setValue }}>
-                <Accordion value={value} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                    {results && display.length ?
+                <Accordion value={value || ""} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
+                    {!display.length ? <Text size="sm" align="center" color="dimmed">A kijelölt idő után már nem megy egy járat sem.</Text> :
                         display.map((key: any, i: any) => {
                             const item = results.results.talalatok[key]
                             if (!item) return <></>
@@ -275,14 +255,41 @@ const Routes: NextPage = () => {
                             const startmin = start[0] * 60 + start[1]
                             if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
                             return (<Route query={query} val={key} key={key} item={item} />)
-                        }
-                        ) : <>
-                            {[...Array(7)].map((e, i) => <Accordion.Item key={i} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })} value={i.toString()}><Accordion.Control><Skeleton height={115} /></Accordion.Control></Accordion.Item>)}
-                        </>}
+                        })
+                    }
                 </Accordion>
             </AccordionController.Provider>
         </Container>
     </PageTransition>)
 }
 
-export default Routes
+Routes.getInitialProps = async (ctx) => {
+    let props: any = {}
+    if (ctx.query['fs'] && ctx.query['ts']) {
+        const { from, to }: { from: Stop, to: Stop } = {
+            from: {
+                ls_id: Number(ctx.query['fl'] as string) || 0,
+                s_id: Number(ctx.query['fs'] as string) || 0,
+                site_code: ctx.query['fc'] as string || ''
+            },
+            to: {
+                ls_id: Number(ctx.query['tl'] as string) || 0,
+                s_id: Number(ctx.query['ts'] as string) || 0,
+                site_code: ctx.query['tc'] as string || ''
+            }
+        }
+        props.query = {
+            from,
+            to,
+            time: {
+                hours: typeof ctx.query['h'] !== 'undefined' ? Number(ctx.query['h'] as string) : undefined,
+                minutes: typeof ctx.query['m'] !== 'undefined' ? Number(ctx.query['m'] as string) : undefined,
+                date: ctx.query['d'] as string || dateString(new Date())
+            }
+        }
+    }
+    props.results = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)
+    return props
+}
+
+export default Routes 

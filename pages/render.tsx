@@ -8,58 +8,8 @@ import { apiCall } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
 import { Stop } from "../components/stops";
 
-const Render: NextPage = () => {
-    const [results, setResults] = useState<any>()
-    const [details, setDetails] = useState<any>()
-    const [done, setDone] = useState(false)
-    const [query, setQuery] = useState<any>()
-    const router = useRouter()
-    const date = new Date()
-
-    useEffect(() => {
-        const { from, to }: { from: Stop, to: Stop } = {
-            from: {
-                ls_id: Number(router.query['fl'] as string) || 0,
-                s_id: Number(router.query['fs'] as string) || 0,
-                site_code: router.query['fc'] as string || ''
-            },
-            to: {
-                ls_id: Number(router.query['tl'] as string) || 0,
-                s_id: Number(router.query['ts'] as string) || 0,
-                site_code: router.query['tc'] as string || ''
-            }
-        }
-        setQuery({
-            from,
-            to,
-            time: {
-                hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
-                minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
-                date: router.query['d'] as string || dateString(new Date())
-            },
-            user: {
-                networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
-                actionTimelineType: router.query['t'] ? Number(router.query['t'] as string) : 1
-            },
-            index: Number(router.query['i'] as string),
-        })
-    }, [router])
-
-    useEffect(() => {
-        if (query) {
-            apiCall("POST", "/api/routes", query).then(resp => { if (resp.status === 'success') { setResults(resp.results.talalatok[query.index]) } })
-        }
-    }, [query])
-
-    useEffect(() => {
-        if (results) {
-            apiCall("POST", "/api/exposition", { fieldvalue: results.kifejtes_postjson, nativeData: results.nativeData, datestring: router.query['d'] as string }).then(setDetails)
-        }
-    }, [results])
-
-    useEffect(() => {
-        if (details) setDone(true)
-    }, [details])
+const Render: NextPage = (props: any) => {
+    const { details, results, query } = props
 
     return (<MantineProvider withGlobalStyles withNormalizeCSS theme={{
         colorScheme: 'dark',
@@ -77,18 +27,50 @@ const Render: NextPage = () => {
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
             <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', maxWidth: 600 }}>
                 <Paper p="sm" radius="lg">
-                    {results && <RouteSummary item={results} query={query} />}
+                    <RouteSummary item={results} query={query} />
                     <Space h='md' />
-                    {details && <RouteExposition iconSize={25} details={details} query={query} />}
-                    {done ? <div id="done" /> : <></>}
+                    <RouteExposition iconSize={25} details={details} query={query} />
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
-                    <Text size={15}>{typeof window !== 'undefined' && location.origin.split("://")[1]}</Text>
+                    <Text suppressHydrationWarning size={15}>{typeof window !== 'undefined' && location.origin.split("://")[1]}</Text>
                 </Group>
             </Box>
         </Center>
     </MantineProvider>)
+}
+
+Render.getInitialProps = async (ctx) => {
+    let props: any = {}
+    const date = new Date()
+    const { from, to }: { from: Stop, to: Stop } = {
+        from: {
+            ls_id: Number(ctx.query['fl'] as string) || 0,
+            s_id: Number(ctx.query['fs'] as string) || 0,
+            site_code: ctx.query['fc'] as string || ''
+        },
+        to: {
+            ls_id: Number(ctx.query['tl'] as string) || 0,
+            s_id: Number(ctx.query['ts'] as string) || 0,
+            site_code: ctx.query['tc'] as string || ''
+        }
+    }
+    props.query = {
+        from,
+        to,
+        time: {
+            hours: ctx.query['h'] ? Number(ctx.query['h'] as string) : date.getHours(),
+            minutes: ctx.query['m'] ? Number(ctx.query['h'] as string) : date.getMinutes(),
+            date: ctx.query['d'] as string || dateString(new Date())
+        },
+        user: {
+            actionTimelineType: ctx.query['t'] ? Number(ctx.query['t'] as string) : 1
+        },
+        index: Number(ctx.query['i'] as string),
+    }
+    props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
+    props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
+    return props
 }
 
 export default Render;

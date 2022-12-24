@@ -16,6 +16,7 @@ import { useUserAgent } from '../components/ua';
 import { Helmet, HelmetProvider } from 'react-helmet-async';
 import { appDesc, appName, appRoot, appShortName, appThumb } from './_document';
 import { useRouter } from 'next/dist/client/router';
+import Head from 'next/head';
 
 export interface Selection {
   from: Stop | undefined;
@@ -35,9 +36,8 @@ export interface Query extends Selection {
     minutes: number | undefined;
     date: string;
   }
-  user: {
+  user?: {
     discount: number;
-    networks: Array<number>;
     actionTimelineType?: number
   },
   index?: number;
@@ -108,6 +108,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (<>
     <HelmetProvider>
       <Helmet>
+        <title>{appShortName}</title>
         <link rel='canonical' href={appUrl} />
         <meta property="og:url" content={appUrl} />
         <meta property="twitter:url" content={appUrl} />
@@ -142,10 +143,11 @@ function MyApp({ Component, pageProps }: AppProps) {
                         { label: "MAHART", link: "https://mahart.hu" },
                         { label: "BAHART", link: "https://bahart.hu" }
                       ].map((item, i, arr) => {
-                        return (<><a key={i} rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
+                        return (<span key={i}><a rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
                           {item.label}
-                        </a>{i + 1 !== arr.length ? ", " : ""}</>)
+                        </a>{i === arr.length - 2 ? " és " : i + 1 !== arr.length ? ", " : " "}</span>)
                       })}
+                      menetrendek
                     </Title>
                     <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
                   </Stack>

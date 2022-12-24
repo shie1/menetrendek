@@ -5,61 +5,19 @@ import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
 import { dateString } from "../client"
 import { apiCall } from "../components/api"
-import { RouteSummary, RouteExposition } from "../components/routes"
 import { Stop } from "../components/stops"
+import { useCookies } from "react-cookie"
+import dynamic from "next/dynamic"
 
-const Route: NextPage = () => {
-    const [results, setResults] = useState<any>()
-    const [details, setDetails] = useState<any>()
-    const [done, setDone] = useState(false)
-    const [query, setQuery] = useState<any>()
-    const router = useRouter()
-    const date = new Date()
+const RouteSummary = dynamic(() => import('../components/routes').then((mod) => mod.RouteSummary), {
+    ssr: false
+})
+const RouteExposition = dynamic(() => import('../components/routes').then((mod) => mod.RouteExposition), {
+    ssr: false
+})
 
-    useEffect(() => {
-        const { from, to }: { from: Stop, to: Stop } = {
-            from: {
-                ls_id: Number(router.query['fl'] as string) || 0,
-                s_id: Number(router.query['fs'] as string) || 0,
-                site_code: router.query['fc'] as string || ''
-            },
-            to: {
-                ls_id: Number(router.query['tl'] as string) || 0,
-                s_id: Number(router.query['ts'] as string) || 0,
-                site_code: router.query['tc'] as string || ''
-            }
-        }
-        setQuery({
-            from,
-            to,
-            time: {
-                hours: router.query['h'] ? Number(router.query['h'] as string) : date.getHours(),
-                minutes: router.query['m'] ? Number(router.query['h'] as string) : date.getMinutes(),
-                date: router.query['d'] as string || dateString(new Date())
-            },
-            user: {
-                networks: router.query['n'] ? (router.query['n'] as string).split(',') : ["1", "2", "3", "10", "11", "12", "13", "14", "24", "25"],
-                actionTimelineType: router.query['t'] ? Number(router.query['t'] as string) : 1
-            },
-            index: Number(router.query['i'] as string),
-        })
-    }, [router])
-
-    useEffect(() => {
-        if (query) {
-            apiCall("POST", "/api/routes", query).then(resp => { if (resp.status === 'success') { setResults(resp.results.talalatok[query.index]) } })
-        }
-    }, [query])
-
-    useEffect(() => {
-        if (results) {
-            apiCall("POST", "/api/exposition", { fieldvalue: results.kifejtes_postjson, nativeData: results.nativeData, datestring: router.query['d'] as string }).then(setDetails)
-        }
-    }, [results])
-
-    useEffect(() => {
-        if (details) setDone(true)
-    }, [details])
+const Route: NextPage = (props: any) => {
+    const { results, details, query } = props
 
     return (<>
         <Container pt="md" size="sm" p={0}>
@@ -73,12 +31,42 @@ const Route: NextPage = () => {
                 borderRadius: theme.radius.lg,
             })} p="lg" radius="lg" style={{ position: 'relative', minHeight: '8rem' }}>
                 <LoadingOverlay visible={!results && !details} />
-                {results && <RouteSummary item={results} query={query} />}
+                <RouteSummary item={results} query={query} />
                 <Space h='md' />
-                {details && <RouteExposition iconSize={25} details={details} withInfoButton query={query} />}
+                <RouteExposition iconSize={25} details={details} withInfoButton query={query} />
             </Paper>
         </Container>
     </>)
+}
+
+Route.getInitialProps = async (ctx) => {
+    let props: any = {}
+    const date = new Date()
+    const { from, to }: { from: Stop, to: Stop } = {
+        from: {
+            ls_id: Number(ctx.query['fl'] as string) || 0,
+            s_id: Number(ctx.query['fs'] as string) || 0,
+            site_code: ctx.query['fc'] as string || ''
+        },
+        to: {
+            ls_id: Number(ctx.query['tl'] as string) || 0,
+            s_id: Number(ctx.query['ts'] as string) || 0,
+            site_code: ctx.query['tc'] as string || ''
+        }
+    }
+    props.query = {
+        from,
+        to,
+        time: {
+            hours: ctx.query['h'] ? Number(ctx.query['h'] as string) : date.getHours(),
+            minutes: ctx.query['m'] ? Number(ctx.query['h'] as string) : date.getMinutes(),
+            date: ctx.query['d'] as string || dateString(new Date())
+        },
+        index: Number(ctx.query['i'] as string),
+    }
+    props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
+    props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
+    return props
 }
 
 export default Route;

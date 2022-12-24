@@ -164,9 +164,8 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         id={`stopinput-${variant}`}
         onItemSubmit={(e: any) => { setSelected(e); ref.current?.blur(); setStops([e, ...stops.filter(item => !isEqual(item, e))]) }}
         onChange={(e) => { if (!e) { setData([]) }; setSelected(undefined); setInput(e) }}
-        onBlur={(e) => { if (!e.currentTarget.value) { setData([]) } }}
         onFocus={() => { setSelected(undefined) }}
-        value={selected?.value || input}
+        value={selected?.value || input || ""}
         limit={99}
         placeholder={variant === "from" ? "Honnan?" : "Hova?"}
         rightSectionWidth={42}

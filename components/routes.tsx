@@ -16,6 +16,7 @@ import { useRouter } from "next/router"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
 import { memo } from "react";
+import { useCookies } from "react-cookie";
 
 export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
@@ -50,6 +51,7 @@ export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props
 
 export const RouteSummary = memo(({ item, query }: { item: any, query: any }) => {
     const { warning } = useColors()
+    const [cookies] = useCookies(["discount-percentage"])
     return (<Stack spacing={0}>
         <Grid>
             <Grid.Col sx={{ position: 'relative' }} span="auto">
@@ -69,7 +71,7 @@ export const RouteSummary = memo(({ item, query }: { item: any, query: any }) =>
         <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
         <Group position="center" spacing='sm'>
             <Text size="sm">{item.osszido}</Text>
-            {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.user.discount))}</Text> : <></>}
+            {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.user ? query.user.discount : cookies["discount-percentage"]))}</Text> : <></>}
             <Text size="sm">{item.ossztav}</Text>
         </Group>
     </Stack>)
@@ -77,10 +79,11 @@ export const RouteSummary = memo(({ item, query }: { item: any, query: any }) =>
 
 export const RouteExposition = memo(({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
     const router = useRouter()
+    const [cookies] = useCookies(["action-timeline-type", "discount-percentage"])
     return (<Timeline active={99}>
         {!details ? <></> : Object.keys(details.results).map((i: any) => {
             const dataItem = details.results[i]
-            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet type={Number(query.user.actionTimelineType)} size={iconSize} prev={details.results[i - 1]} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
+            return (<Timeline.Item bulletSize={25} key={i} title={dataItem.allomas} bullet={<ActionBullet type={Number(query.user ? query.user.actionTimelineType : cookies["action-timeline-type"])} size={iconSize} prev={details.results[i - 1]} muvelet={dataItem.muvelet} network={dataItem.network} />} lineVariant={dataItem.muvelet === "átszállás" ? "dashed" : "solid"}>
                 <Stack spacing={0} sx={{ position: 'relative' }}>
                     <Group align="center">
                         <Text size="xl" mr={-4}>{dataItem.idopont}</Text>
@@ -97,7 +100,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton 
                         </Group>}
                         <Group spacing={10}>
                             {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare < 0 ? <></> :
-                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.user.discount))}</Text>}
+                                <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.user ? query.user.discount : cookies["discount-percentage"]))}</Text>}
                             {!dataItem.jaratinfo.travelTime ? <></> :
                                 <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
                             {!dataItem.jaratszam ? <></> :
