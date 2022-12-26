@@ -1,17 +1,28 @@
 import { ActionIcon, Avatar, Box, Card, Group, LoadingOverlay, Space, Stack, Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core"
 import * as L from "leaflet"
 import 'leaflet/dist/leaflet.css'
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react";
 import proj4 from "proj4";
-import { IconArrowBigTop, IconInfoCircle, IconWifi, IconQuestionMark, IconArrowBigDown, IconCheck, IconRefresh, IconArrowLeft, IconBus } from "@tabler/icons";
+import {
+    IconArrowBigTop,
+    IconInfoCircle,
+    IconWifi,
+    IconQuestionMark,
+    IconArrowBigDown,
+    IconCheck,
+    IconRefresh,
+    IconCircle,
+} from "@tabler/icons";
 import Link from "next/link";
 import router from "next/router";
 import { currency, calcDisc, ActionBullet } from "./routes";
 import { renderToStaticMarkup } from 'react-dom/server'
 import { useGeoLocation } from "./geolocation";
 import { apiCall } from "./api";
+import { union, uniqBy } from "lodash";
 import { StopIcon } from "./stops";
 import { useCookies } from "react-cookie";
+
 require("proj4leaflet")
 require("leaflet.markercluster")
 
@@ -25,6 +36,12 @@ const crs = {
     }
 }
 const bp: L.LatLngExpression = [47.4979, 19.0402]
+const getExtent = (map: L.Map, pad: number = 0) => {
+    const bounds = map.getBounds().pad(pad)
+    const a = bounds.getNorthWest()
+    const b = bounds.getSouthEast()
+    return [a.lng, a.lat, b.lng, b.lat]
+}
 
 export const RouteMapView = ({ id, details, exposition, query }: { id: any, details: any, exposition: any, query: any }) => {
     const [cookies] = useCookies(["action-timeline-type"])
@@ -171,9 +188,8 @@ export const RouteMapView = ({ id, details, exposition, query }: { id: any, deta
 }
 
 export const MapView = () => {
-    const geo = useGeoLocation()
-    const gps = geo ? geo.coords.accuracy < 150 : false
-    const tracking = useRef<any>({})
+    const tracking = useRef<any>({ runs: {}, stops: {} })
+    const routeLine = useRef<undefined | L.Layer>()
     const [cookies] = useCookies(["blip-limit"])
 
     useEffect(() => {
@@ -183,39 +199,95 @@ export const MapView = () => {
             maxZoom: 16,
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         }).addTo(map);
+        map.locate()
+        map.on("locationfound", (e) => {
+            if (e.accuracy < 150) {
+                map.setView(e.latlng)
+            }
+        })
 
         return () => { map.off(); map.remove(); (window as any).map = undefined }
     }, [])
 
     useEffect(() => {
-        const runMarkers = new L.FeatureGroup()
+        const stopMarkers = new L.FeatureGroup()
 
-        const mapPin = (network: number) => L.divIcon({
-            html: renderToStaticMarkup(<ThemeIcon radius="xl">{(() => {
-                return <StopIcon network={network} />
-            })()}</ThemeIcon>),
-            className: "map-pin-marker",
+        const stopPin = () => L.divIcon({
+            html: renderToStaticMarkup(<ThemeIcon size={20} radius="xl"><IconCircle /></ThemeIcon>),
+            className: "map-stop-marker",
             iconSize: [20, 20],
             iconAnchor: [10, 20],
         });
 
+        const load = (map: L.Map) => {
+            let checked: Array<any> = []
+            apiCall("POST", "/api/map/drawStops", { extent: getExtent(map), radius: 2500, max: 50 }).then((e) => {
+                const stops = uniqBy(union(e.results.ls, e.results.ps), (e: any) => e["ls_name"])
+                console.log("stops:", stops)
+
+                stops.map((stop: any) => {
+                    const stop_id = stop["ls_name"]
+                    checked.push(stop_id)
+                    if (typeof tracking.current.stops[stop_id] === 'undefined') {
+                        const item = (new L.Proj.GeoJSON(stop.geomWgs, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: stopPin() }) }))
+                        item.bindPopup(renderToStaticMarkup(<Stack justify="center" spacing={0}>
+                            <Group position="center" align="center" spacing={2} noWrap>
+                                <Text align="center" p={2}>{stop["ls_name"]}</Text>
+                            </Group>
+                        </Stack>))
+                        tracking.current.stops[stop_id] = item.getLayers()
+                        item.addTo(stopMarkers)
+                    }
+                })
+
+                for (const key of Object.keys(tracking.current.stops)) {
+                    const items: any = tracking.current.stops[key]
+                    if (checked.findIndex((e: any) => e == key) === -1) {
+                        for (const item of items) {
+                            item.off()
+                            item.remove()
+                            delete tracking.current.stops[key]
+                        }
+                    }
+                }
+            })
+        };
+
+        stopMarkers.addTo((window as any).map)
+        // stops disabled
+
+        // load((window as any).map);
+        // ((window as any).map as L.Map).on("moveend", (e) => {
+        //     load(e.target)
+        // })
+        return () => { stopMarkers.off(); stopMarkers.remove(); tracking.current.stops = {} }
+    }, [])
+
+    useEffect(() => {
+        const runMarkers = new L.FeatureGroup()
+
+        const runPin = (network: number) => L.divIcon({
+            html: renderToStaticMarkup(<ThemeIcon size={25} radius="xl"><StopIcon network={network} /></ThemeIcon>),
+            className: "map-run-marker",
+            iconSize: [25, 25],
+            iconAnchor: [25 / 2, 25],
+        });
+
         const update = setInterval(() => {
             let checked: Array<any> = []
-            const bounds = (window as any).map.getBounds().pad(0.2)
-            const a = bounds.getNorthWest()
-            const b = bounds.getSouthEast()
-            const extent = [a.lng, a.lat, b.lng, b.lat]
-            apiCall("POST", "/api/map", { extent, max: cookies["blip-limit"] }).then((e) => {
+            const map: L.Map = (window as any).map
+            const distance = map.distance(map.getBounds().getNorthEast(), map.getBounds().getSouthWest())
+            apiCall("POST", "/api/map/drawRuns", { extent: getExtent(map, .3), max: cookies["blip-limit"] }).then((e) => {
                 e.runs.map((run: any) => {
                     checked.push(run["run_id"])
-                    if (typeof tracking.current[run["run_id"]] !== 'undefined') {
-                        const items = tracking.current[run["run_id"]]
+                    if (typeof tracking.current.runs[run["run_id"]] !== 'undefined') {
+                        const items = tracking.current.runs[run["run_id"]]
                         for (const item of items) {
                             item.setLatLng([run.geomWgs.coordinates[1], run.geomWgs.coordinates[0]])
                         }
                     } else {
-                        const item = (new L.Proj.GeoJSON(run.geomWgs, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: mapPin(run["network_id"]) }) }))
-                        tracking.current[run["run_id"]] = item.getLayers()
+                        const item = (new L.Proj.GeoJSON(run.geomWgs, { pointToLayer: (feature, latlng) => L.marker(latlng, { icon: runPin(run["network_id"]) }) }))
+                        tracking.current.runs[run["run_id"]] = item.getLayers()
                         item.bindPopup(renderToStaticMarkup(<Stack justify="center" spacing={0}>
                             <Group position="center" align="center" spacing={2} noWrap>
                                 <Box p={2} sx={(theme) => ({ background: theme.colors.yellow[4] })}>{run["Domain_code"]}</Box>
@@ -226,24 +298,33 @@ export const MapView = () => {
                                 <Box p={2}>{run.f_settle_name} - {run.l_settle_name}</Box>
                             </Group>
                         </Stack>))
+                        item.addEventListener("click", () => {
+                            apiCall("POST", "/api/map/drawRunPath", { runId: run["run_id"] }).then((e) => {
+                                if (typeof routeLine.current !== 'undefined') {
+                                    routeLine.current!.off()
+                                    routeLine.current!.remove()
+                                }
+                                routeLine.current = (new L.Proj.GeoJSON(e.routeData[0].geometry))
+                                routeLine.current.addTo(item)
+                            })
+                        })
                         item.addTo(runMarkers)
                     }
                 })
-                for (const key of Object.keys(tracking.current)) {
-                    const items: any = tracking.current[key]
+                for (const key of Object.keys(tracking.current.runs)) {
+                    const items: any = tracking.current.runs[key]
                     if (checked.findIndex((e: any) => e == key) === -1) {
                         for (const item of items) {
                             item.off()
                             item.remove()
-                            delete tracking.current[key]
+                            delete tracking.current.runs[key]
                         }
                     }
                 }
-                runMarkers.addTo((window as any).map)
+                runMarkers.addTo(map)
             })
         }, 500);
-        (window as any).runMarkers = runMarkers
-        return () => { clearInterval(update); runMarkers.off(); runMarkers.remove(); (window as any).runMarkers = undefined }
+        return () => { clearInterval(update); runMarkers.off(); runMarkers.remove(); tracking.current.runs = {}; routeLine.current = undefined; }
     }, [])
 
     return (<>

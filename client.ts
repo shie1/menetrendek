@@ -183,12 +183,36 @@ export const geoInfo = async (nativeData: any, fieldvalue: any, date: string) =>
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const map = async (extent: Array<number>, max: number = 50) => {
+export const drawRuns = async (extent: Array<number>, max: number = 50) => {
     const body = {
         "query": "getRunsByExtent",
         "networks": allNetworks,
         "maxCount": max,
         "wgsExtent": extent
     }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
+
+export const drawRunPath = async (runId: number) => {
+    const body = {
+        "query": "getRouteByRunId",
+        "runId": runId,
+        "datum": dateString(new Date())
+    }
+    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+}
+
+export const drawStops = async (extent: Array<number>, max: number = 50, radius: number = 1500) => {
+    const body = {
+        "query": "getLsPsByExtentC",
+        "datum": dateString(new Date()),
+        "maxCount": max,
+        "wgsExtent": extent,
+        "wgslat": (extent[1] + extent[3]) / 2,
+        "wgslon": (extent[0] + extent[2]) / 2,
+        "radius": radius,
+        "networks": allNetworks
+    }
+    console.log(body)
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
