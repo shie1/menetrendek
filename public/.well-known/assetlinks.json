@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "info.menetrendek.twa",
+                     "sha256_cert_fingerprints": ["55:3F:6A:3D:17:CB:8D:C3:90:C5:6A:8A:18:B1:60:B9:C8:F5:59:68:51:3C:3D:07:C9:43:EB:1C:A1:75:18:7A"] }
+      }
+]
