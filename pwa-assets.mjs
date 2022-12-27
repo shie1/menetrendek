@@ -1,6 +1,7 @@
 // npx pwa-asset-generator --background "linear-gradient(45deg, #4263eb 0%, #1098ad 100%)" ./assets/tabler-road-sign.svg ./public/pwa/
 import { generateImages } from "pwa-asset-generator";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { exit } from "process"
 
 generateImages("./assets/tabler-road-sign.svg", "./public/pwa/", { background: "linear-gradient(45deg, #4263eb 0%, #1098ad 100%)" }).then((e) => {
     writeFileSync("./public/pwa/assets.json", JSON.stringify(e))
