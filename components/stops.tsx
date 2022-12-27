@@ -7,7 +7,7 @@ import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react"
 import { useCookies } from "react-cookie";
 import { apiCall } from "./api";
 import { MdTram } from "react-icons/md"
-import { Input, MyWindow } from "../pages/_app";
+import { Input, MyWindow, OneMenu } from "../pages/_app";
 import { useCallback } from "react";
 import { useContext } from "react";
 
@@ -75,6 +75,7 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
 export type StopSetter = (a: Stop | undefined) => void
 
 export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: CSSProperties }) => {
+    const { oneMenu, setOneMenu } = useContext(OneMenu)
     const [data, setData] = useState<Array<any>>([])
     const i = useContext(Input)
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
@@ -130,7 +131,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         transition="scale-y"
         transitionDuration={200}
         rightSection={typeof selected === 'undefined' && input.length === 0 ? <></> :
-            <Menu position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
+            <Menu transition="scale-y" transitionDuration={200} onClose={() => setOneMenu(0)} onOpen={() => setOneMenu(variant === "from" ? 1 : 2)} opened={variant === "from" ? oneMenu === 1 : oneMenu === 2} position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
                 <Menu.Target>
                     <ActionIcon variant="transparent">
                         <IconDots />

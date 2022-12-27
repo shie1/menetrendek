@@ -7,7 +7,6 @@ import { apiCall } from "./api"
 import { useCookies } from "react-cookie"
 import { dateString } from "../client"
 import { Input } from "../pages/_app";
-import { useUserAgent } from "./ua";
 import { DatePicker } from "@mantine/dates";
 import { showNotification } from "@mantine/notifications";
 import { motion } from "framer-motion"

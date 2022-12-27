@@ -17,6 +17,8 @@ import { appRoot, appShortName } from './_document';
 import { useRouter } from 'next/dist/client/router';
 import { SEO } from '../components/seo';
 
+export const OneMenu = createContext<{ oneMenu: number, setOneMenu: (a: number) => void }>({ oneMenu: 0, setOneMenu: () => { } })
+
 export interface Selection {
   from: Stop | undefined;
   to: Stop | undefined;
@@ -60,6 +62,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const ua = useUserAgent()
   const router = useRouter()
   const [dlVisible, setDlVisible] = useState(false)
+  const [oneMenu, setOneMenu] = useState(0)
   const [prompt, setPropmt] = useState<Event & any | undefined>()
   const touchscreen = useMediaQuery("(max-width: 580px)")
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
@@ -140,76 +143,78 @@ function MyApp({ Component, pageProps }: AppProps) {
       <NotificationsProvider>
         <div className='bg' />
         <Header links={[{ label: "Térkép", link: "/map" }, { label: "Beállítások", link: "/settings" }]} />
-        <Input.Provider value={{ selection, setSelection, input, setInput }}>
-          <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
-            <AnimatedLayout>
-              {router.pathname === "/map" ? <></> : <QuickMenu />}
-              <AnimatePresence mode='wait'>
-                <Component {...pageProps} />
-              </AnimatePresence>
-              {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
-                <Divider size="md" my="md" />
-                <Stack pb="xl" spacing={3}>
-                  <Title order={1} size={36}>Menetrendek</Title>
-                  <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
-                  <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >
-                    {[
-                      { label: "MÁV", link: "https://mav.hu" },
-                      { label: "Volánbusz", link: "https://volanbusz.hu" },
-                      { label: "BKK", link: "https://bkk.hu" },
-                      { label: "GYSEV", link: "https://gysev.hu" },
-                      { label: "MAHART", link: "https://mahart.hu" },
-                      { label: "BAHART", link: "https://bahart.hu" }
-                    ].map((item, i, arr) => {
-                      return (<span key={i}><a rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
-                        {item.label}
-                      </a>{i === arr.length - 2 ? " és " : i + 1 !== arr.length ? ", " : " "}</span>)
-                    })}
-                    menetrendek
-                  </Title>
-                  <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
-                </Stack>
-                <FeaturesGrid
-                  data={[
-                    { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
-                    { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
-                    { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
-                    { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
-                    { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
-                  ]}
-                />
-              </div>}
-            </AnimatedLayout>
-          </Container>
-          <Affix sx={{ width: '100vw' }}>
-            <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
-              {(styles) => (<Alert role="alert" p="lg"
-                styles={{
-                  root: { border: 0 },
-                  closeButton: { scale: '1.5', top: 20 }
-                }}
-                radius={0} onClose={() => {
-                  setDlVisible(false)
-                  setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-                }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
-                <Stack>
-                  <Text>
-                    Töltsd le a Menetrendek alkalmazást, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
-                  </Text>
-                  <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
-                    prompt.prompt().then(({ outcome }: any) => {
-                      if (outcome === "accepted") {
-                        setDlVisible(false)
-                      }
-                    })
-                  }} leftIcon={<IconDownload />}>
-                    Letöltés
-                  </Button>
-                </Stack>
-              </Alert>)}
-            </Transition>
-          </Affix>
-        </Input.Provider>
+        <OneMenu.Provider value={{ oneMenu, setOneMenu }}>
+          <Input.Provider value={{ selection, setSelection, input, setInput }}>
+            <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
+              <AnimatedLayout>
+                {router.pathname === "/map" ? <></> : <QuickMenu />}
+                <AnimatePresence mode='wait'>
+                  <Component {...pageProps} />
+                </AnimatePresence>
+                {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
+                  <Divider size="md" my="md" />
+                  <Stack pb="xl" spacing={3}>
+                    <Title order={1} size={36}>Menetrendek</Title>
+                    <Title mt={-8} style={{ fontSize: '1.4rem' }} color="dimmed" order={2}>A modern menetrend kereső</Title>
+                    <Title mt={-2} color="dimmed" style={{ fontSize: '1.1rem' }} order={3} >
+                      {[
+                        { label: "MÁV", link: "https://mav.hu" },
+                        { label: "Volánbusz", link: "https://volanbusz.hu" },
+                        { label: "BKK", link: "https://bkk.hu" },
+                        { label: "GYSEV", link: "https://gysev.hu" },
+                        { label: "MAHART", link: "https://mahart.hu" },
+                        { label: "BAHART", link: "https://bahart.hu" }
+                      ].map((item, i, arr) => {
+                        return (<span key={i}><a rel='external noreferrer' role="link" aria-label={item.label} href={item.link} target="_blank">
+                          {item.label}
+                        </a>{i === arr.length - 2 ? " és " : i + 1 !== arr.length ? ", " : " "}</span>)
+                      })}
+                      menetrendek
+                    </Title>
+                    <Text style={{ fontSize: '1rem' }} color="dimmed" weight={600}>Íme néhány dolog, amiben egyszerűen jobbak vagyunk:</Text>
+                  </Stack>
+                  <FeaturesGrid
+                    data={[
+                      { title: "Kezelőfelület", icon: IconLayout, description: "Modern, letisztult és mobilbarát kezelőfelület." },
+                      { title: "Gyors elérés", icon: IconSearch, description: "Egyszerű megálló- és állomáskeresés, a legutóbbi elemek mentése gyors elérésbe." },
+                      { title: "Megosztás", icon: IconShare, description: "Útvonaltervek gyors megosztása kép formájában." },
+                      { title: "PWA támogatás", icon: IconApps, description: "Ez a weboldal egy PWA (progresszív webalkalmazás), így könnyen letöltheted alkalmazásként a telefonodra." },
+                      { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
+                    ]}
+                  />
+                </div>}
+              </AnimatedLayout>
+            </Container>
+            <Affix sx={{ width: '100vw' }}>
+              <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
+                {(styles) => (<Alert role="alert" p="lg"
+                  styles={{
+                    root: { border: 0 },
+                    closeButton: { scale: '1.5', top: 20 }
+                  }}
+                  radius={0} onClose={() => {
+                    setDlVisible(false)
+                    setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+                  }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
+                  <Stack>
+                    <Text>
+                      Töltsd le a Menetrendek alkalmazást, hogy könnyen és gyorsan hozzáférj a menetrendekhez, a böngésződ megnyitása nélkül!
+                    </Text>
+                    <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
+                      prompt.prompt().then(({ outcome }: any) => {
+                        if (outcome === "accepted") {
+                          setDlVisible(false)
+                        }
+                      })
+                    }} leftIcon={<IconDownload />}>
+                      Letöltés
+                    </Button>
+                  </Stack>
+                </Alert>)}
+              </Transition>
+            </Affix>
+          </Input.Provider>
+        </OneMenu.Provider>
         <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
       </NotificationsProvider>
     </MantineProvider>
