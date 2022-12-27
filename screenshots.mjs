@@ -79,7 +79,7 @@ generateScreenshots(
                 await page.waitForSelector(".mantine-Timeline-item")
                 await page.waitForTimeout(1500)
                 if (page.viewport().isMobile) {
-                    const selector = ".mantine-Skeleton-root"
+                    const selector = 'div[id^="map"]'
                     await page.evaluate((s) => {
                         document.querySelector(s).scrollIntoView({ block: 'center' })
                     }, selector)
