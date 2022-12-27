@@ -4,7 +4,7 @@ const runtimeCaching = require('next-pwa/cache')
 const withPWA = require('next-pwa')({
   dest: "public",
   customWorkerDir: "serviceworker",
-//  disable: !prod,
+  disable: !prod,
   register: true,
   skipWaiting: true,
   runtimeCaching,
