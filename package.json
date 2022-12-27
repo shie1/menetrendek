@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next-sitemap --config next-sitemap.config.mjs && node pwa-assets.mjs",
+    "build": "node pwa-assets.mjs && next build && next-sitemap --config next-sitemap.config.mjs",
     "start": "next start",
     "lint": "next lint"
   },
