@@ -3,6 +3,7 @@ import { NextScript, Main, Html, Head } from "next/document";
 import { useMantineTheme } from "@mantine/core";
 import { useRouter } from 'next/router';
 import Script from "next/script";
+import { PWAAssets } from "../builtComponents/pwa";
 
 export const appShortName = "Menetrendek"
 export const appName = "Menetrendek - A modern menetrend kereső"
@@ -18,12 +19,11 @@ const Document: NextPage = () => {
         <Head>
             <meta charSet="utf-8" />
             <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-            <link rel='apple-touch-icon' href='/api/img/logo.png?s=180' />
             <link rel='icon' type="image/x-icon" href='/favicon.ico' />
-            <link rel="manifest" href="/api/manifest.webmanifest" />
-            <meta name="theme-color" content="#396be1" />
             <meta property="og:type" content="website" />
             <meta property="twitter:card" content="summary_large_image" />
+            <link rel="manifest" href="/api/manifest.webmanifest" />
+            <PWAAssets />
 
             <Script // Adsense
                 id="Adsense-id"

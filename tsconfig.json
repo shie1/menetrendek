@@ -24,7 +24,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
-  ],
+, "pwa-assets.mts"  ],
   "exclude": [
     "node_modules"
   ]

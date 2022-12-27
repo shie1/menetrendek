@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && next-sitemap --config next-sitemap.config.mjs",
+    "build": "next build && next-sitemap --config next-sitemap.config.mjs && node pwa-assets.mjs",
     "start": "next start",
     "lint": "next lint"
   },
@@ -25,6 +25,7 @@
     "calendar-link": "^2.4.0",
     "dayjs": "^1.11.5",
     "framer-motion": "^7.6.4",
+    "html-react-parser": "^3.0.6",
     "leaflet": "^1.9.3",
     "leaflet.markercluster": "^1.5.3",
     "lz-string": "^1.4.4",
@@ -35,6 +36,7 @@
     "proj4": "^2.8.0",
     "proj4leaflet": "^1.0.2",
     "puppeteer": "^18.0.5",
+    "pwa-asset-generator": "^6.2.0",
     "react": "18.2.0",
     "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",

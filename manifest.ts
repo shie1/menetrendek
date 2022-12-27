@@ -2,6 +2,8 @@ import fs from 'fs'
 import path from "path"
 
 const pkg = JSON.parse((fs.readFileSync(path.join(process.cwd(), "package.json")) as any))
+const pwaAssets = JSON.parse((fs.readFileSync(path.join(process.cwd(), "public/pwaAssets.json")) as any))
+
 const manifest = {
     "name": "Menetrendek",
     "short_name": pkg.name.substring(0, 1).toUpperCase() + pkg.name.substring(1),
@@ -53,62 +55,7 @@ const manifest = {
             "label": "Járat megállói"
         },
     ],
-    "icons": [
-        {
-            "src": "/api/img/logo_maskable.png?s=48",
-            "sizes": "48x48",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=72",
-            "sizes": "72x72",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=96",
-            "sizes": "96x96",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=144",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=168",
-            "sizes": "168x168",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=192",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=512",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
-        },
-        {
-            "src": "/api/img/logo_monochrome.png?s=512",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "monochrome"
-        },
-        {
-            "src": "/api/img/logo_maskable.png?s=512",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
-        },
-    ],
+    "icons": pwaAssets.manifestJsonContent.map((e: any) => ({ ...e, src: e.src.replace(/public\//g, '/') })),
     "start_url": "/",
     "lang": "hu-HU",
     "splash_pages": null,
