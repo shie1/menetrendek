@@ -2,7 +2,8 @@ import fs from 'fs'
 import path from "path"
 
 const pkg = JSON.parse((fs.readFileSync(path.join(process.cwd(), "package.json")) as any))
-const pwaAssets = JSON.parse((fs.readFileSync(path.join(process.cwd(), "public/pwaAssets.json")) as any))
+const pwaAssets = JSON.parse((fs.readFileSync(path.join(process.cwd(), "public/pwa/assets.json")) as any))
+const screenshots = JSON.parse((fs.readFileSync(path.join(process.cwd(), "public/screenshots/assets.json")) as any))
 
 const manifest = {
     "name": "Menetrendek",
@@ -17,44 +18,7 @@ const manifest = {
     "orientation": "portrait",
     "scope": "/",
     "id": "/",
-    "screenshots": [
-        {
-            "src": "/api/img/mobile_1.png",
-            "sizes": "1442x3202",
-            "type": "image/png",
-            "label": "Járatok keresése"
-        },
-        {
-            "src": "/api/img/mobile_2.png",
-            "sizes": "1442x3202",
-            "type": "image/png",
-            "label": "Átszállásos út kifejtve"
-        },
-        {
-            "src": "/api/img/mobile_3.png",
-            "sizes": "1442x3202",
-            "type": "image/png",
-            "label": "Járat megállói"
-        },
-        {
-            "src": "/api/img/desktop_1.png",
-            "sizes": "1920x937",
-            "type": "image/png",
-            "label": "Járatok keresése"
-        },
-        {
-            "src": "/api/img/desktop_2.png",
-            "sizes": "1920x937",
-            "type": "image/png",
-            "label": "Átszállásos út kifejtve"
-        },
-        {
-            "src": "/api/img/desktop_3.png",
-            "sizes": "1920x937",
-            "type": "image/png",
-            "label": "Járat megállói"
-        },
-    ],
+    "screenshots": screenshots,
     "icons": pwaAssets.manifestJsonContent.map((e: any) => ({ ...e, src: e.src.replace(/public\//g, '/') })),
     "start_url": "/",
     "lang": "hu-HU",

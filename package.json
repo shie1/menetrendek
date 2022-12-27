@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "node pwa-assets.mjs && next build && next-sitemap --config next-sitemap.config.mjs",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "screenshots": "node ./screenshots.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
@@ -35,7 +36,7 @@
     "next-sitemap": "^3.1.30",
     "proj4": "^2.8.0",
     "proj4leaflet": "^1.0.2",
-    "puppeteer": "^18.0.5",
+    "puppeteer": "^19.4.1",
     "pwa-asset-generator": "^6.2.0",
     "react": "18.2.0",
     "react-cookie": "^4.1.1",

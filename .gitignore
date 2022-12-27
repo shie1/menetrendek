@@ -53,6 +53,8 @@ yarn-error.log*
 .swc/
 
 # PWA Assets
-/public/icons
-/public/pwaAssets.json
+/public/pwa
 /builtComponents
+
+# Testing
+/test
