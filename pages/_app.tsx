@@ -188,7 +188,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
                     ]}
                   />
-                  {!goal ? <></> : <><Divider my="sm" /><Stack>
+                  {!goal ? <></> : <><Divider size="md" my="md" /><Stack>
                     <Group sx={{ display: 'flex', flexDirection: 'row' }}>
                       <Stack spacing={0} sx={{ flex: 4, minWidth: 300 }}>
                         <Title size={30} weight={700} order={3}>Adománygyűjtés</Title>
