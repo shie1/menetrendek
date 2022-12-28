@@ -189,12 +189,12 @@ function MyApp({ Component, pageProps }: AppProps) {
                     ]}
                   />
                   {!goal ? <></> : <><Divider size="md" my="md" /><Stack>
-                    <Group sx={{ display: 'flex', flexDirection: 'row' }}>
+                    <Group sx={{ display: 'flex', flexDirection: 'row', flexWrap: "wrap" }}>
                       <Stack spacing={0} sx={{ flex: 4, minWidth: 300 }}>
                         <Title size={30} weight={700} order={3}>Adománygyűjtés</Title>
                         <Title size={20} mt={-4} order={4}>{goal?.title} | ${goal?.goal}</Title>
                       </Stack>
-                      <Text component='p' sx={{ lineHeight: 1.6, margin: 0, flex: 8, minWidth: 608 }}>{goal?.description}</Text>
+                      <Text component='p' sx={{ lineHeight: 1.6, margin: 0, flex: 8, flexBasis: 445 }}>{goal?.description}</Text>
                     </Group>
                     <Progress radius="xl" size="xl" value={goal?.percentage} />
                     <Group position='right'>
