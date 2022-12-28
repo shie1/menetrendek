@@ -16,4 +16,6 @@ const nextConfig = withPWA({
   swcMinify: true,
 })
 
-module.exports = nextConfig
+module.exports = {
+  output: 'standalone',
+}
