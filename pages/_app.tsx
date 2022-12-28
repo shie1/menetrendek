@@ -69,7 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit', "install-declined"]);
-  const [goal, setGoal] = useState<any>({})
+  const [goal, setGoal] = useState<any>()
 
   useEffect(() => { //Initialize cookies
     if (typeof ua !== 'undefined') {
@@ -188,8 +188,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
                     ]}
                   />
-                  <Divider my="sm" />
-                  <Stack>
+                  {!goal ? <></> : <><Divider my="sm" /><Stack>
                     <Group sx={{ display: 'flex', flexDirection: 'row' }}>
                       <Stack spacing={0} sx={{ flex: 4, minWidth: 300 }}>
                         <Title size={30} weight={700} order={3}>Adománygyűjtés</Title>
@@ -202,7 +201,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                       <Text>{goal?.percentage}% a ${goal?.goal}-ból</Text>
                       <Button component='a' href='https://ko-fi.com/menetrendekinfo' target="_blank" rel="external noreferrer" leftIcon={<IconCash />}>Támogatás</Button>
                     </Group>
-                  </Stack>
+                  </Stack></>}
                 </div>}
               </AnimatedLayout>
             </Container>

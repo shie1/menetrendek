@@ -7,6 +7,7 @@ COPY package.json ./
 COPY yarn.lock ./
 RUN npm i
 COPY . ./
+ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 RUN apk add --no-cache curl
 ENV DISPLAY=:99
