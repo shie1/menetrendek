@@ -1,7 +1,7 @@
 FROM node:current-alpine3.17 AS deps
 RUN apk add --no-cache chromium
 WORKDIR /app
-COPY package.json yarn.lock ./
+COPY package.json package-lock.lock ./
 RUN npm ci
 
 FROM node:current-alpine3.17 AS build
