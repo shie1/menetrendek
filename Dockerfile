@@ -8,4 +8,6 @@ COPY yarn.lock ./
 RUN npm i
 COPY . ./
 RUN npm run build
+RUN apk add --no-cache curl
+HEALTHCHECK CMD curl --fail http://localhost:3000 || exit 1   
 ENTRYPOINT ["npx", "next", "start"]
