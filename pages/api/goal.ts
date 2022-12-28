@@ -8,7 +8,7 @@ export default async function handler(
 ) {
     let info: any = {
     }
-    res.setHeader("Cache-Control", "public, max-age=604800, immutable")
+    res.setHeader("Cache-Control", "public, max-age=21600, immutable")
     const browser = await launch({ headless: false, args: ["--no-sandbox"] })
     const page = await browser.newPage();
     await page.goto("https://ko-fi.com/menetrendekinfo", { waitUntil: "load" });
