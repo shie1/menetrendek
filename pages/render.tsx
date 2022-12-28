@@ -1,8 +1,6 @@
 import { Box, Center, Group, MantineProvider, Paper, Space, Text } from "@mantine/core";
 import { IconLink } from "@tabler/icons";
 import type { NextPage } from "next";
-import { useRouter } from "next/dist/client/router";
-import { useEffect, useState } from "react";
 import { dateString } from "../client";
 import { apiCall } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";

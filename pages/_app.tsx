@@ -10,10 +10,10 @@ import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
 import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
-import { useMediaQuery, useWindowScroll } from '@mantine/hooks';
+import { useMediaQuery } from '@mantine/hooks';
 import { useCookies } from 'react-cookie';
 import { useUserAgent } from '../components/ua';
-import { appRoot, appShortName } from './_document';
+import { appShortName } from './_document';
 import { useRouter } from 'next/dist/client/router';
 import { SEO } from '../components/seo';
 import { apiCall } from '../components/api';

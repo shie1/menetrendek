@@ -1,5 +1,5 @@
 import parse from "html-react-parser";
-export const PWAAssets = () => (<>{() => parse(`<link rel="apple-touch-startup-image" href="/pwa/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+export const PWAAssets = () => (<>{(() => parse(`<link rel="apple-touch-startup-image" href="/pwa/apple-splash-2048-2732.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <link rel="apple-touch-startup-image" href="/pwa/apple-splash-2732-2048.jpg" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
 <link rel="apple-touch-startup-image" href="/pwa/apple-splash-1668-2388.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 <link rel="apple-touch-startup-image" href="/pwa/apple-splash-2388-1668.jpg" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
@@ -31,4 +31,4 @@ export const PWAAssets = () => (<>{() => parse(`<link rel="apple-touch-startup-i
 <link rel="apple-touch-startup-image" href="/pwa/apple-splash-1136-640.jpg" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="/pwa/apple-icon-180.png">
-`)}</>)
+`))()}</>)
