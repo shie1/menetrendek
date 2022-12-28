@@ -4,8 +4,7 @@ EXPOSE 3000/tcp
 WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
-RUN apk add --no-cache chromium
-RUN npm i 
+RUN npm ci --only=production
 COPY . ./
 RUN npm run build
 ENTRYPOINT ["npx", "next", "start"]
