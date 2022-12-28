@@ -2,8 +2,13 @@ import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
 import { appDesc, appName, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
+import { useEffect } from "react";
 
 const Home: NextPage = () => {
+    useEffect(() => {
+        document.querySelector("iframe")
+    }, [])
+
     return (<PageTransition>
         <SEO
             title={appName}
