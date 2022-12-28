@@ -9,7 +9,7 @@ export default async function handler(
     let info: any = {
     }
     res.setHeader("Cache-Control", "public, max-age=604800, immutable")
-    const browser = await launch({ headless: false })
+    const browser = await launch({ headless: false, args: ["--no-sandbox"] })
     const page = await browser.newPage();
     await page.goto("https://ko-fi.com/menetrendekinfo", { waitUntil: "load" });
     const box = await page.waitForSelector("div.p-16.pn-flex.simple-panel.text-center div.kfds-lyt-width-100")
