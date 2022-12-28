@@ -112,7 +112,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
                     const id = Date.now().toString()
-                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${cookies["action-timeline-type"] || 1}`
+                    const image = `/api/render?${router.asPath.split('?')[1]}&h=${query!.time.hours}&m=${query!.time.minutes}${router.query['d'] ? '' : "&d=" + dateString(new Date())}&i=${val}&=${(cookies["selected-networks"] as Array<any>).join(',')}&t=${cookies["action-timeline-type"] || 1}`
                     const blob = await (await fetch(image)).blob()
                     setFile(new File([blob], `menetrendek-${id}.jpeg`, { type: "image/jpeg" }))
                 })

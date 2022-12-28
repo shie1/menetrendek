@@ -1,8 +1,9 @@
 FROM node:current-alpine3.17
-ENV NODE_ENV=production
 EXPOSE 3000/tcp
 WORKDIR /app
 RUN apk add --no-cache chromium
+RUN apk add --no-cache xvfb
+RUN printf "Xvfb :99 &\nexport DISPLAY=:99" >> /root/.profile
 COPY package.json ./
 COPY yarn.lock ./
 RUN npm i

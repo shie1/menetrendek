@@ -1,10 +1,10 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, Alert, Button, Group, Transition } from '@mantine/core';
+import { MantineProvider, Container, Divider, Stack, Title, Text, Affix, Alert, Button, Group, Transition, Progress } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { Footer } from '../components/footer';
 import { Header } from '../components/header';
-import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconDownload } from '@tabler/icons';
+import { IconLayout, IconSearch, IconShare, IconApps, IconRotateClockwise, IconDownload, IconCash } from '@tabler/icons';
 import { FeaturesGrid } from '../components/hello';
 import { QuickMenu } from '../components/menu';
 import { motion, AnimatePresence } from "framer-motion"
@@ -16,6 +16,7 @@ import { useUserAgent } from '../components/ua';
 import { appRoot, appShortName } from './_document';
 import { useRouter } from 'next/dist/client/router';
 import { SEO } from '../components/seo';
+import { apiCall } from '../components/api';
 
 export const OneMenu = createContext<{ oneMenu: number, setOneMenu: (a: number) => void }>({ oneMenu: 0, setOneMenu: () => { } })
 
@@ -68,6 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [selection, setSelection] = useState<Selection>({ to: undefined, from: undefined })
   const [input, setInput] = useState<Input>({ to: "", from: "" })
   const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions', 'action-timeline-type', 'route-limit', 'use-route-limit', 'calendar-service', 'blip-limit', "install-declined"]);
+  const [goal, setGoal] = useState<any>({})
 
   useEffect(() => { //Initialize cookies
     if (typeof ua !== 'undefined') {
@@ -123,6 +125,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     return () => {
       window.removeEventListener("beforeinstallprompt", handler)
     }
+  }, [])
+
+  useEffect(() => {
+    apiCall("GET", "/api/goal").then(setGoal)
   }, [])
 
   pageProps = {
@@ -182,6 +188,21 @@ function MyApp({ Component, pageProps }: AppProps) {
                       { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
                     ]}
                   />
+                  <Divider my="sm" />
+                  <Stack>
+                    <Group sx={{ display: 'flex', flexDirection: 'row' }}>
+                      <Stack spacing={0} sx={{ flex: 4, minWidth: 300 }}>
+                        <Title size={30} weight={700} order={3}>Adománygyűjtés</Title>
+                        <Title size={20} mt={-4} order={4}>{goal?.title} | ${goal?.goal}</Title>
+                      </Stack>
+                      <Text component='p' sx={{ lineHeight: 1.6, margin: 0, flex: 8, minWidth: 608 }}>{goal?.description}</Text>
+                    </Group>
+                    <Progress radius="xl" size="xl" value={goal?.percentage} />
+                    <Group position='right'>
+                      <Text>{goal?.percentage}% a ${goal?.goal}-ból</Text>
+                      <Button component='a' href='https://ko-fi.com/menetrendekinfo' target="_blank" rel="external noreferrer" leftIcon={<IconCash />}>Támogatás</Button>
+                    </Group>
+                  </Stack>
                 </div>}
               </AnimatedLayout>
             </Container>
@@ -215,7 +236,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </Affix>
           </Input.Provider>
         </OneMenu.Provider>
-        <Footer data={[{ title: "Támogatás", links: [{ label: "Paypal.me", link: "https://paypal.me/shie1bi" }] }]} />
+        <Footer data={[]} />
       </NotificationsProvider>
     </MantineProvider>
   </>)
