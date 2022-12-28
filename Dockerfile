@@ -4,7 +4,7 @@ EXPOSE 3000/tcp
 WORKDIR /app
 COPY package.json ./
 COPY yarn.lock ./
-RUN npm ci --only=production
+RUN npm i
 COPY . ./
 RUN npm run build
 ENTRYPOINT ["npx", "next", "start"]
