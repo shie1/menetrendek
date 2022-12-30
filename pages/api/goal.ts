@@ -6,6 +6,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
+    if (process.env.NODE_ENV === "development") { res.status(200).json(false); return }
     let info: any = {
     }
     res.setHeader("Cache-Control", "public, max-age=21600, immutable")
