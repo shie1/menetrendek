@@ -18,6 +18,7 @@ import { useRouter } from 'next/dist/client/router';
 import { SEO } from '../components/seo';
 import { apiCall } from '../components/api';
 import { LocalizedStrings } from './api/localization';
+import App from 'next/app';
 
 export const OneMenu = createContext<{ oneMenu: number, setOneMenu: (a: number) => void }>({ oneMenu: 0, setOneMenu: () => { } })
 
@@ -246,10 +247,11 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
   </>)
 }
 
-MyApp.getInitialProps = async ({ ctx }: any) => {
-  let props: any = {}
-  const subdomain = ctx.req?.headers.host.split('.')[0] || "";
-  const lang = subdomain === "en" ? "en" : "hu"
+MyApp.getInitialProps = async (context: any) => {
+  const pageProps = await App.getInitialProps(context);
+  let props: any = { ...pageProps }
+  const subdomain = context.ctx.req?.headers.host.split('.')[0] || "";
+  const lang = subdomain === "en" ? "en" : "en"
   props.strings = await apiCall("POST", (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info") + "/api/localization", { lang: lang })
   return props
 }

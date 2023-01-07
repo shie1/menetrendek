@@ -174,9 +174,10 @@ const Route = ({ item, val, query, strings }: { item: any, val: any, query: Quer
     </Accordion.Item >)
 }
 
-const Routes: NextPage = ({ strings, ...props }: any & { strings: LocalizedStrings }) => {
+const Routes: NextPage = (props: any) => {
     const router = useRouter()
     const query = props.query
+    const strings: LocalizedStrings = props.strings
     const { classes, theme } = useMyAccordion()
     const [time, setTime] = useState<number | null>(null)
     const [sliderVal, setSliderVal] = useState<number | undefined>()
@@ -243,11 +244,11 @@ const Routes: NextPage = ({ strings, ...props }: any & { strings: LocalizedStrin
     return (<PageTransition>
         {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal || 0} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
         <SEO
-            title={`${strings.routesBeetweenXandY.replace('{0}', results.nativeResults.Params["FromSettle:"].toString()).replace('{1}', results.nativeResults.Params["ToSettle:"].toString())}`}
+            title={`${strings.routesBeetweenXandY.replace('{0}', results?.nativeResults.Params["FromSettle:"].toString()).replace('{1}', results?.nativeResults.Params["ToSettle:"].toString())}`}
             description={strings.appDescription}
             image={appThumb}
         >
-            <title>{results.nativeResults.Params["FromSettle:"].toString()} - {results.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>
+            <title>{results?.nativeResults.Params["FromSettle:"].toString()} - {results?.nativeResults.Params["ToSettle:"].toString()} | {appShortName}</title>
             <Canonical url="https://menetrendek.info/routes" />
         </SEO>
         <Container pt="md" size="sm" p={0}>
