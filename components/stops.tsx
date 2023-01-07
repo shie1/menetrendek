@@ -76,7 +76,7 @@ export type StopSetter = (a: Stop | undefined) => void
 
 export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: CSSProperties }) => {
     const { oneMenu, setOneMenu } = useContext(OneMenu)
-    const [data, setData] = useState<Array<any>>([])
+    const [data, setData] = useState<Array<Stop & any>>([])
     const i = useContext(Input)
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
     const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
@@ -98,33 +98,29 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
     }, [selected])
 
     useEffect(() => {
-        if (!input) {
+        if (input.length == 0) {
             setData(stops)
         }
     }, [input, stops])
 
     const load = (e: string) => {
-        setSelected(undefined)
-        if (!e.length) { setData([]); return }
+        if (!e.length) { return }
         apiCall("POST", "/api/autocomplete", { 'input': e, 'networks': cookies["selected-networks"] }).then(resp => {
-            setData((resp.results as Array<any>).map(item => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
+            setData((resp.results as Array<any>).map((item, i) => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
         })
     }
 
+    // useeffect on input change timeout 500 ms and then call load function
     useEffect(() => {
-        const timer = setTimeout(() => {
-            if (input) { load(input); setInput(input) }
-            if (selected) setSelected(selected)
-        }, 500)
-        return () => clearTimeout(timer)
-    }, [input])
+        load(input)
+    }, [input]);
 
     return (<Autocomplete
         icon={selected ? <StopIcon network={selected.network!} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
         style={style}
-        data={data}
+        data={data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i)}
         ref={ref}
-        switchDirectionOnFlip={false}
+        switchDirectionOnFlip
         size="md"
         className="searchInput"
         variant="unstyled"
@@ -164,8 +160,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         itemComponent={AutoCompleteItem}
         id={`stopinput-${variant}`}
         onItemSubmit={(e: any) => { setSelected(e); ref.current?.blur(); setStops([e, ...stops.filter(item => !isEqual(item, e))]) }}
-        onChange={(e) => { if (!e) { setData([]) }; setSelected(undefined); setInput(e) }}
-        onFocus={() => { setSelected(undefined) }}
+        onChange={(e) => { setSelected(undefined); setInput(e) }}
         value={selected?.value || input || ""}
         limit={99}
         placeholder={variant === "from" ? "Honnan?" : "Hova?"}

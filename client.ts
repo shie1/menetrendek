@@ -1,4 +1,3 @@
-import { Stop } from "./components/stops"
 import { Query } from "./pages/_app"
 
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
