@@ -16,8 +16,8 @@ const MP = memo((props: any) => {
 const Map: NextPage = (props: any) => {
     return (<PageTransition>
         <SEO
-            title="Valós idejű tömegközlekedési térkép"
-            description="Tekintse meg magyarország valós idejű tömegközlekedési térképét."
+            title={props.strings.realtimeTransitMap}
+            description={props.strings.realtimeTransitMapSubtext}
             image={appThumb}
         >
             <title>{props.strings.map} | {appShortName}</title>

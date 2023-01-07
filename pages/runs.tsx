@@ -6,7 +6,7 @@ import { apiCall } from "../components/api";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
-import { appDesc, appShortName, appThumb } from "./_document";
+import { appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 
 const Runs: NextPage = (props: any) => {
@@ -26,8 +26,8 @@ const Runs: NextPage = (props: any) => {
 
     return (<PageTransition>
         <SEO
-            title={`${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()} járat megállói`}
-            description={appDesc}
+            title={props.strings.stopsForX.replace('{0}', `${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()}`)}
+            description={props.strings.appDescription}
             image={appThumb}
         >
             <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>
@@ -73,7 +73,7 @@ const Runs: NextPage = (props: any) => {
                 </Stack>
             </Card>
         </Container>
-    </PageTransition>)
+    </PageTransition >)
 }
 
 Runs.getInitialProps = async (ctx) => {

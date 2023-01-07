@@ -4,7 +4,7 @@ import { dateString } from "../client"
 import { apiCall } from "../components/api"
 import { Stop } from "../components/stops"
 import dynamic from "next/dynamic"
-import { appDesc, appShortName, appThumb } from "./_document"
+import { appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo"
 
 const RouteSummary = dynamic(() => import('../components/routes').then((mod) => mod.RouteSummary), {
@@ -20,7 +20,7 @@ const Route: NextPage = (props: any) => {
     return (<>
         <SEO
             title={`${strings.transitRoute}: ${results.departureCity} - ${results.arrivalCity}`}
-            description={appDesc}
+            description={strings.appDescription}
             image={appThumb}
         >
             <title>{results.departureCity} - {results.arrivalCity} | {appShortName}</title>

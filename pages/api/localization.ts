@@ -1,8 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { delay } from 'lodash'
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 export type LocalizedStrings = {
+    appName: string,
+    appDescription: string,
     confirm: string,
     map: string,
     settings: string,
@@ -78,10 +79,15 @@ export type LocalizedStrings = {
     routesBeetweenXandY: string,
     timetables: string,
     and: string,
+    stopsForX: string,
+    realtimeTransitMap: string,
+    realtimeTransitMapSubtext: string,
 }
 
 const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
     hu: {
+        appName: "Menetrendek - A modern menetrend kereső",
+        appDescription: "MÁV, Volánbusz, BKK, GYSEV, MAHART és BAHART menetrendek.",
         confirm: "Megerősítés",
         map: "Térkép",
         settings: "Beállítások",
@@ -157,8 +163,13 @@ const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
         routesBeetweenXandY: "Útvonalak {0} és {1} között",
         timetables: "menetrendek",
         and: "és",
+        stopsForX: "{0} járat megállói",
+        realtimeTransitMap: "Valós idejű tömegközlekedési térkép",
+        realtimeTransitMapSubtext: "Tekintse meg Magyarország valós idejű tömegközlekedési térképét.",
     },
     en: {
+        appName: "Menetrendek - Timetable search engine for Hungary",
+        appDescription: "MÁV, Volánbusz, BKK, GYSEV, MAHART and BAHART timetables.",
         confirm: "Confirm",
         map: "Map",
         settings: "Setings",
@@ -234,6 +245,9 @@ const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
         routesBeetweenXandY: "Routes between {0} and {1}",
         timetables: "timetables",
         and: "and",
+        stopsForX: "Stops for {0}",
+        realtimeTransitMap: "Realtime transit map",
+        realtimeTransitMapSubtext: "View Hungary's realtime transit map.",
     }
 }
 

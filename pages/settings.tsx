@@ -7,7 +7,7 @@ import { IconDiscount, IconWalk, IconCalendar, IconMap2, IconDownload } from "@t
 import { RouteExposition } from "../components/routes"
 import { transferExample } from "../components/mockdata"
 import { useUserAgent } from "../components/ua"
-import { appDesc, appShortName, appThumb } from "./_document";
+import { appShortName, appThumb } from "./_document";
 import { useMediaQuery } from "@mantine/hooks";
 import { Canonical, SEO } from "../components/seo";
 import { LocalizedStrings } from "./api/localization";
@@ -23,7 +23,7 @@ const Settings: NextPage = (props: any) => {
     return (<PageTransition>
         <SEO
             title={appShortName}
-            description={appDesc}
+            description={strings.appDescription}
             image={appThumb}
         >
             <title>{strings.settings} | {appShortName}</title>
