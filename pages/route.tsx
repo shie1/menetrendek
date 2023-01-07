@@ -15,11 +15,11 @@ const RouteExposition = dynamic(() => import('../components/routes').then((mod) 
 })
 
 const Route: NextPage = (props: any) => {
-    const { results, details, query } = props
+    const { results, details, query, strings } = props
 
     return (<>
         <SEO
-            title={`Tömegközlekedési útvonal: ${results.departureCity} - ${results.arrivalCity}`}
+            title={`${strings.transitRoute}: ${results.departureCity} - ${results.arrivalCity}`}
             description={appDesc}
             image={appThumb}
         >
@@ -37,9 +37,9 @@ const Route: NextPage = (props: any) => {
                 borderRadius: theme.radius.lg,
             })} p="lg" radius="lg" style={{ position: 'relative', minHeight: '8rem' }}>
                 <LoadingOverlay visible={!results && !details} />
-                <RouteSummary item={results} query={query} />
+                <RouteSummary strings={strings} item={results} query={query} />
                 <Space h='md' />
-                <RouteExposition iconSize={25} details={details} withInfoButton query={query} />
+                <RouteExposition strings={strings} iconSize={25} details={details} withInfoButton query={query} />
             </Paper>
         </Container>
     </>)

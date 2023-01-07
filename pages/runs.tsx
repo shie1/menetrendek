@@ -10,7 +10,7 @@ import { appDesc, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 
 const Runs: NextPage = (props: any) => {
-    const { query, runs } = props
+    const { query, runs, strings } = props
     const [delay, setDelay] = useState<any>(props.delay)
     const [cityState, setCityState] = useState(-1)
 
@@ -40,7 +40,7 @@ const Runs: NextPage = (props: any) => {
                         <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
                         <Text size="xl" mb={4}>{runs?.results.kozlekedteti}</Text>
                         <Text size="sm" align="center">{runs?.results.kozlekedik}</Text>
-                        {!delay?.result.data.length ? <></> : <Text size="sm">Késés: {delay?.result.data[0].delay}</Text>}
+                        {!delay?.result.data.length ? <></> : <Text size="sm">{strings.delay}: {delay?.result.data[0].delay}</Text>}
                     </Stack>
                     <Timeline active={99}>
                         {!runs ? <></> :

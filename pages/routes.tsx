@@ -36,6 +36,7 @@ import dynamic from "next/dynamic"
 import { yahoo, office365, google, ics, outlook } from "calendar-link";
 import { appDesc, appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
+import { LocalizedStrings } from "./api/localization";
 
 const AccordionController = createContext<{ value: string | null | undefined, setValue: (a: string | null | undefined) => void }>({ value: '', setValue: () => { } })
 
@@ -47,7 +48,7 @@ const RMP = memo((props: any) => {
     return <RouteMapView {...props} />
 })
 
-const Route = ({ item, val, query }: { item: any, val: any, query: Query | undefined }) => {
+const Route = ({ item, val, query, strings }: { item: any, val: any, query: Query | undefined, strings: LocalizedStrings }) => {
     const router = useRouter()
     const [mapView, setMapView] = useState<boolean>(false)
     const [data, setData] = useState<any>()
@@ -123,7 +124,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                 })
             }
         }} sx={(theme) => ({ padding: '16px' })}>
-            <RouteSummary item={item} query={query} />
+            <RouteSummary strings={strings} item={item} query={query} />
         </Accordion.Control>
         <Accordion.Panel>
             <Skeleton px="sm" visible={!data} sx={{ width: '100%' }} radius="lg">
@@ -145,7 +146,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
                         <Button onClick={() => setMapView(!mapView)} leftIcon={!mapView ? <IconMap /> : <IconListDetails />} variant="light" color="indigo" size="sm" sx={{ width: '100%' }} mb="md">
                             {!mapView ? "Térkép nézet" : "Idővonal nézet"}
                         </Button>
-                        {!mapView ? <RouteExposition details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
+                        {!mapView ? <RouteExposition strings={strings} details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
                         <Group spacing="sm" position="right">
                             <ActionIcon role="button" aria-label="Mentés naptárba" onClick={() => cal(Number(cookies["calendar-service"]))}>
                                 <IconCalendarEvent />
@@ -173,7 +174,7 @@ const Route = ({ item, val, query }: { item: any, val: any, query: Query | undef
     </Accordion.Item >)
 }
 
-const Routes: NextPage = (props: any) => {
+const Routes: NextPage = ({ strings, ...props }: any & { strings: LocalizedStrings }) => {
     const router = useRouter()
     const query = props.query
     const { classes, theme } = useMyAccordion()
@@ -242,7 +243,7 @@ const Routes: NextPage = (props: any) => {
     return (<PageTransition>
         {cookies["use-route-limit"] !== 'true' ? <></> : <Slider value={sliderVal || 0} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
         <SEO
-            title={`Járatok ${results.nativeResults.Params["FromSettle:"].toString()} és ${results.nativeResults.Params["ToSettle:"].toString()} között`}
+            title={`${strings.routesBeetweenXandY.replace('{0}', results.nativeResults.Params["FromSettle:"].toString()).replace('{1}', results.nativeResults.Params["ToSettle:"].toString())}`}
             description={appDesc}
             image={appThumb}
         >
@@ -252,14 +253,14 @@ const Routes: NextPage = (props: any) => {
         <Container pt="md" size="sm" p={0}>
             <AccordionController.Provider value={{ value, setValue }}>
                 <Accordion value={value || ""} onChange={setValue} variant="separated" classNames={classes} className={classes.root}>
-                    {!display.length ? <Text size="sm" align="center" color="dimmed">A kijelölt idő után már nem megy egy járat sem.</Text> :
+                    {!display.length ? <Text size="sm" align="center" color="dimmed">{strings.noRoutesAfterSelectedTime}</Text> :
                         display.map((key: any, i: any) => {
                             const item = results.results.talalatok[key]
                             if (!item) return <></>
                             const start = item.indulasi_ido.split(":").map((e: string) => Number(e))
                             const startmin = start[0] * 60 + start[1]
                             if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <></>
-                            return (<Route query={query} val={key} key={key} item={item} />)
+                            return (<Route strings={props.strings} query={query} val={key} key={key} item={item} />)
                         })
                     }
                 </Accordion>
