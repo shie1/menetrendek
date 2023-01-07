@@ -7,6 +7,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    const rb = JSON.parse(req.body) 
-    res.status(200).json(await routes(rb))
+    const rb = JSON.parse(req.body)
+    const lang = req.headers.host?.split('.')[0] === 'en' ? 'en' : 'hu'
+    res.status(200).json(await routes(rb, lang))
 }
