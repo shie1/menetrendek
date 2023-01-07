@@ -8,7 +8,8 @@
     "build": "next build && next-sitemap --config next-sitemap.config.mjs",
     "start": "next start",
     "lint": "next lint",
-    "screenshots": "node ./screenshots.mjs"
+    "screenshots": "node ./screenshots.mjs",
+    "icons": "node ./pwa-assets.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.10.4",
