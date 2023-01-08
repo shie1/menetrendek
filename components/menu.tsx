@@ -72,7 +72,7 @@ export const QuickMenu = ({ strings }: { strings: LocalizedStrings }) => {
                     } else {
                         showNotification({ title: strings.errorEmptyFields, message: strings.errorEmptyFieldsSubtext, icon: <IconAlertCircle />, color: "red", id: "error-empty-fields" })
                     }
-                }} role="button" component="a" aria-label="Járatok keresése" href={searchHref || "#"} gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>{strings.search}</Button>
+                }} role="button" component="a" aria-label={strings.searchRoutes} href={searchHref || "#"} gradient={{ from: theme.colors[theme.primaryColor][theme.primaryShade as any], to: theme.colors["cyan"][theme.primaryShade as any] }} sx={{ flex: 4, minWidth: '15rem' }} leftIcon={<IconSearch />}>{strings.search}</Button>
             </Group>
         </motion.div>
     </Stack>)

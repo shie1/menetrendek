@@ -108,7 +108,7 @@ const Route = ({ item, val, query, strings }: { item: any, val: any, query: Quer
     }
 
     return (<Accordion.Item value={val} sx={(theme) => ({ boxShadow: '5px 5px 3px rgba(0, 0, 0, .25)', transition: '.25s', })}>
-        <Accordion.Control role="button" aria-label="Járat kifejtése" onClick={() => {
+        <Accordion.Control role="button" aria-label={strings.explainRun} onClick={() => {
             if (!data) {
                 apiCall("POST", "/api/exposition", { fieldvalue: item.kifejtes_postjson, nativeData: item.nativeData, datestring: router.query['d'] as string }).then(async (e) => {
                     setData(e)
@@ -146,13 +146,13 @@ const Route = ({ item, val, query, strings }: { item: any, val: any, query: Quer
                         <Button onClick={() => setMapView(!mapView)} leftIcon={!mapView ? <IconMap /> : <IconListDetails />} variant="light" color="indigo" size="sm" sx={{ width: '100%' }} mb="md">
                             {!mapView ? "Térkép nézet" : "Idővonal nézet"}
                         </Button>
-                        {!mapView ? <RouteExposition strings={strings} details={data} query={query} withInfoButton /> : <RMP id={val} details={geoInfo} exposition={data} query={query} />}
+                        {!mapView ? <RouteExposition strings={strings} details={data} query={query} withInfoButton /> : <RMP strings={strings} id={val} details={geoInfo} exposition={data} query={query} />}
                         <Group spacing="sm" position="right">
-                            <ActionIcon role="button" aria-label="Mentés naptárba" onClick={() => cal(Number(cookies["calendar-service"]))}>
+                            <ActionIcon role="button" aria-label={strings.addToCalendar} onClick={() => cal(Number(cookies["calendar-service"]))}>
                                 <IconCalendarEvent />
                             </ActionIcon>
                             {!file ? <Loader size={28} /> :
-                                <ActionIcon role="button" aria-label="Megosztás" onClick={() => {
+                                <ActionIcon role="button" aria-label={strings.share} onClick={() => {
                                     const params: any = {
                                         ...(query?.from!.ls_id ? { fl: query?.from!.ls_id.toString() } : {}),
                                         fs: query?.from!.s_id.toString(),

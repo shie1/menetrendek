@@ -23,7 +23,7 @@ const Map: NextPage = (props: any) => {
             <title>{props.strings.map} | {appShortName}</title>
             <Canonical url="https://menetrendek.info/map" />
         </SEO>
-        <MP />
+        <MP {...props} />
     </PageTransition>)
 }
 

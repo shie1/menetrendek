@@ -97,7 +97,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton,
                     {!dataItem.jaratinfo ? <></> : <>
                         {!withInfoButton ? <></> : <Group position="right">
                             <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}${!router.query['d'] ? '' : '&d=' + router.query['d']}`}>
-                                <ActionIcon role="button" aria-label="Összes megálló megtekintése" sx={{ position: 'absolute', top: 0 }}>
+                                <ActionIcon role="button" aria-label={strings.viewAllStops} sx={{ position: 'absolute', top: 0 }}>
                                     <IconInfoCircle />
                                 </ActionIcon>
                             </Link>
@@ -118,7 +118,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton,
                             <Text size="sm">{strings.platform} {strings.atArrival}: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />
                         {!dataItem.jaratinfo.wifi ? <></> :
-                            <ThemeIcon role="status" aria-label="Wi-Fi elérés" size="lg" variant="light" radius="xl">
+                            <ThemeIcon role="status" aria-label={strings.wifiAccess} size="lg" variant="light" radius="xl">
                                 <IconWifi size={25} />
                             </ThemeIcon>
                         }

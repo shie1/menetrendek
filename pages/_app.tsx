@@ -154,7 +154,7 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
     }} >
       <NotificationsProvider>
         <div className='bg' />
-        <Header links={[{ label: strings.map, link: "/map" }, { label: strings.settings, link: "/settings" }]} />
+        <Header strings={strings} links={[{ label: strings.map, link: "/map" }, { label: strings.settings, link: "/settings" }]} />
         <OneMenu.Provider value={{ oneMenu, setOneMenu }}>
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
             <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
@@ -163,7 +163,7 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
                 <AnimatePresence mode='wait'>
                   <Component {...pageProps} />
                 </AnimatePresence>
-                {router.pathname === "/map" ? <></> : <div role="region" aria-label='Funkciók'>
+                {router.pathname === "/map" ? <></> : <div role="region" aria-label={strings.features}>
                   <Divider size="md" my="md" />
                   <Stack pb="xl" spacing={3}>
                     <Title order={1} size={36}>Menetrendek</Title>
@@ -253,7 +253,7 @@ MyApp.getInitialProps = async (context: any) => {
   const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + context.ctx.req?.headers.host) || "https://menetrendek.info")
   const subdomain = context.ctx.req?.headers.host.split('.')[0] || "";
   const lang = subdomain === "en" ? "en" : "hu"
-  props.strings = await apiCall("POST", host  + "/api/localization", { lang: lang })
+  props.strings = await apiCall("POST", host + "/api/localization", { lang: lang })
   return props
 }
 

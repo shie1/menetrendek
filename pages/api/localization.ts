@@ -82,6 +82,13 @@ export type LocalizedStrings = {
     stopsForX: string,
     realtimeTransitMap: string,
     realtimeTransitMapSubtext: string,
+    searchRoutes: string,
+    homepage: string,
+    viewAllStops: string,
+    wifiAccess: string,
+    features: string,
+    explainRun: string,
+    addToCalendar: string,
 }
 
 const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
@@ -166,6 +173,13 @@ const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
         stopsForX: "{0} járat megállói",
         realtimeTransitMap: "Valós idejű tömegközlekedési térkép",
         realtimeTransitMapSubtext: "Tekintse meg Magyarország valós idejű tömegközlekedési térképét.",
+        searchRoutes: "Útvonalak keresése",
+        homepage: "Főoldal",
+        viewAllStops: "Minden megálló megtekintése",
+        wifiAccess: "WiFi elérés",
+        features: "Funkciók",
+        explainRun: "Járat kifejtése",
+        addToCalendar: "Hozzáadás a naptárhoz",
     },
     en: {
         appName: "Menetrendek - Timetable search engine for Hungary",
@@ -248,6 +262,13 @@ const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
         stopsForX: "Stops for {0}",
         realtimeTransitMap: "Realtime transit map",
         realtimeTransitMapSubtext: "View Hungary's realtime transit map.",
+        searchRoutes: "Search routes",
+        homepage: "Homepage",
+        viewAllStops: "View all stops",
+        wifiAccess: "WiFi access",
+        features: "Features",
+        explainRun: "Explain run",
+        addToCalendar: "Add to calendar",
     }
 }
 
