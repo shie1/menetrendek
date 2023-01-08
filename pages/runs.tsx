@@ -77,6 +77,7 @@ const Runs: NextPage = (props: any) => {
 }
 
 Runs.getInitialProps = async (ctx) => {
+    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
     let props: any = {}
     if (ctx.query['id']) {
         props.query = {
@@ -87,8 +88,8 @@ Runs.getInitialProps = async (ctx) => {
         }
     }
     if (props.query) {
-        props.runs = await apiCall("POST", "/api/runs", props.query)
-        props.delay = await apiCall("POST", "/api/runsDelay", props.query)
+        props.runs = await apiCall("POST", `${host}/api/runs`, props.query)
+        props.delay = await apiCall("POST", `${host}/api/runsDelay`, props.query)
     }
     return props
 }

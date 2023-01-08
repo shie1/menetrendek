@@ -250,9 +250,11 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
 MyApp.getInitialProps = async (context: any) => {
   const pageProps = await App.getInitialProps(context);
   let props: any = { ...pageProps }
+  const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + context.ctx.req?.headers.host) || "https://menetrendek.info")
   const subdomain = context.ctx.req?.headers.host.split('.')[0] || "";
   const lang = subdomain === "en" ? "en" : "hu"
-  props.strings = await apiCall("POST", (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info") + "/api/localization", { lang: lang })
+  console.log(lang)
+  props.strings = await apiCall("POST", host  + "/api/localization", { lang: lang })
   return props
 }
 

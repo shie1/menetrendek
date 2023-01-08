@@ -31,7 +31,7 @@ const Settings: NextPage = (props: any) => {
         </SEO>
         <Stack>
             {!props.prompt ? <></> :
-                <ContentCard icon={IconDownload} title="Alkalmazás letöltése">
+                <ContentCard icon={IconDownload} title={strings.downloadApp}>
                     <Stack spacing={4} sx={{ position: 'relative' }}>
                         <Text size="md" sx={{ maxWidth: dlBreak ? 'unset' : 'calc(100% - 130px)' }}>
                             {strings.settingsDownloadPitch}

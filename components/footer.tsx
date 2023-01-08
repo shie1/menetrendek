@@ -1,5 +1,4 @@
-import { createStyles, Text, Container, ActionIcon, Group, Image } from '@mantine/core';
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
+import { createStyles, Text, Container, Group } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { Logo } from './brand';
 import { LocalizedStrings } from '../pages/api/localization';

@@ -40,6 +40,7 @@ const Render: NextPage = (props: any) => {
 }
 
 Render.getInitialProps = async (ctx) => {
+    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
     let props: any = {}
     const date = new Date()
     const { from, to }: { from: Stop, to: Stop } = {
@@ -67,7 +68,7 @@ Render.getInitialProps = async (ctx) => {
         },
         index: Number(ctx.query['i'] as string),
     }
-    props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
+    props.results = (await apiCall("POST", `${host}/api/routes`, props.query)).results.talalatok[props.query.index]
     props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
     return props
 }

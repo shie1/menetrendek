@@ -271,6 +271,7 @@ const Routes: NextPage = (props: any) => {
 }
 
 Routes.getInitialProps = async (ctx) => {
+    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
     let props: any = {}
     if (ctx.query['fs'] && ctx.query['ts']) {
         const { from, to }: { from: Stop, to: Stop } = {
@@ -295,7 +296,7 @@ Routes.getInitialProps = async (ctx) => {
             }
         }
     }
-    props.results = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)
+    props.results = await apiCall("POST", `${host}/api/routes`, props.query)
     return props
 }
 

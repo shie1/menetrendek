@@ -255,6 +255,6 @@ export default function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    const { lang }: { lang: "hu" | "en" } = JSON.parse(req.body)
+    const lang: "hu" | "en" = JSON.parse(req.body).lang
     res.status(200).json(strings[lang])
 }
