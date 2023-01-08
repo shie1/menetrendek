@@ -251,9 +251,7 @@ MyApp.getInitialProps = async (context: any) => {
   const pageProps = await App.getInitialProps(context);
   let props: any = { ...pageProps }
   const host = getHost(context.ctx.req)
-  const subdomain = host.replace("http://",'').split('.')[0] || "";
-  const lang = subdomain === "en" ? "en" : "hu"
-  props.strings = await apiCall("POST", host + "/api/localization", { lang: lang })
+  props.strings = await apiCall("POST", host + "/api/localization", { lang: "hu" })
   return props
 }
 

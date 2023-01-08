@@ -1,5 +1,5 @@
 export const getHost = (req: any) => {
-    const host = req ? "http://" + req.headers.host : typeof window !== 'undefined' ? window.location.origin : ""
+    const host = process.env.NODE_ENV === 'development' ? "http://localhost:3000" : "https://menetrendek.info"
     return host
 }
 
