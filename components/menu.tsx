@@ -10,7 +10,6 @@ import { Input } from "../pages/_app";
 import { DatePicker } from "@mantine/dates";
 import { showNotification } from "@mantine/notifications";
 import { motion } from "framer-motion"
-import { LocalizedStrings } from "../pages/api/localization";
 import "dayjs/locale/hu"
 
 export const QuickMenu = ({ strings }: { strings: LocalizedStrings }) => {
@@ -62,9 +61,9 @@ export const QuickMenu = ({ strings }: { strings: LocalizedStrings }) => {
         <motion.div transition={{ duration: .2 }} animate={{ margin: !loading ? 0 : '-10px -10px', padding: !loading ? 0 : '10px 10px' }} style={{ position: 'relative' }}>
             <Group sx={{ display: 'flex', flexWrap: "wrap", '& > *': { flex: 8 }, '& .searchInput': { minWidth: '16rem', } }}>
                 <LoadingOverlay transitionDuration={200} radius="md" visible={loading} />
-                <StopInput strings={strings} variant="from" />
-                <StopInput strings={strings} variant="to" />
-                <DatePicker locale={strings.locale} transition="scale-y" transitionDuration={200} styles={(theme) => ({ dropdown: { borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, input: { fontSize: 16, border: 'unset', background: 'transparent' }, wrapper: { width: '100%', height: 36 }, root: { borderBottom: '3px solid #373A40', height: 45, display: 'flex', alignItems: 'center', } })} className="searchInput" value={date || new Date()} clearable={false} onChange={setDate} />
+                <StopInput variant="from" />
+                <StopInput variant="to" />
+                <DatePicker locale="hu" transition="scale-y" transitionDuration={200} styles={(theme) => ({ dropdown: { borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, input: { fontSize: 16, border: 'unset', background: 'transparent' }, wrapper: { width: '100%', height: 36 }, root: { borderBottom: '3px solid #373A40', height: 45, display: 'flex', alignItems: 'center', } })} className="searchInput" value={date || new Date()} clearable={false} onChange={setDate} />
                 <Button variant="gradient" onClick={(e) => {
                     e.preventDefault()
                     if (searchHref) {
