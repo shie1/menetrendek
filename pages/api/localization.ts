@@ -89,6 +89,7 @@ export type LocalizedStrings = {
     features: string,
     explainRun: string,
     addToCalendar: string,
+    locale?: string,
 }
 
 const strings: { hu: LocalizedStrings, en: LocalizedStrings } = {
@@ -277,5 +278,5 @@ export default function handler(
     res: NextApiResponse<any>
 ) {
     const lang: "hu" | "en" = JSON.parse(req.body).lang
-    res.status(200).json(strings[lang])
+    res.status(200).json({ locale: lang, ...strings[lang] })
 }
