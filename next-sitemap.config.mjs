@@ -2,7 +2,7 @@
 const config = {
     siteUrl: process.env.SITE_URL || 'https://menetrendek.info',
     generateRobotsTxt: true,
-    exclude: ['/render'],
+    exclude: ['/render', '/settings', '/route', '/routes', '/runs'],
     alternateRefs: [
         {
             href: 'https://en.menetrendek.info',
