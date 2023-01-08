@@ -1,5 +1,5 @@
 export const getHost = (req: any) => {
-    return (process.env.NODE_ENV === "development" ? "http://localhost:3000" : (req ? "https://" + req.headers.host : "https://menetrendek.info"))
+    return req ? (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://" + req.headers.host) : ""
 }
 
 export const apiCall = async (method: "GET" | "POST", url: string, body?: any) => {
