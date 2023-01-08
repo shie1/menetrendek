@@ -1,7 +1,7 @@
-import { createStyles, Text, Container, ActionIcon, Group, Image } from '@mantine/core';
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram } from '@tabler/icons';
+import { createStyles, Text, Container, Group } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { Logo } from './brand';
+import { LocalizedStrings } from '../pages/api/localization';
 
 const useStyles = createStyles((theme) => ({
     footer: {
@@ -103,7 +103,7 @@ interface FooterLinksProps {
     }[];
 }
 
-export function Footer({ data }: FooterLinksProps) {
+export function Footer({ data, strings }: FooterLinksProps & { strings: LocalizedStrings }) {
     const { classes } = useStyles();
     const router = useRouter()
 
@@ -144,7 +144,7 @@ export function Footer({ data }: FooterLinksProps) {
                 <div className={classes.logo}>
                     <Logo size={30} />
                     <Text weight={30} size="xs" color="dimmed" className={classes.description}>
-                        Menetrendek <br /> A modern menetrend kereső
+                        Menetrendek <br /> {strings.slogan}
                     </Text>
                 </div>
                 <div className={classes.groups}>{groups}</div>

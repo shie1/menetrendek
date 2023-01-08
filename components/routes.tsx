@@ -17,6 +17,7 @@ import useColors from "./colors"
 import { StopIcon } from "../components/stops"
 import { memo } from "react";
 import { useCookies } from "react-cookie";
+import { LocalizedStrings } from "../pages/api/localization";
 
 export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
@@ -24,21 +25,24 @@ export const calcDisc = (fee: number, discount?: number) => {
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
 
-export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: "átszállás" | "leszállás" | "felszállás", prev: any, network: number, size?: number }) => {
+export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props }: { type: number, muvelet: string, prev: any, network: number, size?: number }) => {
     if (!size) { size = 20 }
     switch (type) {
         case 1:
         default:
             switch (muvelet) {
+                case 'transfer':
                 case 'átszállás':
+                default:
                     return <StopIcon size={size} network={prev?.network} />
                 case 'leszállás':
                     return <StopIcon size={size} network={prev?.network} />
                 case 'felszállás':
-                    return !prev ? <IconArrowBigDown size={size} /> : prev?.muvelet === "átszállás" ? <IconWalk size={size} /> : <StopIcon size={size} network={network} />
+                    return !prev ? <IconArrowBigDown size={size} /> : prev?.muvelet === "átszállás" || prev?.muvelet === "transfer" ? <IconWalk size={size} /> : <StopIcon size={size} network={network} />
             }
         case 2:
             switch (muvelet) {
+                case 'transfer':
                 case 'átszállás':
                     return <IconWalk size={size} />
                 case 'leszállás':
@@ -49,7 +53,7 @@ export const ActionBullet = memo(({ type, muvelet, prev, network, size, ...props
     }
 })
 
-export const RouteSummary = memo(({ item, query }: { item: any, query: any }) => {
+export const RouteSummary = memo(({ item, query, strings }: { item: any, query: any, strings: LocalizedStrings }) => {
     const { warning } = useColors()
     const [cookies] = useCookies(["discount-percentage"])
     return (<Stack spacing={0}>
@@ -68,7 +72,7 @@ export const RouteSummary = memo(({ item, query }: { item: any, query: any }) =>
             </Grid.Col>
         </Grid>
         <Divider size="lg" my={6} />
-        <Text align="center">{item.atszallasok_szama} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
+        <Text align="center">{item.atszallasok_szama} {strings.transfer} {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
         <Group position="center" spacing='sm'>
             <Text size="sm">{item.osszido}</Text>
             {item.totalFare > 0 ? <Text size="sm">{currency.format(calcDisc(item.totalFare, query.user ? query.user.discount : cookies["discount-percentage"]))}</Text> : <></>}
@@ -77,7 +81,7 @@ export const RouteSummary = memo(({ item, query }: { item: any, query: any }) =>
     </Stack>)
 })
 
-export const RouteExposition = memo(({ details, query, iconSize, withInfoButton }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean }) => {
+export const RouteExposition = memo(({ details, query, iconSize, withInfoButton, strings }: { details: any, query: any, iconSize?: number, withInfoButton?: boolean, strings: LocalizedStrings }) => {
     const router = useRouter()
     const [cookies] = useCookies(["action-timeline-type", "discount-percentage"])
     return (<Timeline active={99}>
@@ -93,7 +97,7 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton 
                     {!dataItem.jaratinfo ? <></> : <>
                         {!withInfoButton ? <></> : <Group position="right">
                             <Link href={`/runs?id=${dataItem.runId}&s=${dataItem.jaratinfo.StartStation}&e=${dataItem.jaratinfo.EndStation}${!router.query['d'] ? '' : '&d=' + router.query['d']}`}>
-                                <ActionIcon role="button" aria-label="Összes megálló megtekintése" sx={{ position: 'absolute', top: 0 }}>
+                                <ActionIcon role="button" aria-label={strings.viewAllStops} sx={{ position: 'absolute', top: 0 }}>
                                     <IconInfoCircle />
                                 </ActionIcon>
                             </Link>
@@ -102,25 +106,25 @@ export const RouteExposition = memo(({ details, query, iconSize, withInfoButton 
                             {!dataItem.jaratinfo.fare || dataItem.jaratinfo.fare < 0 ? <></> :
                                 <Text size="sm">{currency.format(calcDisc(dataItem.jaratinfo.fare, query.user ? query.user.discount : cookies["discount-percentage"]))}</Text>}
                             {!dataItem.jaratinfo.travelTime ? <></> :
-                                <Text size="sm">{dataItem.jaratinfo.travelTime} perc</Text>}
+                                <Text size="sm">{dataItem.jaratinfo.travelTime} {strings.minute}</Text>}
                             {!dataItem.jaratszam ? <></> :
                                 <Text size="sm">{dataItem.jaratszam}</Text>}
                         </Group>
                         {!dataItem.vegallomasok ? <></> :
                             <Text size="sm">{dataItem.vegallomasok}</Text>}
                         {!dataItem.jaratinfo.kozlekedik ? <></> :
-                            <Text size="sm">Közlekedik: {dataItem.jaratinfo.kozlekedik}</Text>}
+                            <Text size="sm">{strings.operates} {dataItem.jaratinfo.kozlekedik}</Text>}
                         {!dataItem.jaratinfo.ToBay ? <></> :
-                            <Text size="sm">Kocsiállás érkezéskor: {dataItem.jaratinfo.ToBay}</Text>}
+                            <Text size="sm">{strings.platform} {strings.atArrival}: {dataItem.jaratinfo.ToBay}</Text>}
                         <Space h={2} />
                         {!dataItem.jaratinfo.wifi ? <></> :
-                            <ThemeIcon role="status" aria-label="Wi-Fi elérés" size="lg" variant="light" radius="xl">
+                            <ThemeIcon role="status" aria-label={strings.wifiAccess} size="lg" variant="light" radius="xl">
                                 <IconWifi size={25} />
                             </ThemeIcon>
                         }
                     </>}
                     {!dataItem.TimeForChange ? <></> :
-                        <Text size="sm">Idő az átszállásra: {dataItem.TimeForChange} perc</Text>}
+                        <Text size="sm">{strings.timeForTransfer} {dataItem.TimeForChange} {strings.minute}</Text>}
                     {dataItem.muvelet !== "leszállás" ? <Space h="md" /> : <></>}
                 </Stack>
             </Timeline.Item>)

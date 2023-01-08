@@ -10,6 +10,7 @@ import { MdTram } from "react-icons/md"
 import { Input, MyWindow, OneMenu } from "../pages/_app";
 import { useCallback } from "react";
 import { useContext } from "react";
+import { LocalizedStrings } from "../pages/api/localization";
 
 export interface Stop {
     value?: string
@@ -74,7 +75,7 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
 
 export type StopSetter = (a: Stop | undefined) => void
 
-export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: CSSProperties }) => {
+export const StopInput = ({ variant, style, strings }: { variant: "from" | "to", style?: CSSProperties, strings: LocalizedStrings }) => {
     const { oneMenu, setOneMenu } = useContext(OneMenu)
     const [data, setData] = useState<Array<Stop & any>>([])
     const i = useContext(Input)
@@ -134,23 +135,23 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
                     </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown role="menu">
-                    <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
+                    <Menu.Label>{variant === 'from' ? strings.fromWhere : strings.toWhere}</Menu.Label>
                     <Menu.Item role="menuitem" onClick={() => {
                         setInput("")
                         setSelected(undefined)
                     }} color="red" icon={<IconX />}>
-                        Mező kiürítése
+                        {strings.clearField}
                     </Menu.Item>
                     <Menu.Divider role="separator" />
-                    <Menu.Label>Minden mező</Menu.Label>
+                    <Menu.Label>{strings.allFields}</Menu.Label>
                     <Menu.Item role="menuitem" onClick={swap} icon={<IconRefresh />}>
-                        Mezők felcserélése
+                        {strings.swapFields}
                     </Menu.Item>
                     <Menu.Item role="menuitem" onClick={() => {
                         i.setInput({ from: "", to: "" })
                         i.setSelection({ from: undefined, to: undefined })
                     }} color="red" icon={<IconClearAll />}>
-                        Minden mező kiürítése
+                        {strings.clearFields}
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>}
@@ -163,7 +164,7 @@ export const StopInput = ({ variant, style }: { variant: "from" | "to", style?: 
         onChange={(e) => { setSelected(undefined); setInput(e) }}
         value={selected?.value || input || ""}
         limit={99}
-        placeholder={variant === "from" ? "Honnan?" : "Hova?"}
+        placeholder={variant === "from" ? strings.fromWhere : strings.toWhere}
         rightSectionWidth={42}
     />)
 }

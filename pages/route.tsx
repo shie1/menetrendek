@@ -1,10 +1,10 @@
 import { Paper, Space, Container, LoadingOverlay } from "@mantine/core";
 import type { NextPage } from "next"
 import { dateString } from "../client"
-import { apiCall } from "../components/api"
+import { apiCall, getHost } from "../components/api"
 import { Stop } from "../components/stops"
 import dynamic from "next/dynamic"
-import { appDesc, appShortName, appThumb } from "./_document"
+import { appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo"
 
 const RouteSummary = dynamic(() => import('../components/routes').then((mod) => mod.RouteSummary), {
@@ -15,12 +15,12 @@ const RouteExposition = dynamic(() => import('../components/routes').then((mod) 
 })
 
 const Route: NextPage = (props: any) => {
-    const { results, details, query } = props
+    const { results, details, query, strings } = props
 
     return (<>
         <SEO
-            title={`Tömegközlekedési útvonal: ${results.departureCity} - ${results.arrivalCity}`}
-            description={appDesc}
+            title={`${strings.transitRoute}: ${results.departureCity} - ${results.arrivalCity}`}
+            description={strings.appDescription}
             image={appThumb}
         >
             <title>{results.departureCity} - {results.arrivalCity} | {appShortName}</title>
@@ -37,15 +37,16 @@ const Route: NextPage = (props: any) => {
                 borderRadius: theme.radius.lg,
             })} p="lg" radius="lg" style={{ position: 'relative', minHeight: '8rem' }}>
                 <LoadingOverlay visible={!results && !details} />
-                <RouteSummary item={results} query={query} />
+                <RouteSummary strings={strings} item={results} query={query} />
                 <Space h='md' />
-                <RouteExposition iconSize={25} details={details} withInfoButton query={query} />
+                <RouteExposition strings={strings} iconSize={25} details={details} withInfoButton query={query} />
             </Paper>
         </Container>
     </>)
 }
 
 Route.getInitialProps = async (ctx) => {
+    const host = getHost(ctx.req)
     let props: any = {}
     const date = new Date()
     const { from, to }: { from: Stop, to: Stop } = {
@@ -70,8 +71,8 @@ Route.getInitialProps = async (ctx) => {
         },
         index: Number(ctx.query['i'] as string),
     }
-    props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
-    props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
+    props.results = (await apiCall("POST", `${host}/api/routes`, props.query)).results.talalatok[props.query.index]
+    props.details = await apiCall("POST", `${host}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
     props.asPath = ctx.asPath
     return props
 }

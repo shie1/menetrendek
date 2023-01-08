@@ -13,17 +13,17 @@ const MP = memo((props: any) => {
     return <MapView {...props} />
 })
 
-const Map: NextPage = () => {
+const Map: NextPage = (props: any) => {
     return (<PageTransition>
         <SEO
-            title="Valós idejű tömegközlekedési térkép"
-            description="Tekintse meg magyarország valós idejű tömegközlekedési térképét."
+            title={props.strings.realtimeTransitMap}
+            description={props.strings.realtimeTransitMapSubtext}
             image={appThumb}
         >
-            <title>Térkép | {appShortName}</title>
+            <title>{props.strings.map} | {appShortName}</title>
             <Canonical url="https://menetrendek.info/map" />
         </SEO>
-        <MP />
+        <MP {...props} />
     </PageTransition>)
 }
 

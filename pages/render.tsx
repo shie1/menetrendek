@@ -2,12 +2,13 @@ import { Box, Center, Group, MantineProvider, Paper, Space, Text } from "@mantin
 import { IconLink } from "@tabler/icons";
 import type { NextPage } from "next";
 import { dateString } from "../client";
-import { apiCall } from "../components/api";
+import { apiCall, getHost } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
 import { Stop } from "../components/stops";
+import { LocalizedStrings } from "./api/localization";
 
 const Render: NextPage = (props: any) => {
-    const { details, results, query } = props
+    const { details, results, query, strings } = props
 
     return (<MantineProvider withGlobalStyles withNormalizeCSS theme={{
         colorScheme: 'dark',
@@ -25,9 +26,9 @@ const Render: NextPage = (props: any) => {
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
             <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', maxWidth: 600 }}>
                 <Paper p="sm" radius="lg">
-                    <RouteSummary item={results} query={query} />
+                    <RouteSummary strings={strings} item={results} query={query} />
                     <Space h='md' />
-                    <RouteExposition iconSize={25} details={details} query={query} />
+                    <RouteExposition strings={strings} iconSize={25} details={details} query={query} />
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />
@@ -39,6 +40,7 @@ const Render: NextPage = (props: any) => {
 }
 
 Render.getInitialProps = async (ctx) => {
+    const host = getHost(ctx.req)
     let props: any = {}
     const date = new Date()
     const { from, to }: { from: Stop, to: Stop } = {
@@ -66,7 +68,7 @@ Render.getInitialProps = async (ctx) => {
         },
         index: Number(ctx.query['i'] as string),
     }
-    props.results = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, props.query)).results.talalatok[props.query.index]
+    props.results = (await apiCall("POST", `${host}/api/routes`, props.query)).results.talalatok[props.query.index]
     props.details = await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { fieldvalue: props.results.kifejtes_postjson, nativeData: props.results.nativeData, datestring: ctx.query['d'] as string })
     return props
 }

@@ -19,6 +19,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Logo } from './brand';
 import Link from "next/link"
+import { LocalizedStrings } from '../pages/api/localization';
 
 const useStyles = createStyles((theme) => ({
     header: {
@@ -72,7 +73,7 @@ interface HeaderSearchProps {
     links: { link: string; label: string; links?: { link: string; label: string }[] }[];
 }
 
-export function Header({ links }: HeaderSearchProps) {
+export function Header({ links, strings }: HeaderSearchProps & {strings: LocalizedStrings}) {
     const [opened, { toggle }] = useDisclosure(false);
     const { classes } = useStyles();
     const router = useRouter()
@@ -142,7 +143,7 @@ export function Header({ links }: HeaderSearchProps) {
         <MHeader role="banner" sx={{ '& *': { zIndex: 2 } }} height={56} className={classes.header} mb={router.pathname === "/map" ? 0 : 120}>
             <Container>
                 <div className={classes.inner}>
-                    <Link href='/' role="link" aria-label="Főoldal">
+                    <Link href='/' role="link" aria-label={strings.homepage}>
                         <Group spacing='xs' noWrap style={{ cursor: 'pointer' }}>
                             <Logo size={40} />
                             <MediaQuery smallerThan="xs" styles={{ display: 'none' }}>

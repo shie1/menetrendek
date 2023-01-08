@@ -76,7 +76,7 @@ export const stationsNear = async (query: any) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const routes = async (query: any) => {
+export const routes = async (query: any, lang: string) => {
     const rb: Query = query
     const date = new Date(rb.time.date)
     const body = {
@@ -102,7 +102,7 @@ export const routes = async (query: any) => {
             "discountPercent": "0",
             "utirany": "oda",
             "var": '0',
-            "lang": "hu",
+            "lang": lang,
             "dayPartText": "Egész nap",
             "orderText": "Indulási idő",
             "networks": allNetworks,
@@ -111,13 +111,13 @@ export const routes = async (query: any) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
-export const exposition = async (fieldvalue: any, nativeData: any, datestring: string) => {
+export const exposition = async (fieldvalue: any, nativeData: any, datestring: string, lang: string) => {
     const body = {
         "debug": 0,
         "type": "",
         "query": "jarat_kifejtes_text_jsonC",
         "datum": datestring,
-        "lang": "hu",
+        "lang": lang,
         "fieldvalue": fieldvalue,
         "nativeData": nativeData
     }

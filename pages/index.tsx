@@ -1,18 +1,21 @@
 import type { NextPage } from "next";
 import PageTransition from "../components/pageTransition";
-import { appDesc, appName, appShortName, appThumb } from "./_document";
+import { appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 import { useEffect } from "react";
+import { LocalizedStrings } from "./api/localization";
 
-const Home: NextPage = () => {
+const Home: NextPage = (props: any) => {
+    const strings: LocalizedStrings = props.strings
+
     useEffect(() => {
         document.querySelector("iframe")
     }, [])
 
     return (<PageTransition>
         <SEO
-            title={appName}
-            description={appDesc}
+            title={strings.appName}
+            description={strings.appDescription}
             image={appThumb}
         >
             <title>{appShortName}</title>

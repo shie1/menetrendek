@@ -22,6 +22,7 @@ import { apiCall } from "./api";
 import { union, uniqBy } from "lodash";
 import { StopIcon } from "./stops";
 import { useCookies } from "react-cookie";
+import { LocalizedStrings } from "../pages/api/localization";
 
 require("proj4leaflet")
 require("leaflet.markercluster")
@@ -43,7 +44,7 @@ const getExtent = (map: L.Map, pad: number = 0) => {
     return [a.lng, a.lat, b.lng, b.lat]
 }
 
-export const RouteMapView = ({ id, details, exposition, query }: { id: any, details: any, exposition: any, query: any }) => {
+export const RouteMapView = ({ id, details, exposition, query, strings }: { id: any, details: any, exposition: any, query: any, strings: LocalizedStrings }) => {
     const [cookies] = useCookies(["action-timeline-type"])
     const stops = !details ? undefined : (details.results.features as Array<any>).filter((item) => item.geometry.type === "Point")
     const theme = useMantineTheme()
@@ -119,7 +120,7 @@ export const RouteMapView = ({ id, details, exposition, query }: { id: any, deta
 
     return (<Box sx={{ minHeight: '20rem', position: 'relative', display: 'flex', flexWrap: 'wrap', '& > *': { flex: '40%', minWidth: '20rem' } }} mb="sm">
         <LoadingOverlay visible={!details} />
-        <Box aria-label="Térkép" id={`map-${id}`} sx={({ minHeight: '20rem', fontFamily: 'unset !important' })} />
+        <Box aria-label={strings.map} id={`map-${id}`} sx={({ minHeight: '20rem', fontFamily: 'unset !important' })} />
         <Card sx={(theme) => ({ borderRadius: 0 })}>
             <Timeline active={Infinity}>
                 {!stops ? <></> : stops.map((stop: any, i: any) => {
@@ -187,7 +188,7 @@ export const RouteMapView = ({ id, details, exposition, query }: { id: any, deta
     </Box>)
 }
 
-export const MapView = () => {
+export const MapView = ({ strings }: { strings: LocalizedStrings }) => {
     const tracking = useRef<any>({ runs: {}, stops: {} })
     const routeLine = useRef<undefined | L.Layer>()
     const [cookies] = useCookies(["blip-limit"])
@@ -328,6 +329,6 @@ export const MapView = () => {
     }, [])
 
     return (<>
-        <Box aria-label="Térkép" id="map-main" sx={({ minHeight: 'calc(100vh - 56px)', fontFamily: 'unset !important', })} />
+        <Box aria-label={strings.map} id="map-main" sx={({ minHeight: 'calc(100vh - 56px)', fontFamily: 'unset !important', })} />
     </>)
 }

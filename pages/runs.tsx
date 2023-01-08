@@ -2,15 +2,15 @@ import { Card, Container, Group, Stack, Text, Timeline } from "@mantine/core";
 import { IconArrowBarRight, IconArrowBarToRight, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { apiCall } from "../components/api";
+import { apiCall, getHost } from "../components/api";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
-import { appDesc, appShortName, appThumb } from "./_document";
+import { appShortName, appThumb } from "./_document";
 import { Canonical, SEO } from "../components/seo";
 
 const Runs: NextPage = (props: any) => {
-    const { query, runs } = props
+    const { query, runs, strings } = props
     const [delay, setDelay] = useState<any>(props.delay)
     const [cityState, setCityState] = useState(-1)
 
@@ -26,8 +26,8 @@ const Runs: NextPage = (props: any) => {
 
     return (<PageTransition>
         <SEO
-            title={`${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()} járat megállói`}
-            description={appDesc}
+            title={props.strings.stopsForX.replace('{0}', `${runs.results.mezo.toString()}/${runs.results.jaratszam.toString()}`)}
+            description={props.strings.appDescription}
             image={appThumb}
         >
             <title>{runs.results.mezo.toString()}/{runs.results.jaratszam.toString()} | {appShortName}</title>
@@ -40,7 +40,7 @@ const Runs: NextPage = (props: any) => {
                         <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
                         <Text size="xl" mb={4}>{runs?.results.kozlekedteti}</Text>
                         <Text size="sm" align="center">{runs?.results.kozlekedik}</Text>
-                        {!delay?.result.data.length ? <></> : <Text size="sm">Késés: {delay?.result.data[0].delay}</Text>}
+                        {!delay?.result.data.length ? <></> : <Text size="sm">{strings.delay}: {delay?.result.data[0].delay}</Text>}
                     </Stack>
                     <Timeline active={99}>
                         {!runs ? <></> :
@@ -73,10 +73,11 @@ const Runs: NextPage = (props: any) => {
                 </Stack>
             </Card>
         </Container>
-    </PageTransition>)
+    </PageTransition >)
 }
 
 Runs.getInitialProps = async (ctx) => {
+    const host = getHost(ctx.req)
     let props: any = {}
     if (ctx.query['id']) {
         props.query = {
@@ -87,8 +88,8 @@ Runs.getInitialProps = async (ctx) => {
         }
     }
     if (props.query) {
-        props.runs = await apiCall("POST", "/api/runs", props.query)
-        props.delay = await apiCall("POST", "/api/runsDelay", props.query)
+        props.runs = await apiCall("POST", `${host}/api/runs`, props.query)
+        props.delay = await apiCall("POST", `${host}/api/runsDelay`, props.query)
     }
     return props
 }
