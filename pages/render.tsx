@@ -2,7 +2,7 @@ import { Box, Center, Group, MantineProvider, Paper, Space, Text } from "@mantin
 import { IconLink } from "@tabler/icons";
 import type { NextPage } from "next";
 import { dateString } from "../client";
-import { apiCall } from "../components/api";
+import { apiCall, getHost } from "../components/api";
 import { RouteExposition, RouteSummary } from "../components/routes";
 import { Stop } from "../components/stops";
 import { LocalizedStrings } from "./api/localization";
@@ -40,7 +40,7 @@ const Render: NextPage = (props: any) => {
 }
 
 Render.getInitialProps = async (ctx) => {
-    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
+    const host = getHost(ctx.req)
     let props: any = {}
     const date = new Date()
     const { from, to }: { from: Stop, to: Stop } = {

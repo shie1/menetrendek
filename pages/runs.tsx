@@ -2,7 +2,7 @@ import { Card, Container, Group, Stack, Text, Timeline } from "@mantine/core";
 import { IconArrowBarRight, IconArrowBarToRight, IconMapPin } from "@tabler/icons";
 import { NextPage } from "next";
 import { useEffect, useState } from "react";
-import { apiCall } from "../components/api";
+import { apiCall, getHost } from "../components/api";
 import { dateString } from "../client";
 import PageTransition from "../components/pageTransition";
 import { StopIcon } from "../components/stops";
@@ -77,7 +77,7 @@ const Runs: NextPage = (props: any) => {
 }
 
 Runs.getInitialProps = async (ctx) => {
-    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
+    const host = getHost(ctx.req)
     let props: any = {}
     if (ctx.query['id']) {
         props.query = {

@@ -16,7 +16,7 @@ import { useUserAgent } from '../components/ua';
 import { appShortName } from './_document';
 import { useRouter } from 'next/dist/client/router';
 import { SEO } from '../components/seo';
-import { apiCall } from '../components/api';
+import { apiCall, getHost } from '../components/api';
 import { LocalizedStrings } from './api/localization';
 import App from 'next/app';
 
@@ -250,7 +250,7 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
 MyApp.getInitialProps = async (context: any) => {
   const pageProps = await App.getInitialProps(context);
   let props: any = { ...pageProps }
-  const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + context.ctx.req?.headers.host) || "https://menetrendek.info")
+  const host = getHost(context.ctx.req)
   const subdomain = context.ctx.req?.headers.host.split('.')[0] || "";
   const lang = subdomain === "en" ? "en" : "hu"
   props.strings = await apiCall("POST", host + "/api/localization", { lang: lang })

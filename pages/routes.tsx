@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { dateString } from "../client";
 import { Stop } from "../components/stops";
 import { useCookies } from "react-cookie";
-import { apiCall } from "../components/api";
+import { apiCall, getHost } from "../components/api";
 import { showNotification } from "@mantine/notifications";
 import {
     IconCalendarEvent,
@@ -271,7 +271,7 @@ const Routes: NextPage = (props: any) => {
 }
 
 Routes.getInitialProps = async (ctx) => {
-    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
+    const host = getHost(ctx.req)
     let props: any = {}
     if (ctx.query['fs'] && ctx.query['ts']) {
         const { from, to }: { from: Stop, to: Stop } = {

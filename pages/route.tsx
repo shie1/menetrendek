@@ -1,7 +1,7 @@
 import { Paper, Space, Container, LoadingOverlay } from "@mantine/core";
 import type { NextPage } from "next"
 import { dateString } from "../client"
-import { apiCall } from "../components/api"
+import { apiCall, getHost } from "../components/api"
 import { Stop } from "../components/stops"
 import dynamic from "next/dynamic"
 import { appShortName, appThumb } from "./_document";
@@ -46,7 +46,7 @@ const Route: NextPage = (props: any) => {
 }
 
 Route.getInitialProps = async (ctx) => {
-    const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + ctx.req?.headers.host) || "https://menetrendek.info")
+    const host = getHost(ctx.req)
     let props: any = {}
     const date = new Date()
     const { from, to }: { from: Stop, to: Stop } = {
