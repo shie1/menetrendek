@@ -121,7 +121,7 @@ export const StopInput = ({ variant, style, strings }: { variant: "from" | "to",
         style={style}
         data={data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i)}
         ref={ref}
-        switchDirectionOnFlip
+        switchDirectionOnFlip={false}
         size="md"
         className="searchInput"
         variant="unstyled"
