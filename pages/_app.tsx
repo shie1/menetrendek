@@ -253,7 +253,6 @@ MyApp.getInitialProps = async (context: any) => {
   const host = (process.env.NODE_ENV === "development" ? "http://localhost:3000" : ("https://" + context.ctx.req?.headers.host) || "https://menetrendek.info")
   const subdomain = context.ctx.req?.headers.host.split('.')[0] || "";
   const lang = subdomain === "en" ? "en" : "hu"
-  console.log(lang)
   props.strings = await apiCall("POST", host  + "/api/localization", { lang: lang })
   return props
 }
