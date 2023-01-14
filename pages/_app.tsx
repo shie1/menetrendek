@@ -159,7 +159,7 @@ function MyApp({ Component, pageProps, strings }: AppProps & { strings: Localize
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
             <Container aria-current="page" fluid={router.pathname === "/map"} p={router.pathname === "/map" ? 0 : 'md'}>
               <AnimatedLayout>
-                {router.pathname === "/map" ? <></> : <QuickMenu strings={strings} />}
+                {["/map"].find((el) => el === router.pathname) ? <></> : <QuickMenu strings={strings} />}
                 <AnimatePresence mode='wait'>
                   <Component {...pageProps} />
                 </AnimatePresence>
