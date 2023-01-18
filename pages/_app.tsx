@@ -5,7 +5,7 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { appShortName } from './_document';
 import { SEO } from '../components/seo';
 import { NavbarMinimal } from '../components/nav';
-import { IconArrowsUpDown, IconBrandGithub, IconCoin, IconHome, IconSearch, IconSettings, IconStar } from '@tabler/icons';
+import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCoin, IconHome, IconMap, IconSearch, IconSettings, IconStar } from '@tabler/icons';
 import { SpotlightProvider, openSpotlight } from "@mantine/spotlight"
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
@@ -31,6 +31,11 @@ function MyApp({ Component, pageProps }: AppProps) {
           }
         }}
         actions={[
+          {
+            title: "Városok",
+            icon: <IconBuilding />,
+            onTrigger: () => { router.push("/cities") },
+          },
           {
             "title": "Beállítások",
             icon: <IconSettings />,
@@ -63,17 +68,30 @@ function MyApp({ Component, pageProps }: AppProps) {
               label: 'Keresés',
               href: '#',
               onClick: openSpotlight,
-            }, {
+            },
+            {
               icon: IconHome,
-              label: 'Gyors elérés',
+              label: 'Főoldal',
               href: '/',
-            }, {
+            },
+            {
+              icon: IconMap,
+              label: 'Térkép',
+              href: '/map',
+            },
+            {
+              icon: IconBuilding,
+              label: 'Városok',
+              href: '/cities',
+            },
+            {
               icon: IconSettings,
               label: 'Beállítások',
               href: '/settings',
-            }]} />
-          <Box ml={mobileBreakpoint ? 0 : 80}>
-            <Container p="md" mt="xl">
+            }
+          ]} />
+          <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0}>
+            <Container p="lg" mt="xl">
               <Component {...pageProps} />
             </Container>
           </Box>
