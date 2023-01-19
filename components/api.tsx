@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosHeaders, RawAxiosRequestConfig } from 'axios'
 
 export const getHost = (req: any) => {
     const host = process.env.NODE_ENV === 'development' ? "http://localhost:3000" : "https://menetrendek.info"

@@ -9,9 +9,9 @@ const Cities: NextPage = (props: any) => {
     return (<>
         <PageHeading icon={IconBuilding} title="Városok" subtitle="Itt találod a legnépszerűbb városokat" />
         <Grid mt="sm">
-            {props.topCities?.map((city: any) => {
+            {props.topCities.map((city: any) => {
                 return (<Grid.Col span={12} xs={6} sm={4} key={city.id}>
-                    <CityCard image={city.image} title={city.name} county={city.county} description={`${city.stops} megálló`} />
+                    <CityCard id={city.id} image={city.image} title={city.name} county={{ name: city.county, id: city.county_id }} description={`${city.stops} megálló`} />
                 </Grid.Col>)
             })}
         </Grid>
