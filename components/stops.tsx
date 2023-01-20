@@ -89,11 +89,12 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         dropdownComponent={Dropdown}
         onChange={(e) => { setSelected(undefined); setInput(e) }}
         onItemSubmit={(e: any) => { setSelected(e); setInput(e.value) }}
-        styles={{
+        styles={(theme) => ({
             dropdown: {
-                background: '#1A1B1E'
+                background: '#1A1B1E',
+                borderRadius: theme.radius.md
             }
-        }}
+        })}
         size="md"
         sx={(theme) => ({ borderBottom: `2px solid ${theme.colors.gray[8]}` })}
         itemComponent={AutoCompleteItem}
