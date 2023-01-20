@@ -1,5 +1,3 @@
-import { Query } from "./pages/_app"
-
 const api = "https://menetrendek.hu/menetrend/interface/index.php"
 
 const allNetworks = [
@@ -17,31 +15,6 @@ const allNetworks = [
 
 export const dateString = (date: Date) => {
     return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-}
-
-export const parseKozlekedik = (kozlekedik: string) => {
-    const date = /([MDCLXVI]+[.\-][0-9]+)(\-[A-ző]+)/
-
-    const days = ["hétfő", "kedd", "szerda", "csütörtök", "péntek", "szombat", "vasárnap"]
-    const except = "kivéve"
-    const workday = "munkanap"
-    const nonwork = "munkaszünet"
-    const before = "megelőző"
-    const other = ["iskola", "nap", "és"]
-    const keywords = [...days, except, workday, nonwork, before, ...other]
-    const filterKeywords = () => {
-        let res = []
-        for (let word of kozlekedik.split(" ")) {
-            if (word.match(date)) {
-                res.push(word.match(date)![1].replace('-', '.'))
-            }
-            for (let kword of keywords) {
-                if (word.includes(kword)) { res.push(kword) }
-            }
-        }
-        return res
-    }
-    return filterKeywords()
 }
 
 export const autocomplete = async (query: any) => {
@@ -77,21 +50,19 @@ export const stationsNear = async (query: any) => {
 }
 
 export const routes = async (query: any, lang: string) => {
-    const rb: Query = query
-    const date = new Date(rb.time.date)
     const body = {
         "func": "getRoutes",
         "params": {
-            "datum": `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`,
+            "datum": query.date,
             "ext_settings": "block",
-            "honnan_ls_id": rb.from!.ls_id,
-            "honnan_settlement_id": rb.from!.s_id,
-            "honnan_site_code": rb.from!.site_code,
-            "hour": rb.time.hours || 0,
-            "min": rb.time.minutes || 0,
-            "hova_ls_id": rb.to!.ls_id,
-            "hova_settlement_id": rb.to!.s_id,
-            "hova_site_code": rb.to!.site_code,
+            "honnan_ls_id": query.from.ls_id || 0,
+            "honnan_settlement_id": query.from!.s_id,
+            "honnan_site_code": query.from!.site_code || "",
+            "hour": 0,
+            "min": 0,
+            "hova_ls_id": query.to.ls_id || 0,
+            "hova_settlement_id": query.to!.s_id,
+            "hova_site_code": query.to!.site_code || "",
             "maxatszallas": '5',
             "maxwalk": 1000,
             "timeWindow": 0,

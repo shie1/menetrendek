@@ -74,7 +74,7 @@ export function NavbarMinimal({ data, doBreak }: { data: Array<NavbarLinkProps>,
 
     return (
         <Navbar p={!doBreak ? "md" : undefined} sx={{ position: "fixed", display: "flex", ...(doBreak ? { bottom: 0, alignItems: "center", justifyContent: "center", } : {}) }} height={doBreak ? navSize : "100vh"} width={{ base: !doBreak ? navSize : "100vw" }}>
-            <FluidStack doBreak={doBreak}>
+            <Stack>
                 {doBreak ? <></> : <Center>
                     <Logo size={45} />
                 </Center>}
@@ -83,7 +83,7 @@ export function NavbarMinimal({ data, doBreak }: { data: Array<NavbarLinkProps>,
                         {links}
                     </FluidStack>
                 </Navbar.Section>
-            </FluidStack>
+            </Stack>
         </Navbar >
     );
 }

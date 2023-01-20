@@ -1,8 +1,9 @@
-import { forwardRef, useContext, useState } from "react";
+import { forwardRef, useContext, useEffect, useState } from "react";
 import { Input } from "../pages/_app";
 import { MdTram } from "react-icons/md"
-import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text } from "@mantine/core/";
+import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader } from "@mantine/core/";
 import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons";
+import { apiCall } from "./api";
 
 export interface Stop {
     value?: string
@@ -69,10 +70,31 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     const i = useContext(Input)
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
     const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
+    const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (input) {
+            setLoading(true)
+            apiCall("POST", "/api/autocomplete", { input: input }).then((e) => { setData(e.map((e: any) => ({ ...e, value: e.stop_name }))) }).finally(() => setLoading(false))
+        } else {
+            setData([])
+        }
+    }, [input])
+
     return (<Autocomplete
-        icon={selected ? <StopIcon network={selected.network as number} /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
+        icon={selected ? <StopIcon network={selected.network as number} /> : loading ? <Loader size="sm" /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
+        placeholder={variant == 'from' ? 'Honnan?' : 'Hova?'}
         data={data}
-        size="lg"
+        value={selected?.value || input}
+        dropdownComponent={Dropdown}
+        onChange={(e) => { setSelected(undefined); setInput(e) }}
+        onItemSubmit={(e: any) => { setSelected(e); setInput(e.value) }}
+        styles={{
+            dropdown: {
+                background: '#1A1B1E'
+            }
+        }}
+        size="md"
         sx={(theme) => ({ borderBottom: `2px solid ${theme.colors.gray[8]}` })}
         itemComponent={AutoCompleteItem}
         variant="unstyled"
