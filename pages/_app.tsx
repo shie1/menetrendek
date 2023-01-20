@@ -1,6 +1,6 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app';
-import { Box, Container, MantineProvider } from '@mantine/core';
+import { Box, Container, LoadingOverlay, MantineProvider } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { appShortName } from './_document';
 import { SEO } from '../components/seo';
@@ -9,10 +9,35 @@ import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCoin, IconHome, Ic
 import { SpotlightProvider, openSpotlight } from "@mantine/spotlight"
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
+import { createContext, useEffect, useState } from 'react';
+import { Stop } from '../components/stops';
+
+export interface Selection {
+  from: Stop | undefined;
+  to: Stop | undefined;
+}
+export interface Input {
+  from: string;
+  to: string;
+}
+export const Input = createContext<{ selection: Selection, setSelection: (a: Selection) => void, input: Input, setInput: (a: Input) => void }>({ selection: { from: undefined, to: undefined }, setSelection: () => { }, input: { from: "", to: "" }, setInput: () => { } })
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
+  const [pageLoading, setPageLoading] = useState(false)
   const mobileBreakpoint = useMediaQuery("(max-width: 600px)")
+  const [[selection, setSelection], [input, setInput]] = [useState<Selection>({ to: undefined, from: undefined }), useState<Input>({ to: "", from: "" })]
+
+  useEffect(() => {
+    router.events.on('routeChangeStart', () => setPageLoading(true))
+    router.events.on('routeChangeComplete', () => setPageLoading(false))
+    router.events.on('routeChangeError', () => setPageLoading(false))
+    return () => {
+      router.events.off('routeChangeStart', () => setPageLoading(true))
+      router.events.off('routeChangeComplete', () => setPageLoading(false))
+      router.events.off('routeChangeError', () => setPageLoading(false))
+    }
+  })
 
   return (<>
     <SEO>
@@ -44,7 +69,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           {
             "title": "Útvonalterv készítése",
             icon: <IconArrowsUpDown />,
-            onTrigger: () => { },
+            onTrigger: () => { router.push("/#search-routes") },
           },
           {
             "title": "Forráskód (GitHub)",
@@ -61,40 +86,42 @@ function MyApp({ Component, pageProps }: AppProps) {
         onChange={() => { }}
       >
         <NotificationsProvider>
-          <div className='bg' />
-          <NavbarMinimal doBreak={mobileBreakpoint} data={[
-            {
-              icon: IconSearch,
-              label: 'Keresés',
-              href: '#',
-              onClick: openSpotlight,
-            },
-            {
-              icon: IconHome,
-              label: 'Főoldal',
-              href: '/',
-            },
-            {
-              icon: IconMap,
-              label: 'Térkép',
-              href: '/map',
-            },
-            {
-              icon: IconBuilding,
-              label: 'Városok',
-              href: '/cities',
-            },
-            {
-              icon: IconSettings,
-              label: 'Beállítások',
-              href: '/settings',
-            }
-          ]} />
-          <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0}>
-            <Container p="lg" mt="xl">
-              <Component {...pageProps} />
-            </Container>
-          </Box>
+          <Input.Provider value={{ selection, setSelection, input, setInput }}>
+            <div className='bg' />
+            <NavbarMinimal doBreak={mobileBreakpoint} data={[
+              {
+                icon: IconSearch,
+                label: 'Keresés',
+                onClick: openSpotlight,
+              },
+              {
+                icon: IconHome,
+                label: 'Főoldal',
+                href: '/',
+              },
+              {
+                icon: IconMap,
+                label: 'Térkép',
+                href: '/map',
+              },
+              {
+                icon: IconBuilding,
+                label: 'Városok',
+                href: '/cities',
+              },
+              {
+                icon: IconSettings,
+                label: 'Beállítások',
+                href: '/settings',
+              }
+            ]} />
+            <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0} pt="xl" sx={{ position: "relative", minHeight: !mobileBreakpoint ? '100vh' : 'calc(100vh - 80px)', width: mobileBreakpoint ? '100%' : 'calc(100% - 80px)' }}>
+              <LoadingOverlay overlayOpacity={.5} loaderProps={{ size: "lg" }} style={{ zIndex: '99 !import' }} visible={pageLoading} />
+              <Container p="lg" pt="xl">
+                <Component {...pageProps} />
+              </Container>
+            </Box>
+          </Input.Provider>
         </NotificationsProvider>
       </SpotlightProvider>
     </MantineProvider>
