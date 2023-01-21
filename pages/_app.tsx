@@ -85,9 +85,9 @@ function MyApp({ Component, pageProps }: AppProps) {
         radius="lg"
         onChange={() => { }}
       >
-        <NotificationsProvider>
+        <NotificationsProvider position='top-center'>
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
-            <div className='bg' />
+            <div className='bg' style={{backgroundImage: 'url("/api/img/bg.jpg?s=2000")'}} />
             <NavbarMinimal doBreak={mobileBreakpoint} data={[
               {
                 icon: IconSearch,

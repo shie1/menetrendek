@@ -38,6 +38,7 @@
     "next": "12.3.1",
     "next-pwa": "^5.6.0",
     "next-sitemap": "^3.1.30",
+    "node-html-parser": "^6.1.4",
     "proj4": "^2.8.0",
     "proj4leaflet": "^1.0.2",
     "puppeteer": "^19.4.1",

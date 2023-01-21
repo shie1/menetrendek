@@ -43,13 +43,12 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  background: url("/api/img/bg.jpg?s=2000");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   background-attachment: scroll;
   z-index: -1;
-  filter: brightness(.15);
+  filter: brightness(.15) contrast(.9) blur(2px);
 }
 
 /* scrollbar */
