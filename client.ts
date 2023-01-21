@@ -135,7 +135,7 @@ export type exposition = {
     arrivalPlatform?: number;
     distance?: string;
     operates?: string;
-    timeForTransfer?: number;
+    timeForTransfer?: string;
     stations?: string
     duration?: number
 }
@@ -164,8 +164,7 @@ export const exposition = async (fieldvalue: any, nativeData: any, datestring: s
             arrivalPlatform: item.jaratinfo ? parseInt(item.jaratinfo.ToBay) : null,
             distance: item.jaratinfo?.utazasi_tavolsag,
             operates: item.jaratinfo?.kozlekedik,
-            timeForTransfer: parseInt(item.TimeForChange),
-            stations: item.vegallomasok,
+            ...((`${item.vegallomasok}`).startsWith("Átszállás") ? { timeForTransfer: (`${item.vegallomasok}`).replace("Átszállásra rendelkezésre álló idő", "Idő az átszállásra") } : { stations: item.vegallomasok }),
             duration: item.jaratinfo ? parseInt(item.jaratinfo?.travelTime) : null
         }))
     }

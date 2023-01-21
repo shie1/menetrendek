@@ -57,6 +57,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         }}
         actions={[
           {
+            title: "Főoldal",
+            icon: <IconHome />,
+            onTrigger: () => { router.push("/") },
+          },
+          {
             title: "Városok",
             icon: <IconBuilding />,
             onTrigger: () => { router.push("/cities") },
@@ -69,12 +74,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           {
             "title": "Útvonalterv készítése",
             icon: <IconArrowsUpDown />,
-            onTrigger: () => { router.push("/#search-routes") },
-          },
-          {
-            "title": "Forráskód (GitHub)",
-            icon: <IconBrandGithub />,
-            onTrigger: () => { window.open("https://github.com/shie1/menetrendek", "_blank", "noopener,noreferrer") },
+            onTrigger: () => { router.push("/") },
           },
           {
             title: "Támogatás (Ko-Fi)",
@@ -87,7 +87,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       >
         <NotificationsProvider position='top-center'>
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
-            <div className='bg' style={{backgroundImage: 'url("/api/img/bg.jpg?s=2000")'}} />
+            <div className='bg' style={{ backgroundImage: 'url("/api/img/bg.jpg?s=2000")' }} />
             <NavbarMinimal doBreak={mobileBreakpoint} data={[
               {
                 icon: IconSearch,

@@ -82,7 +82,7 @@ export const RouteExposition = ({ exposition }: { exposition: Array<exposition> 
                 {!item.stations ? <></> : <Text size="sm">{item.stations}</Text>}
                 {!item.operates ? <></> : <Text size="sm">Közlekedik: {item.operates}</Text>}
                 {!item.timeForTransfer ? <></> :
-                    <Text size="sm">Idő az átszállásra: {item.timeForTransfer} perc</Text>}
+                    <Text size="sm">{item.timeForTransfer}</Text>}
             </Stack>
         </Timeline.Item>))}
     </Timeline>)
