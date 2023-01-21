@@ -10,6 +10,12 @@ export const useMyAccordion = createStyles((theme) => ({
         borderRadius: theme.radius.md,
     },
 
+    control: {
+        '&:hover': {
+            background: 'unset'
+        }
+    },
+
     item: {
         backgroundColor: theme.fn.rgba(theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.gray[0], .9),
         border: '1px solid transparent',

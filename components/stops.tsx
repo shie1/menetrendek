@@ -84,7 +84,9 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     return (<Autocomplete
         icon={selected ? <StopIcon network={selected.network as number} /> : loading ? <Loader size="sm" /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
         placeholder={variant == 'from' ? 'Honnan?' : 'Hova?'}
-        data={data}
+        data={data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i)}
+        switchDirectionOnFlip={false}
+        filter={() => true}
         value={selected?.value || input}
         dropdownComponent={Dropdown}
         onChange={(e) => { setSelected(undefined); setInput(e) }}

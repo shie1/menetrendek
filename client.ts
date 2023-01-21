@@ -49,6 +49,25 @@ export const stationsNear = async (query: any) => {
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }
 
+export type route = {
+    departure: Array<string>;
+    departureTime: string;
+    departurePlatform?: number;
+    arrival: Array<string>;
+    arrivalTime: string;
+    arrivalPlatform?: number;
+    transfers: number;
+    duration: string;
+    distance: string;
+    operates: string;
+    riskyTransfer: boolean;
+    fare: number;
+    expositionData: {
+        nativeData: any,
+        exposition: any
+    },
+}
+
 export const routes = async (query: any, lang: string) => {
     const body = {
         "func": "getRoutes",
@@ -79,7 +98,46 @@ export const routes = async (query: any, lang: string) => {
             "networks": allNetworks,
         }
     }
-    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+    const result = await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+    if (result.status === "success") {
+        const routesArr = Object.values(result.results.talalatok).map((item: any) => ({
+            departure: [item.departureCity, item.departureStation],
+            departureTime: item.indulasi_ido,
+            departurePlatform: parseInt(item.nativeData[0].FromBay),
+            arrival: [item.arrivalCity, item.arrivalStation],
+            arrivalTime: item.erkezesi_ido,
+            arrivalPlatform: parseInt(item.nativeData.at(-1).ToBay),
+            transfers: item.atszallasok_szama,
+            duration: item.osszido,
+            distance: item.ossztav,
+            operates: item.kozlekedik,
+            riskyTransfer: item.riskyTransfer,
+            fare: item.totalFare,
+            expositionData: {
+                nativeData: item.nativeData,
+                exposition: item.kifejtes_postjson
+            },
+        }))
+        return { status: result.status, routes: routesArr || [], fromSettle: result.nativeResults.Params["FromSettle:"], toSettle: result.nativeResults.Params["ToSettle:"] }
+    } else {
+        return { status: result.status, routes: [], fromSettle: "", toSettle: "" }
+    }
+}
+
+export type exposition = {
+    provider?: string;
+    action: "átszállás" | "leszállás" | "felszállás";
+    station: string;
+    time: string;
+    network?: number;
+    fare?: number;
+    departurePlatform?: number;
+    arrivalPlatform?: number;
+    distance?: string;
+    operates?: string;
+    timeForTransfer?: number;
+    stations?: string
+    duration?: number
 }
 
 export const exposition = async (fieldvalue: any, nativeData: any, datestring: string, lang: string) => {
@@ -92,7 +150,26 @@ export const exposition = async (fieldvalue: any, nativeData: any, datestring: s
         "fieldvalue": fieldvalue,
         "nativeData": nativeData
     }
-    return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+    const result = await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
+    let myExposition: Array<any> = []
+    if (result.status === "success") {
+        myExposition = Object.values(result.results).map((item: any) => ({
+            provider: item.OwnerName,
+            action: item.muvelet,
+            station: item.allomas,
+            time: item.idopont,
+            network: parseInt(item.network),
+            fare: item.jaratinfo?.fare,
+            departurePlatform: item.jaratinfo ? parseInt(item.jaratinfo.FromBay) : null,
+            arrivalPlatform: item.jaratinfo ? parseInt(item.jaratinfo.ToBay) : null,
+            distance: item.jaratinfo?.utazasi_tavolsag,
+            operates: item.jaratinfo?.kozlekedik,
+            timeForTransfer: parseInt(item.TimeForChange),
+            stations: item.vegallomasok,
+            duration: item.jaratinfo ? parseInt(item.jaratinfo?.travelTime) : null
+        }))
+    }
+    return { status: result.status, exposition: myExposition }
 }
 
 export const runs = async (id: number, datestring: string, sls: number, els: number) => {
