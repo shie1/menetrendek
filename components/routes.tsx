@@ -59,21 +59,22 @@ export const RouteSummary = memo(({ item, }: { item: route }) => {
         <Text align="center">{item.transfers} átszállás {item.riskyTransfer ? <IconAlertTriangle size={15} stroke={2} color={warning} /> : <></>}</Text>
         <Group position="center" spacing='sm'>
             <Text size="sm">{item.duration}</Text>
-            {item.fare > 0 ? <Text size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text> : <></>}
+            {item.fare > 0 ? <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text> : <></>}
             <Text size="sm">{item.distance}</Text>
         </Group>
     </Stack>)
 })
 
 export const RouteExposition = ({ exposition }: { exposition: Array<exposition> }) => {
+    const [cookies] = useCookies(["discount-percentage"])
     return (<Timeline active={Infinity}>
-        {exposition.map((item, index) => (<Timeline.Item key={index} bullet={<ActionBullet muvelet={item.action} network={item.network!} />}>
+        {exposition.map((item, index) => (<Timeline.Item lineVariant={item.action === "átszállás" ? "dashed" : "solid"} key={index} bullet={<ActionBullet muvelet={item.action} network={item.network!} />}>
             <Stack spacing={0}>
                 <Text>{item.station}</Text>
                 <Text size="xl" my={-2}>{item.time}</Text>
                 {!item.fare || !item.distance || !item.duration ? <></> :
                     <Group spacing={10}>
-                        {item.fare === -1 ? <></> : <Text size="sm">{currency.format(item.fare)}</Text>}
+                        {item.fare === -1 ? <></> : <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text>}
                         <Text size="sm">{item.distance} km</Text>
                         <Text size="sm">{item.duration} perc</Text>
                     </Group>

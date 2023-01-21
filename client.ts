@@ -260,6 +260,5 @@ export const drawStops = async (extent: Array<number>, max: number = 50, radius:
         "radius": radius,
         "networks": allNetworks
     }
-    console.log(body)
     return await (await fetch(api, { method: "POST", body: JSON.stringify(body) })).json()
 }

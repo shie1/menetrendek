@@ -24,7 +24,7 @@ const Route = ({ route }: { route: route }) => {
                         <Skeleton radius="lg" height={53} />
                     </Timeline.Item>)
                 } else {
-                    return (<Timeline.Item bullet={<ActionBullet muvelet={i % 2 === 0 ? "átszállás" : "felszállás"} network={1} />}>
+                    return (<Timeline.Item lineVariant={i % 2 !== 0 ? "dashed" : "solid"} bullet={<ActionBullet muvelet={i % 2 !== 0 ? "átszállás" : "felszállás"} network={1} />}>
                         <Skeleton radius="lg" height={i % 2 === 0 ? 98 : 120} />
                     </Timeline.Item>)
                 }

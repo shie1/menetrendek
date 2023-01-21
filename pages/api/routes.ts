@@ -20,6 +20,5 @@ export default async function handler(
             return { s_id: q[0].city_id, ls_id: q[0].stop_id, site_code: q[0].site_code }
         }
     }))
-    console.log(from, to)
     res.status(200).json(await routes({ date: rb.date, from, to }, "hu"))
 }
