@@ -26,7 +26,7 @@ const Render: NextPage = (props: any) => {
                 <Paper p="sm" radius="lg">
                     <RouteSummary item={route} options={{ hideNetworks: true }} />
                     <Space h='md' />
-                    <RouteExposition exposition={exposition} />
+                    <RouteExposition exposition={exposition} options={{ hideRunsButton: true }} />
                 </Paper>
                 <Group py={6} style={{ opacity: .8 }} position="right" spacing={2}>
                     <IconLink size={17} />

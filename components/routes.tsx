@@ -4,6 +4,7 @@ import {
     Divider,
     Grid,
     Group,
+    Modal,
     Space,
     Stack,
     Text,
@@ -15,10 +16,11 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import useColors from "./colors"
 import { StopIcon } from "../components/stops"
-import { memo } from "react";
+import { memo, useState } from "react";
 import { useCookies } from "react-cookie";
-import { exposition, route } from "../client";
+import { dateString, exposition, route } from "../client";
 import { useMediaQuery } from "@mantine/hooks";
+import Runs from "../pages/runs";
 
 export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
@@ -41,7 +43,7 @@ export const ActionBullet = memo(({ muvelet, network, size, ...props }: { muvele
     }
 })
 
-export const RouteSummary = memo(({ item, options }: { item: route, options?: { hideNetworks: boolean } }) => {
+export const RouteSummary = memo(({ item, options }: { item: route, options?: { hideNetworks?: boolean } }) => {
     const { warning } = useColors()
     const [cookies] = useCookies(["discount-percentage"])
     const breakPoint = useMediaQuery("(max-width: 600px)")
@@ -75,13 +77,25 @@ export const RouteSummary = memo(({ item, options }: { item: route, options?: { 
     </Stack>)
 })
 
-export const RouteExposition = ({ exposition }: { exposition: Array<exposition> }) => {
+export const RouteExposition = ({ exposition, options }: { exposition: Array<exposition>, options?: { hideRunsButton?: boolean } }) => {
     const [cookies] = useCookies(["discount-percentage"])
+    const router = useRouter()
     return (<Timeline active={Infinity}>
         {exposition.map((item, index) => (<Timeline.Item lineVariant={item.action === "átszállás" ? "dashed" : "solid"} key={index} bullet={<ActionBullet muvelet={item.action} network={item.network!} />}>
             <Stack spacing={0}>
-                <Text>{item.station}</Text>
-                <Text size="xl" my={-2}>{item.time}</Text>
+                <Group spacing={0} position="apart">
+                    <Stack spacing={0}>
+                        <Text>{item.station}</Text>
+                        <Text size="xl" my={-2}>{item.time}</Text>
+                    </Stack>
+                    {!item.runsData || options?.hideRunsButton ? <></> :
+                        <Link href={`/runs?${new URLSearchParams({ id: item.runsData.runId, s: item.runsData.sls, e: item.runsData.sls, d: router.query['d'] as string || dateString(new Date()) }).toString()}`}>
+                            <ActionIcon>
+                                <IconInfoCircle />
+                            </ActionIcon>
+                        </Link>
+                    }
+                </Group>
                 {!item.fare || !item.distance || !item.duration ? <></> :
                     <Group spacing={10}>
                         {item.fare === -1 ? <></> : <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text>}

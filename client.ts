@@ -139,7 +139,12 @@ export type exposition = {
     operates?: string;
     timeForTransfer?: string;
     stations?: string
-    duration?: number
+    duration?: number,
+    runsData?: {
+        runId: string,
+        sls: string,
+        els: string,
+    }
 }
 
 export const exposition = async (fieldvalue: any, nativeData: any, datestring: string, lang: string) => {
@@ -167,6 +172,13 @@ export const exposition = async (fieldvalue: any, nativeData: any, datestring: s
             distance: item.jaratinfo?.utazasi_tavolsag,
             operates: item.jaratinfo?.kozlekedik,
             ...((`${item.vegallomasok}`).startsWith("Átszállás") ? { timeForTransfer: (`${item.vegallomasok}`).replace("Átszállásra rendelkezésre álló idő", "Idő az átszállásra") } : { stations: item.vegallomasok }),
+            ...(item.muvelet === "felszállás" ? {
+                runsData: {
+                    runId: item.runId,
+                    sls: item.jaratinfo?.StartStation,
+                    els: item.jaratinfo?.EndStation
+                }
+            } : {}),
             duration: item.jaratinfo ? parseInt(item.jaratinfo?.travelTime) : null
         }))
     }
