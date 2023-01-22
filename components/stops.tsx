@@ -81,7 +81,7 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         if (stops.length) {
             if ((stops[0] as any).s_id) {
                 setStops([])
-                showNotification({ title: 'Megállóidat töröltük!', message: 'A gyakori megállók listája nem kompatibilis a jelenlegi verzióval. A lista törlésre került.', color: 'yellow', icon: <IconClearAll /> })
+                showNotification({ title: 'Megállóidat töröltük!', message: 'A gyakori megállók listája nem kompatibilis a jelenlegi verzióval. A lista törlésre került.', color: 'yellow', icon: <IconClearAll />, id: 'error-cleared-stops' })
             }
         }
     }, [stops])
@@ -114,7 +114,7 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         value={selected?.value || input}
         dropdownComponent={Dropdown}
         onChange={(e) => { setSelected(undefined); setInput(e) }}
-        onItemSubmit={(e: any) => { setStops([{ value: e.value, id: e.id, network: e.network }, ...stops.filter(item => !isEqual(item, e))]); setSelected(e); setInput(e.value) }}
+        onItemSubmit={(e: any) => { setStops([{ value: e.value, id: e.id, network: e.network }, ...stops.filter(item => !isEqual(item, { value: e.value, id: e.id, network: e.network }))]); setSelected(e); setInput(e.value) }}
         styles={(theme) => ({
             dropdown: {
                 background: '#1A1B1E',

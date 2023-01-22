@@ -47,7 +47,7 @@ export const RouteSummary = memo(({ item, options }: { item: route, options?: { 
     const breakPoint = useMediaQuery("(max-width: 600px)")
     return (<Stack sx={{ position: 'relative' }} spacing={0}>
         {options?.hideNetworks ? <></> :
-            <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0, marginTop: theme.spacing.md })} position="center">
+            <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0 })} position="center">
                 {item.networks.filter(onlyUnique).map((network: number, i: any) => (<StopIcon key={i} network={network} />))}
             </Group>
         }
