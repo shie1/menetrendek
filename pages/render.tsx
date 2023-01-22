@@ -24,7 +24,7 @@ const Render: NextPage = (props: any) => {
         <Center sx={{ zIndex: 89, position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh', background: 'black' }}>
             <Box id="renderBox" p="md" pb={0} sx={{ zIndex: 90, background: '#25262B', maxWidth: 600 }}>
                 <Paper p="sm" radius="lg">
-                    <RouteSummary item={route} />
+                    <RouteSummary item={route} options={{ hideNetworks: true }} />
                     <Space h='md' />
                     <RouteExposition exposition={exposition} />
                 </Paper>

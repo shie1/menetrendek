@@ -41,14 +41,16 @@ export const ActionBullet = memo(({ muvelet, network, size, ...props }: { muvele
     }
 })
 
-export const RouteSummary = memo(({ item, }: { item: route }) => {
+export const RouteSummary = memo(({ item, options }: { item: route, options?: { hideNetworks: boolean } }) => {
     const { warning } = useColors()
     const [cookies] = useCookies(["discount-percentage"])
     const breakPoint = useMediaQuery("(max-width: 600px)")
-    return (<Stack spacing={0}>
-        <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0, marginTop: theme.spacing.md })} position="center">
-            {item.networks.filter(onlyUnique).map((network: number) => (<StopIcon network={network} />))}
-        </Group>
+    return (<Stack sx={{ position: 'relative' }} spacing={0}>
+        {options?.hideNetworks ? <></> :
+            <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0, marginTop: theme.spacing.md })} position="center">
+                {item.networks.filter(onlyUnique).map((network: number) => (<StopIcon network={network} />))}
+            </Group>
+        }
         <Grid>
             <Grid.Col sx={{ position: 'relative' }} span="auto">
                 {!item.departurePlatform ? <></> :
