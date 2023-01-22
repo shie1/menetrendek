@@ -117,7 +117,7 @@ const Routes: NextPage = (props: any) => {
 
 Routes.getInitialProps = async (ctx: any) => {
     return {
-        routes: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.SITE_URL}/api/routes`, { from: ctx.query.from, to: ctx.query.to, date: ctx.query.date || dateString(new Date()) })
+        routes: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, { from: ctx.query.from, to: ctx.query.to, date: ctx.query.date || dateString(new Date()) })
     }
 }
 

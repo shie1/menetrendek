@@ -29,7 +29,7 @@ const City: NextPage = (props: any) => {
 City.getInitialProps = async (ctx: any) => {
     try {
         return {
-            city: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.SITE_URL}/api/cities/${ctx.query.city}`)
+            city: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/cities/${ctx.query.city}`)
         }
     } catch (e) {
         return {

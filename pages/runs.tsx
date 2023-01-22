@@ -68,7 +68,7 @@ Runs.getInitialProps = async (ctx: any) => {
         date: ctx.query['d'],
         id: ctx.query['id'],
     }
-    return { runs: await apiCall("POST", "/api/runs", query), delay: await apiCall("POST", "/api/runsDelay", query), query: query }
+    return { runs: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/runs`, query), delay: await apiCall("POST", "/api/runsDelay", query), query: query }
 }
 
 export default Runs

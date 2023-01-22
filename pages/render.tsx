@@ -47,7 +47,7 @@ Render.getInitialProps = async (ctx) => {
         index: Number(ctx.query['i'] as string),
     }
     props.route = (await apiCall("POST", `${host}/api/routes`, query)).routes[query.index]
-    props.exposition = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.SITE_URL}/api/exposition`, { exposition: props.route.expositionData.exposition, nativeData: props.route.expositionData.nativeData, datestring: query.date })).exposition
+    props.exposition = (await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/exposition`, { exposition: props.route.expositionData.exposition, nativeData: props.route.expositionData.nativeData, datestring: query.date })).exposition
     return props
 }
 
