@@ -48,7 +48,7 @@ export const RouteSummary = memo(({ item, options }: { item: route, options?: { 
     return (<Stack sx={{ position: 'relative' }} spacing={0}>
         {options?.hideNetworks ? <></> :
             <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0, marginTop: theme.spacing.md })} position="center">
-                {item.networks.filter(onlyUnique).map((network: number) => (<StopIcon network={network} />))}
+                {item.networks.filter(onlyUnique).map((network: number, i: any) => (<StopIcon key={i} network={network} />))}
             </Group>
         }
         <Grid>

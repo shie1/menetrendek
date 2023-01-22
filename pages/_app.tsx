@@ -1,17 +1,18 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app';
-import { Box, Container, LoadingOverlay, MantineProvider } from '@mantine/core';
+import { Affix, Alert, Box, Button, Container, LoadingOverlay, MantineProvider, Stack, Text, Transition } from '@mantine/core';
 import { NotificationsProvider } from '@mantine/notifications';
 import { appShortName } from './_document';
 import { SEO } from '../components/seo';
 import { NavbarMinimal } from '../components/nav';
-import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCoin, IconDiscount, IconHome, IconMap, IconSearch, IconSettings, IconStar } from '@tabler/icons';
+import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCalendar, IconCoin, IconDiscount, IconDownload, IconHome, IconMap, IconSearch, IconSettings, IconStar } from '@tabler/icons';
 import { SpotlightProvider, openSpotlight } from "@mantine/spotlight"
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
 import { useCookies } from 'react-cookie';
+import { useUserAgent } from '../components/ua';
 
 export interface Selection {
   from: Stop | undefined;
@@ -28,11 +29,36 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [pageLoading, setPageLoading] = useState(false)
   const mobileBreakpoint = useMediaQuery("(max-width: 600px)")
   const [[selection, setSelection], [input, setInput]] = [useState<Selection>({ to: undefined, from: undefined }), useState<Input>({ to: "", from: "" })]
-  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage'])
+  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'calendar-service', 'install-declined'])
+  const ua = useUserAgent()
+  const [dlVisible, setDlVisible] = useState(false)
+  const [prompt, setPropmt] = useState<Event & any | undefined>()
+  const touchscreen = useMediaQuery("(max-width: 580px)")
 
   useEffect(() => { // Init cookies
     if (typeof cookies['discount-percentage'] === "undefined") setCookie('discount-percentage', 0, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    if (typeof cookies['calendar-service'] === "undefined") setCookie('calendar-service', ua?.device.vendor === "Apple" ? '5' : '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    if (typeof cookies['install-declined'] === "undefined") setCookie("install-declined", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
   }, [cookies])
+
+  useEffect(() => {
+    if (prompt && cookies["install-declined"] === "false") {
+      setDlVisible(true)
+    }
+  }, [prompt, cookies])
+
+  useEffect(() => {
+    const handler = (e: Event & any) => {
+      e.preventDefault()
+      setPropmt(e)
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener("beforeinstallprompt", handler)
+    }
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler)
+    }
+  }, [])
 
   useEffect(() => {
     router.events.on('routeChangeStart', () => setPageLoading(true))
@@ -88,6 +114,11 @@ function MyApp({ Component, pageProps }: AppProps) {
             onTrigger: () => { router.push("/settings#discount") },
           },
           {
+            title: "Naptár alkalmazás kiválasztása",
+            icon: <IconCalendar />,
+            onTrigger: () => { router.push("/settings#calendar") },
+          },
+          {
             title: "Támogatás (Ko-Fi)",
             icon: <IconCoin />,
             onTrigger: () => { window.open("https://ko-fi.com/menetrendekinfo", "_blank", "noopener,noreferrer") },
@@ -127,11 +158,39 @@ function MyApp({ Component, pageProps }: AppProps) {
               }
             ]} />
             <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0} pt="xl" sx={{ position: "relative", minHeight: !mobileBreakpoint ? '100vh' : 'calc(100vh - 80px)', width: mobileBreakpoint ? '100%' : 'calc(100% - 80px)' }}>
-              <LoadingOverlay overlayOpacity={.5} loaderProps={{ size: "lg" }} style={{ zIndex: '99 !import' }} visible={pageLoading} />
+              <LoadingOverlay overlayOpacity={.5} loaderProps={{ size: "lg" }} style={{ zIndex: '99 !import', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }} visible={pageLoading} />
               <Container p="lg" pt="xl">
                 <Component {...pageProps} />
               </Container>
             </Box>
+            <Affix sx={{ width: '100vw' }}>
+              <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
+                {(styles) => (<Alert role="alert" p="lg"
+                  styles={{
+                    root: { border: 0 },
+                    closeButton: { scale: '1.5', top: 20 }
+                  }}
+                  radius={0} onClose={() => {
+                    setDlVisible(false)
+                    setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+                  }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
+                  <Stack>
+                    <Text>
+                      Töltsd le az oldalunkat mobiltelefonodon, hogy még egyszerűbben használhasd!
+                    </Text>
+                    <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
+                      prompt.prompt().then(({ outcome }: any) => {
+                        if (outcome === "accepted") {
+                          setDlVisible(false)
+                        }
+                      })
+                    }} leftIcon={<IconDownload />}>
+                      Letöltés
+                    </Button>
+                  </Stack>
+                </Alert>)}
+              </Transition>
+            </Affix>
           </Input.Provider>
         </NotificationsProvider>
       </SpotlightProvider>

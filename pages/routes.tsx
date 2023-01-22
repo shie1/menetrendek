@@ -65,11 +65,11 @@ const Route = ({ route, index }: { route: route, index: any }) => {
         <Accordion.Panel>
             {!exposition.length ? (<><Timeline active={Infinity}>{Array(route.expositionData.exposition.runcount * 2).fill(0).map((v, i, arr) => {
                 if (i + 1 === arr.length) {// Last element
-                    return (<Timeline.Item bullet={<ActionBullet muvelet="leszállás" network={1} />}>
+                    return (<Timeline.Item key={i} bullet={<ActionBullet muvelet="leszállás" network={1} />}>
                         <Skeleton radius="lg" height={53} />
                     </Timeline.Item>)
                 } else {
-                    return (<Timeline.Item lineVariant={i % 2 !== 0 ? "dashed" : "solid"} bullet={<ActionBullet muvelet={i % 2 !== 0 ? "átszállás" : "felszállás"} network={1} />}>
+                    return (<Timeline.Item key={i} lineVariant={i % 2 !== 0 ? "dashed" : "solid"} bullet={<ActionBullet muvelet={i % 2 !== 0 ? "átszállás" : "felszállás"} network={1} />}>
                         <Skeleton radius="lg" height={i % 2 === 0 ? 98 : 120} />
                     </Timeline.Item>)
                 }
@@ -117,7 +117,7 @@ const Routes: NextPage = (props: any) => {
 
 Routes.getInitialProps = async (ctx: any) => {
     return {
-        routes: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/routes`, { from: ctx.query.from, to: ctx.query.to, date: ctx.query.date || dateString(new Date()) })
+        routes: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.SITE_URL}/api/routes`, { from: ctx.query.from, to: ctx.query.to, date: ctx.query.date || dateString(new Date()) })
     }
 }
 

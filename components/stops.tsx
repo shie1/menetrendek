@@ -2,8 +2,11 @@ import { forwardRef, useContext, useEffect, useState } from "react";
 import { Input } from "../pages/_app";
 import { MdTram } from "react-icons/md"
 import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader } from "@mantine/core/";
-import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight } from "@tabler/icons";
+import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconClearAll } from "@tabler/icons";
 import { apiCall } from "./api";
+import { useLocalStorage } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { isEqual } from "lodash";
 
 export interface Stop {
     value?: string
@@ -67,10 +70,20 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
 
 export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     const [data, setData] = useState<Array<Stop & any>>([])
+    const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: 'frequent-stops', defaultValue: [] })
     const i = useContext(Input)
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
     const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
     const [loading, setLoading] = useState(false)
+
+    useEffect(() => {
+        if (stops.length) {
+            if ((stops[0] as any).s_id) {
+                setStops([])
+                showNotification({ title: 'Megállóidat töröltük!', message: 'A gyakori megállók listája nem kompatibilis a jelenlegi verzióval. A lista törlésre került.', color: 'yellow', icon: <IconClearAll /> })
+            }
+        }
+    }, [stops])
 
     useEffect(() => {
         const delay = 1000
@@ -87,13 +100,13 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     return (<Autocomplete
         icon={selected ? <StopIcon network={selected.network as number} /> : loading ? <Loader size="sm" /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
         placeholder={variant == 'from' ? 'Honnan?' : 'Hova?'}
-        data={data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i)}
+        data={input.length ? data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i) : stops}
         switchDirectionOnFlip={false}
         filter={() => true}
         value={selected?.value || input}
         dropdownComponent={Dropdown}
         onChange={(e) => { setSelected(undefined); setInput(e) }}
-        onItemSubmit={(e: any) => { setSelected(e); setInput(e.value) }}
+        onItemSubmit={(e: any) => { setStops([{ value: e.value, id: e.id, network: e.network }, ...stops.filter(item => !isEqual(item, e))]); setSelected(e); setInput(e.value) }}
         styles={(theme) => ({
             dropdown: {
                 background: '#1A1B1E',
