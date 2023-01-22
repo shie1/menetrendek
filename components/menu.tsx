@@ -46,7 +46,7 @@ export const Search = () => {
             <StopInput variant='to' />
         </Grid.Col>
         <Grid.Col xs={6} span={12}>
-            <DatePicker clearable={false} dropdownPosition="bottom-start" locale='hu' value={new Date()} variant='unstyled' styles={(theme) => ({ dropdown: { background: "#1A1B1E", borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, input: { fontSize: 16, border: 'unset', background: 'transparent' }, wrapper: { width: '100%', height: 36 }, root: { borderBottom: '2px solid #373A40', height: 45, display: 'flex', alignItems: 'center', } })} />
+            <DatePicker onChange={setDate} clearable={false} dropdownPosition="bottom-start" locale='hu' value={date || new Date()} variant='unstyled' styles={(theme) => ({ dropdown: { background: "#1A1B1E", borderRadius: theme.radius.md, border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2] }, input: { fontSize: 16, border: 'unset', background: 'transparent' }, wrapper: { width: '100%', height: 36 }, root: { borderBottom: '2px solid #373A40', height: 45, display: 'flex', alignItems: 'center', } })} />
         </Grid.Col>
         <Grid.Col sx={{ display: 'flex', alignItems: 'center' }} xs={6} span={12}>
             <Link href={searchHref}>

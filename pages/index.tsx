@@ -1,7 +1,7 @@
-import { Box, Divider, Space, Stack, Text } from '@mantine/core';
+import { Box, Divider, Grid, Group, Space, Stack, Text } from '@mantine/core';
 import type { NextPage } from 'next';
 import { PageHeading, PageSection } from '../components/page';
-import { IconApps, IconLayout, IconPlus, IconRoadSign, IconRotateClockwise, IconSearch, IconShare } from '@tabler/icons';
+import { IconApps, IconLayout, IconPlus, IconRoadSign, IconRotateClockwise, IconSearch, IconShare, IconUsers } from '@tabler/icons';
 import "dayjs/locale/hu"
 import { Search } from '../components/menu';
 import { FeaturesGrid } from '../components/hello';
@@ -27,6 +27,7 @@ const Home: NextPage = () => {
                 { title: "Aktív fejlesztés", icon: IconRotateClockwise, description: "A weboldal szinte minden héten frissül. A funkciók folyamatosan bővülnek és a hibák folyamatosan javítva vannak." },
             ]}
         />
+        <Space h="md" />
     </>)
 }
 

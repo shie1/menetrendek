@@ -5,12 +5,13 @@ import { NotificationsProvider } from '@mantine/notifications';
 import { appShortName } from './_document';
 import { SEO } from '../components/seo';
 import { NavbarMinimal } from '../components/nav';
-import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCoin, IconHome, IconMap, IconSearch, IconSettings, IconStar } from '@tabler/icons';
+import { IconArrowsUpDown, IconBrandGithub, IconBuilding, IconCoin, IconDiscount, IconHome, IconMap, IconSearch, IconSettings, IconStar } from '@tabler/icons';
 import { SpotlightProvider, openSpotlight } from "@mantine/spotlight"
 import { useRouter } from 'next/router';
 import { useMediaQuery } from '@mantine/hooks';
 import { createContext, useEffect, useState } from 'react';
 import { Stop } from '../components/stops';
+import { useCookies } from 'react-cookie';
 
 export interface Selection {
   from: Stop | undefined;
@@ -27,6 +28,11 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [pageLoading, setPageLoading] = useState(false)
   const mobileBreakpoint = useMediaQuery("(max-width: 600px)")
   const [[selection, setSelection], [input, setInput]] = [useState<Selection>({ to: undefined, from: undefined }), useState<Input>({ to: "", from: "" })]
+  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage'])
+
+  useEffect(() => { // Init cookies
+    if (typeof cookies['discount-percentage'] === "undefined") setCookie('discount-percentage', 0, { path: '/', maxAge: 60 * 60 * 24 * 365 })
+  }, [cookies])
 
   useEffect(() => {
     router.events.on('routeChangeStart', () => setPageLoading(true))
@@ -72,9 +78,14 @@ function MyApp({ Component, pageProps }: AppProps) {
             onTrigger: () => { router.push("/settings") },
           },
           {
-            "title": "Útvonalterv készítése",
+            title: "Útvonalterv készítése",
             icon: <IconArrowsUpDown />,
             onTrigger: () => { router.push("/") },
+          },
+          {
+            title: "Kedvezmény beállítása",
+            icon: <IconDiscount />,
+            onTrigger: () => { router.push("/settings#discount") },
           },
           {
             title: "Támogatás (Ko-Fi)",
