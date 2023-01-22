@@ -1,8 +1,8 @@
-import { forwardRef, useContext, useEffect, useState } from "react";
-import { Input } from "../pages/_app";
+import { forwardRef, useCallback, useContext, useEffect, useState } from "react";
+import { Input, MenuHandler } from "../pages/_app";
 import { MdTram } from "react-icons/md"
-import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader } from "@mantine/core/";
-import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconClearAll } from "@tabler/icons";
+import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader, ActionIcon, Menu } from "@mantine/core/";
+import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconClearAll, IconDots, IconRefresh, IconX } from "@tabler/icons";
 import { apiCall } from "./api";
 import { useLocalStorage } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
@@ -75,6 +75,7 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
     const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
     const [loading, setLoading] = useState(false)
+    const { menuOpen, setMenuOpen } = useContext(MenuHandler)
 
     useEffect(() => {
         if (stops.length) {
@@ -97,6 +98,13 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         return () => clearTimeout(bounce)
     }, [input])
 
+    const swap = useCallback(() => {
+        const s = i.selection
+        const inp = i.input
+        i.setSelection({ from: s.to, to: s.from })
+        i.setInput({ from: inp.to, to: inp.from })
+    }, [i])
+
     return (<Autocomplete
         icon={selected ? <StopIcon network={selected.network as number} /> : loading ? <Loader size="sm" /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
         placeholder={variant == 'from' ? 'Honnan?' : 'Hova?'}
@@ -117,5 +125,33 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         sx={(theme) => ({ borderBottom: `2px solid ${theme.colors.gray[8]}` })}
         itemComponent={AutoCompleteItem}
         variant="unstyled"
+        rightSection={typeof selected === 'undefined' && input.length === 0 ? <></> :
+            <Menu transition="scale-y" transitionDuration={200} onClose={() => setMenuOpen(-1)} onOpen={() => setMenuOpen(variant === "from" ? 0 : 1)} opened={variant === "from" ? menuOpen === 0 : menuOpen === 1} position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
+                <Menu.Target>
+                    <ActionIcon variant="transparent">
+                        <IconDots />
+                    </ActionIcon>
+                </Menu.Target>
+                <Menu.Dropdown role="menu">
+                    <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
+                    <Menu.Item role="menuitem" onClick={() => {
+                        setInput("")
+                        setSelected(undefined)
+                    }} color="red" icon={<IconX />}>
+                        Mező törlése
+                    </Menu.Item>
+                    <Menu.Divider role="separator" />
+                    <Menu.Label>Összes mező</Menu.Label>
+                    <Menu.Item role="menuitem" onClick={swap} icon={<IconRefresh />}>
+                        Mezők felcserélése
+                    </Menu.Item>
+                    <Menu.Item role="menuitem" onClick={() => {
+                        i.setInput({ from: "", to: "" })
+                        i.setSelection({ from: undefined, to: undefined })
+                    }} color="red" icon={<IconClearAll />}>
+                        Mezők törlése
+                    </Menu.Item>
+                </Menu.Dropdown>
+            </Menu>}
     />)
 }

@@ -23,6 +23,7 @@ export interface Input {
   to: string;
 }
 export const Input = createContext<{ selection: Selection, setSelection: (a: Selection) => void, input: Input, setInput: (a: Input) => void }>({ selection: { from: undefined, to: undefined }, setSelection: () => { }, input: { from: "", to: "" }, setInput: () => { } })
+export const MenuHandler = createContext<{ menuOpen: number, setMenuOpen: (a: number) => void }>({ menuOpen: -1, setMenuOpen: () => { } })
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -34,6 +35,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [dlVisible, setDlVisible] = useState(false)
   const [prompt, setPropmt] = useState<Event & any | undefined>()
   const touchscreen = useMediaQuery("(max-width: 580px)")
+  const [menuOpen, setMenuOpen] = useState(-1)
 
   useEffect(() => { // Init cookies
     if (typeof cookies['discount-percentage'] === "undefined") setCookie('discount-percentage', 0, { path: '/', maxAge: 60 * 60 * 24 * 365 })
@@ -129,68 +131,70 @@ function MyApp({ Component, pageProps }: AppProps) {
       >
         <NotificationsProvider position='top-center'>
           <Input.Provider value={{ selection, setSelection, input, setInput }}>
-            <div className='bg' style={{ backgroundImage: 'url("/api/img/bg.jpg?s=2000")' }} />
-            <NavbarMinimal doBreak={mobileBreakpoint} data={[
-              {
-                icon: IconSearch,
-                label: 'Keresés',
-                onClick: openSpotlight,
-              },
-              {
-                icon: IconHome,
-                label: 'Főoldal',
-                href: '/',
-              },
-              {
-                icon: IconMap,
-                label: 'Térkép',
-                href: '/map',
-              },
-              {
-                icon: IconBuilding,
-                label: 'Városok',
-                href: '/cities',
-              },
-              {
-                icon: IconSettings,
-                label: 'Beállítások',
-                href: '/settings',
-              }
-            ]} />
-            <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0} pt="xl" sx={{ position: "relative", minHeight: !mobileBreakpoint ? '100vh' : 'calc(100vh - 80px)', width: mobileBreakpoint ? '100%' : 'calc(100% - 80px)' }}>
-              <LoadingOverlay overlayOpacity={.5} loaderProps={{ size: "lg" }} style={{ zIndex: '99 !import', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }} visible={pageLoading} />
-              <Container p="lg" pt="xl">
-                <Component {...pageProps} />
-              </Container>
-            </Box>
-            <Affix sx={{ width: '100vw' }}>
-              <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
-                {(styles) => (<Alert role="alert" p="lg"
-                  styles={{
-                    root: { border: 0 },
-                    closeButton: { scale: '1.5', top: 20 }
-                  }}
-                  radius={0} onClose={() => {
-                    setDlVisible(false)
-                    setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
-                  }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
-                  <Stack>
-                    <Text>
-                      Töltsd le az oldalunkat mobiltelefonodon, hogy még egyszerűbben használhasd!
-                    </Text>
-                    <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
-                      prompt.prompt().then(({ outcome }: any) => {
-                        if (outcome === "accepted") {
-                          setDlVisible(false)
-                        }
-                      })
-                    }} leftIcon={<IconDownload />}>
-                      Letöltés
-                    </Button>
-                  </Stack>
-                </Alert>)}
-              </Transition>
-            </Affix>
+            <MenuHandler.Provider value={{ menuOpen, setMenuOpen }}>
+              <div className='bg' style={{ backgroundImage: 'url("/api/img/bg.jpg?s=2000")' }} />
+              <NavbarMinimal doBreak={mobileBreakpoint} data={[
+                {
+                  icon: IconSearch,
+                  label: 'Keresés',
+                  onClick: openSpotlight,
+                },
+                {
+                  icon: IconHome,
+                  label: 'Főoldal',
+                  href: '/',
+                },
+                {
+                  icon: IconMap,
+                  label: 'Térkép',
+                  href: '/map',
+                },
+                {
+                  icon: IconBuilding,
+                  label: 'Városok',
+                  href: '/cities',
+                },
+                {
+                  icon: IconSettings,
+                  label: 'Beállítások',
+                  href: '/settings',
+                }
+              ]} />
+              <Box ml={mobileBreakpoint ? 0 : 80} mb={mobileBreakpoint ? 80 : 0} pt="xl" sx={{ position: "relative", minHeight: !mobileBreakpoint ? '100vh' : 'calc(100vh - 80px)', width: mobileBreakpoint ? '100%' : 'calc(100% - 80px)' }}>
+                <LoadingOverlay overlayOpacity={.5} loaderProps={{ size: "lg" }} style={{ zIndex: '99 !import', width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }} visible={pageLoading} />
+                <Container p="lg" pt="xl">
+                  <Component {...pageProps} />
+                </Container>
+              </Box>
+              <Affix sx={{ width: '100vw' }}>
+                <Transition transition="slide-up" mounted={dlVisible && touchscreen}>
+                  {(styles) => (<Alert role="alert" p="lg"
+                    styles={{
+                      root: { border: 0 },
+                      closeButton: { scale: '1.5', top: 20 }
+                    }}
+                    radius={0} onClose={() => {
+                      setDlVisible(false)
+                      setCookie("install-declined", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+                    }} style={styles} variant='outline' icon={<IconDownload />} title="Töltsd le az alkalmazást!" withCloseButton>
+                    <Stack>
+                      <Text>
+                        Töltsd le az oldalunkat mobiltelefonodon, hogy még egyszerűbben használhasd!
+                      </Text>
+                      <Button role="button" aria-label="Alkalmazás letöltése" onClick={() => {
+                        prompt.prompt().then(({ outcome }: any) => {
+                          if (outcome === "accepted") {
+                            setDlVisible(false)
+                          }
+                        })
+                      }} leftIcon={<IconDownload />}>
+                        Letöltés
+                      </Button>
+                    </Stack>
+                  </Alert>)}
+                </Transition>
+              </Affix>
+            </MenuHandler.Provider>
           </Input.Provider>
         </NotificationsProvider>
       </SpotlightProvider>
