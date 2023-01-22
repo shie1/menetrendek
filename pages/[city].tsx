@@ -1,11 +1,11 @@
 import type { NextPage } from "next"
 import { apiCall } from "../components/api"
 import { PageHeading } from "../components/page"
-import { Image } from "@mantine/core"
+import { Alert, Image } from "@mantine/core"
 import { useEffect } from "react"
 import { useRouter } from "next/router"
 import { showNotification } from "@mantine/notifications"
-import { IconBandage } from "@tabler/icons"
+import { IconBandage, IconPrompt } from "@tabler/icons"
 
 const City: NextPage = (props: any) => {
     const router = useRouter()
@@ -20,6 +20,9 @@ const City: NextPage = (props: any) => {
     return (<>
         <div className='bg' style={{ backgroundImage: `url("${props.city.image}")` }} />
         <PageHeading title={props.city.name} subtitle={`Magyar település ${props.city.county} megyében`} />
+        <Alert my="sm" icon={<IconPrompt />} title="Fejlesztés alatt">
+            A város oldalak jelenleg csak demonstrációs jellegűek, a városokhoz még nem tartozik semmi adat.
+        </Alert>
     </>)
 }
 
