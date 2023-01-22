@@ -126,7 +126,7 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
         itemComponent={AutoCompleteItem}
         variant="unstyled"
         rightSection={typeof selected === 'undefined' && input.length === 0 ? <></> :
-            <Menu transition="scale-y" transitionDuration={200} onClose={() => setMenuOpen(-1)} onOpen={() => setMenuOpen(variant === "from" ? 0 : 1)} opened={variant === "from" ? menuOpen === 0 : menuOpen === 1} position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
+            <Menu transition="scale-y" transitionDuration={200} onClose={() => setMenuOpen(-1)} onOpen={() => setMenuOpen(variant === "from" ? 0 : 1)} opened={variant === "from" ? menuOpen === 0 : menuOpen === 1} position="bottom-end" styles={(theme) => ({ dropdown: { minWidth: '15rem', background: theme.colors.dark[7], borderRadius: theme.radius.md } })}>
                 <Menu.Target>
                     <ActionIcon variant="transparent">
                         <IconDots />
