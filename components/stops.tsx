@@ -1,26 +1,30 @@
-import { Autocomplete, ScrollArea, Group, Text, Box, ActionIcon, Menu, Transition } from "@mantine/core"
-import { SelectItemProps } from "@mantine/core/lib/Select";
-import { useLocalStorage } from "@mantine/hooks";
-import { IconMapPin, IconBus, IconTrain, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconShip, IconEqual, IconX, IconDots, IconRefresh, IconClearAll } from "@tabler/icons";
-import { isEqual } from "lodash";
-import { CSSProperties, forwardRef, useEffect, useRef, useState } from "react"
-import { useCookies } from "react-cookie";
-import { apiCall } from "./api";
+import { forwardRef, useCallback, useContext, useEffect, useState } from "react";
+import { Input, MenuHandler } from "../pages/_app";
 import { MdTram } from "react-icons/md"
-import { Input, MyWindow, OneMenu } from "../pages/_app";
-import { useCallback } from "react";
-import { useContext } from "react";
-import { LocalizedStrings } from "../pages/api/localization";
+import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader, ActionIcon, Menu } from "@mantine/core/";
+import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconClearAll, IconDots, IconRefresh, IconX } from "@tabler/icons";
+import { apiCall } from "./api";
+import { useLocalStorage } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
+import { isEqual } from "lodash";
 
 export interface Stop {
     value?: string
     network?: number;
-    ls_id: number;
-    s_id: number;
-    site_code: string;
+    id: number;
 }
 
-export const StopIcon = ({ network, size, ...props }: { network: Number, size?: number }) => {
+const Dropdown = ({ children, ...props }: any) => {
+    return (<ScrollArea
+        sx={{
+            maxHeight: '25vh',
+            width: '100%',
+        }}>
+        {children}
+    </ScrollArea>)
+}
+
+export const StopIcon = ({ network, size, ...props }: { network: number, size?: number }) => {
     props = { ...props, size: size ? size : 24 }
     switch (network) {
         case 0: // City
@@ -48,19 +52,10 @@ export const StopIcon = ({ network, size, ...props }: { network: Number, size?: 
     }
 }
 
-const Dropdown = ({ children, ...props }: any) => {
-    return (<ScrollArea
-        sx={{
-            maxHeight: '25vh',
-            width: '100%',
-        }}>
-        {children}
-    </ScrollArea>)
-}
 
 const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
-    ({ value, network, ls_id, s_id, site_code, ...others }: SelectItemProps & Stop, ref) => (
-        <div key={`${ls_id}-${s_id}-${site_code}`} ref={ref} {...others}>
+    ({ value, network, id, ...others }: SelectItemProps & Stop, ref) => (
+        <div ref={ref} {...others}>
             <Group noWrap align="left">
                 <div style={{ zIndex: '99 !important' }}>
                     <StopIcon network={network!} />
@@ -73,17 +68,35 @@ const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     )
 );
 
-export type StopSetter = (a: Stop | undefined) => void
-
-export const StopInput = ({ variant, style, strings }: { variant: "from" | "to", style?: CSSProperties, strings: LocalizedStrings }) => {
-    const { oneMenu, setOneMenu } = useContext(OneMenu)
+export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     const [data, setData] = useState<Array<Stop & any>>([])
+    const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: 'frequent-stops', defaultValue: [] })
     const i = useContext(Input)
     const [selected, setSelected] = [i.selection[variant], ((e: Stop | undefined) => { i.setSelection({ ...i.selection, [variant]: e }) })]
     const [input, setInput] = [i.input[variant], ((e: string) => { i.setInput({ ...i.input, [variant]: e }) })]
-    const [cookies, setCookie, removeCookie] = useCookies(['selected-networks', 'no-page-transitions']);
-    const [stops, setStops] = useLocalStorage<Array<Stop>>({ key: "frequent-stops", defaultValue: [] })
-    const ref = useRef<HTMLInputElement | null>(null)
+    const [loading, setLoading] = useState(false)
+    const { menuOpen, setMenuOpen } = useContext(MenuHandler)
+
+    useEffect(() => {
+        if (stops.length) {
+            if ((stops[0] as any).s_id) {
+                setStops([])
+                showNotification({ title: 'Megállóidat töröltük!', message: 'A gyakori megállók listája nem kompatibilis a jelenlegi verzióval. A lista törlésre került.', color: 'yellow', icon: <IconClearAll />, id: 'error-cleared-stops' })
+            }
+        }
+    }, [stops])
+
+    useEffect(() => {
+        const delay = 1000
+        let bounce: any
+        if (input) {
+            setLoading(true)
+            bounce = setTimeout(() => { apiCall("POST", "/api/autocomplete", { input: input }).then((e) => { setData(e.map((e: any) => ({ ...e, value: e.stop_name }))) }).finally(() => setLoading(false)) }, delay)
+        } else {
+            setData([])
+        }
+        return () => clearTimeout(bounce)
+    }, [input])
 
     const swap = useCallback(() => {
         const s = i.selection
@@ -92,79 +105,53 @@ export const StopInput = ({ variant, style, strings }: { variant: "from" | "to",
         i.setInput({ from: inp.to, to: inp.from })
     }, [i])
 
-    useEffect(() => {
-        if (selected && typeof window !== 'undefined') {
-            (window as unknown as MyWindow).dataLayer.push({ event: "stopinput-select", ...selected })
-        }
-    }, [selected])
-
-    useEffect(() => {
-        if (input.length == 0) {
-            setData(stops)
-        }
-    }, [input, stops])
-
-    const load = (e: string) => {
-        if (!e.length) { return }
-        apiCall("POST", "/api/autocomplete", { 'input': e, 'networks': cookies["selected-networks"] }).then(resp => {
-            setData((resp.results as Array<any>).map((item, i) => ({ value: item.lsname, ls_id: item.ls_id, s_id: item.settlement_id, site_code: item.site_code, network: item.network_id })))
-        })
-    }
-
-    // useeffect on input change timeout 500 ms and then call load function
-    useEffect(() => {
-        load(input)
-    }, [input]);
-
     return (<Autocomplete
-        icon={selected ? <StopIcon network={selected.network!} /> : (variant === "from" ? <IconArrowBarRight size={18} stroke={1.5} /> : <IconArrowBarToRight size={18} stroke={1.5} />)}
-        style={style}
-        data={data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i)}
-        ref={ref}
+        icon={selected ? <StopIcon network={selected.network as number} /> : loading ? <Loader size="sm" /> : (variant == 'from' ? <IconArrowBarRight /> : <IconArrowBarToRight />)}
+        placeholder={variant == 'from' ? 'Honnan?' : 'Hova?'}
+        data={input.length ? data.filter((item, i, array) => array.findIndex((e) => e.value === item.value) === i) : stops}
         switchDirectionOnFlip={false}
+        filter={() => true}
+        value={selected?.value || input}
+        dropdownComponent={Dropdown}
+        onChange={(e) => { setSelected(undefined); setInput(e) }}
+        onItemSubmit={(e: any) => { setStops([{ value: e.value, id: e.id, network: e.network }, ...stops.filter(item => !isEqual(item, { value: e.value, id: e.id, network: e.network }))]); setSelected(e); setInput(e.value) }}
+        styles={(theme) => ({
+            dropdown: {
+                background: '#1A1B1E',
+                borderRadius: theme.radius.md
+            }
+        })}
         size="md"
-        className="searchInput"
+        sx={(theme) => ({ borderBottom: `2px solid ${theme.colors.gray[8]}` })}
+        itemComponent={AutoCompleteItem}
         variant="unstyled"
-        transition="scale-y"
-        transitionDuration={200}
         rightSection={typeof selected === 'undefined' && input.length === 0 ? <></> :
-            <Menu transition="scale-y" transitionDuration={200} onClose={() => setOneMenu(0)} onOpen={() => setOneMenu(variant === "from" ? 1 : 2)} opened={variant === "from" ? oneMenu === 1 : oneMenu === 2} position="bottom-end" styles={{ dropdown: { minWidth: '15rem' } }}>
+            <Menu transition="scale-y" transitionDuration={200} onClose={() => setMenuOpen(-1)} onOpen={() => setMenuOpen(variant === "from" ? 0 : 1)} opened={variant === "from" ? menuOpen === 0 : menuOpen === 1} position="bottom-end" styles={(theme) => ({ dropdown: { minWidth: '15rem', background: theme.colors.dark[7], borderRadius: theme.radius.md } })}>
                 <Menu.Target>
                     <ActionIcon variant="transparent">
                         <IconDots />
                     </ActionIcon>
                 </Menu.Target>
                 <Menu.Dropdown role="menu">
-                    <Menu.Label>{variant === 'from' ? strings.fromWhere : strings.toWhere}</Menu.Label>
+                    <Menu.Label>{variant === 'from' ? "Honnan?" : "Hova?"}</Menu.Label>
                     <Menu.Item role="menuitem" onClick={() => {
                         setInput("")
                         setSelected(undefined)
                     }} color="red" icon={<IconX />}>
-                        {strings.clearField}
+                        Mező törlése
                     </Menu.Item>
                     <Menu.Divider role="separator" />
-                    <Menu.Label>{strings.allFields}</Menu.Label>
+                    <Menu.Label>Összes mező</Menu.Label>
                     <Menu.Item role="menuitem" onClick={swap} icon={<IconRefresh />}>
-                        {strings.swapFields}
+                        Mezők felcserélése
                     </Menu.Item>
                     <Menu.Item role="menuitem" onClick={() => {
                         i.setInput({ from: "", to: "" })
                         i.setSelection({ from: undefined, to: undefined })
                     }} color="red" icon={<IconClearAll />}>
-                        {strings.clearFields}
+                        Mezők törlése
                     </Menu.Item>
                 </Menu.Dropdown>
             </Menu>}
-        sx={(theme) => ({ borderBottom: '3px solid #373A40', '& .mantine-Autocomplete-dropdown': { border: '1px solid', borderColor: theme.colorScheme === 'dark' ? theme.colors.dark[4] : theme.colors.gray[2], borderRadius: theme.radius.md, padding: theme.spacing.xs / 6 }, '& .mantine-Autocomplete-item': { borderRadius: theme.radius.sm } })}
-        filter={() => true}
-        dropdownComponent={Dropdown}
-        itemComponent={AutoCompleteItem}
-        id={`stopinput-${variant}`}
-        onItemSubmit={(e: any) => { setSelected(e); ref.current?.blur(); setStops([e, ...stops.filter(item => !isEqual(item, e))]) }}
-        onChange={(e) => { setSelected(undefined); setInput(e) }}
-        value={selected?.value || input || ""}
-        limit={99}
-        placeholder={variant === "from" ? strings.fromWhere : strings.toWhere}
-        rightSectionWidth={42}
     />)
 }

@@ -1,30 +1,18 @@
+import { showNotification } from "@mantine/notifications";
+import { IconHourglass } from "@tabler/icons";
 import type { NextPage } from "next";
-import PageTransition from "../components/pageTransition";
-import { appShortName, appThumb } from "./_document";
-import { memo } from "react";
-import dynamic from "next/dynamic"
-import { Canonical, SEO } from "../components/seo";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
-const MP = memo((props: any) => {
-    if (typeof window === 'undefined') return <></>
-    const MapView = dynamic(() => import('../components/routeMap').then((mod) => mod.MapView), {
-        ssr: false
-    })
-    return <MapView {...props} />
-})
+const Map: NextPage = () => {
+    const router = useRouter()
 
-const Map: NextPage = (props: any) => {
-    return (<PageTransition>
-        <SEO
-            title={props.strings.realtimeTransitMap}
-            description={props.strings.realtimeTransitMapSubtext}
-            image={appThumb}
-        >
-            <title>{props.strings.map} | {appShortName}</title>
-            <Canonical url="https://menetrendek.info/map" />
-        </SEO>
-        <MP {...props} />
-    </PageTransition>)
+    useEffect(() => {
+        router.push("/")
+        showNotification({ title: "Sajnáljuk!", message: "Ez a funkció még nem elérhető.", color: "yellow", id: "feature-not-available", icon: <IconHourglass /> })
+    }, [])
+
+    return (<></>)
 }
 
 export default Map;

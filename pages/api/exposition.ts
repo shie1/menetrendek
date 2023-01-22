@@ -6,7 +6,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<any>
 ) {
-    const rb = JSON.parse(req.body)
-    const lang = req.headers.host?.split('.')[0] === 'en' ? 'en' : 'hu'
-    res.status(200).json(await exposition(rb["runs"], rb["nativeData"], rb["datestring"], lang))
+    const rb = req.body
+    res.status(200).json(await exposition(rb["exposition"], rb["nativeData"], rb["date"], "hu"))
 }

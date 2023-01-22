@@ -1,13 +1,15 @@
-import type { NextPage } from "next"
-import { useEffect } from "react"
-import { showNotification } from "@mantine/notifications"
-import { IconX } from "@tabler/icons"
-import { LocalizedStrings } from "./api/localization"
+import { showNotification } from '@mantine/notifications'
+import { IconBandage } from '@tabler/icons'
+import type { NextPage } from 'next'
+import { useRouter } from 'next/router'
+import { useEffect } from 'react'
 
-const Page404: NextPage = (props: any) => {
-    const strings: LocalizedStrings = props.strings
+const Page404: NextPage = () => {
+    const router = useRouter()
+
     useEffect(() => {
-        showNotification({ title: strings.error, color: 'red', message: strings.pageNotFound, icon: <IconX />, id: '404-pagenotfound' })
+        router.push("/")
+        showNotification({ title: "Hiba!", message: "404 • Az oldal nem található!", color: "red", id: "page-not-found", icon: <IconBandage /> })
     }, [])
 
     return (<></>)
