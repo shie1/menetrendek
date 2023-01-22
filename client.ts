@@ -62,6 +62,7 @@ export type route = {
     operates: string;
     riskyTransfer: boolean;
     fare: number;
+    networks: Array<number>;
     expositionData: {
         nativeData: any,
         exposition: any
@@ -113,6 +114,7 @@ export const routes = async (query: any, lang: string) => {
             operates: item.kozlekedik,
             riskyTransfer: item.riskyTransfer,
             fare: item.totalFare,
+            networks: Object.values(item.jaratinfok).map((item: any) => item.network),
             expositionData: {
                 nativeData: item.nativeData,
                 exposition: item.kifejtes_postjson

@@ -73,12 +73,15 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
     const [loading, setLoading] = useState(false)
 
     useEffect(() => {
+        const delay = 1000
+        let bounce: any
         if (input) {
             setLoading(true)
-            apiCall("POST", "/api/autocomplete", { input: input }).then((e) => { setData(e.map((e: any) => ({ ...e, value: e.stop_name }))) }).finally(() => setLoading(false))
+            bounce = setTimeout(() => { apiCall("POST", "/api/autocomplete", { input: input }).then((e) => { setData(e.map((e: any) => ({ ...e, value: e.stop_name }))) }).finally(() => setLoading(false)) }, delay)
         } else {
             setData([])
         }
+        return () => clearTimeout(bounce)
     }, [input])
 
     return (<Autocomplete

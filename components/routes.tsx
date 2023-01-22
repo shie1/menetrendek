@@ -18,12 +18,16 @@ import { StopIcon } from "../components/stops"
 import { memo } from "react";
 import { useCookies } from "react-cookie";
 import { exposition, route } from "../client";
+import { useMediaQuery } from "@mantine/hooks";
 
 export const calcDisc = (fee: number, discount?: number) => {
     return discount ? Math.abs(fee - (fee * (discount / 100))) : fee
 }
 
 export const currency = new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF', maximumFractionDigits: 0, minimumFractionDigits: 0 })
+function onlyUnique(value: any, index: any, self: any) {
+    return self.indexOf(value) === index;
+}
 
 export const ActionBullet = memo(({ muvelet, network, size, ...props }: { muvelet: "átszállás" | "leszállás" | "felszállás", network?: number, size?: number }) => {
     if (!size) { size = 20 }
@@ -40,7 +44,11 @@ export const ActionBullet = memo(({ muvelet, network, size, ...props }: { muvele
 export const RouteSummary = memo(({ item, }: { item: route }) => {
     const { warning } = useColors()
     const [cookies] = useCookies(["discount-percentage"])
+    const breakPoint = useMediaQuery("(max-width: 600px)")
     return (<Stack spacing={0}>
+        <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0, marginTop: theme.spacing.md })} position="center">
+            {item.networks.filter(onlyUnique).map((network: number) => (<StopIcon network={network} />))}
+        </Group>
         <Grid>
             <Grid.Col sx={{ position: 'relative' }} span="auto">
                 {!item.departurePlatform ? <></> :
