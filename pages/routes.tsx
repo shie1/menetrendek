@@ -7,7 +7,7 @@ import { Accordion, ActionIcon, Group, Loader, Skeleton, Timeline } from "@manti
 import { useMyAccordion } from "../components/styles"
 import { ActionBullet, RouteExposition, RouteSummary } from "../components/routes"
 import { useEffect, useState } from "react"
-import { yahoo, office365, google, ics, outlook } from "calendar-link";
+import { yahoo, office365, google, ics, outlook, CalendarEvent } from "calendar-link";
 import { useRouter } from "next/router"
 import { useCookies } from "react-cookie"
 
@@ -33,17 +33,23 @@ const Route = ({ route, index }: { route: route, index: any }) => {
     const [exposition, setExposition] = useState<Array<exposition>>([])
     const router = useRouter()
     const [file, setFile] = useState<File | undefined>()
-    const [body, setBody] = useState<any>()
+    const [body, setBody] = useState<CalendarEvent | undefined>()
     const [cookies] = useCookies(["calendar-service"])
 
     useEffect(() => {
         if (!body && exposition.length) {
             const start = new Date(`${router.query['d'] || dateString(new Date())} ${route.departureTime}`)
             const end = new Date(`${router.query['d'] || dateString(new Date())} ${route.arrivalTime}`)
+            let details: string[] = []
+            for (let action of exposition) {
+                const fb = action.action === "felszállás" ? action.departurePlatform ? `\nKocsiállás: ${action.departurePlatform}` : '' : ''
+                const more = action.action === "felszállás" ? `${fb}\n${action.fare} Ft | ${action.duration} perc\n${action.stations}` : ''
+                details.push(`- ${action.time} ${action.action} ${action.station}${more}\n`)
+            }
             setBody({
                 start,
                 end,
-                description: `${exposition.join("\n")}`,
+                description: `${details.join("\n")}`,
                 location: exposition[0].station,
                 title: `${route.departure[0]} - ${route.arrival[0]}`
             })
