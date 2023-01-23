@@ -96,7 +96,7 @@ const Route = ({ route, index }: { route: route, index: any }) => {
                                 to: router.query.to,
                                 index: index,
                             }
-                            navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body.text })
+                            navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body?.title })
                         }}>
                             <IconShare />
                         </ActionIcon>}
