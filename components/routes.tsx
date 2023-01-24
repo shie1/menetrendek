@@ -99,6 +99,11 @@ export const RouteExposition = ({ exposition, options }: { exposition: Array<exp
                         </Link>
                     }
                 </Group>
+                {!item.provider || !item.runId || !item.network ? <></> : <Group spacing="xs">
+                    <StopIcon network={item.network} />
+                    <Text size="sm">{item.provider}</Text>
+                    <Text size="sm">{item.runId}</Text>
+                </Group>}
                 {!item.fare || !item.distance || !item.duration ? <></> :
                     <Group spacing={10}>
                         {item.fare === -1 ? <></> : <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text>}

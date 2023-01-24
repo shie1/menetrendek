@@ -137,6 +137,7 @@ export type exposition = {
     arrivalPlatform?: number;
     distance?: string;
     operates?: string;
+    runId: string;
     timeForTransfer?: string;
     stations?: string
     duration?: number,
@@ -165,6 +166,7 @@ export const exposition = async (fieldvalue: any, nativeData: any, datestring: s
             action: item.muvelet,
             station: item.allomas,
             time: item.idopont,
+            runId: item.jaratszam,
             network: parseInt(item.network),
             fare: item.jaratinfo?.fare,
             departurePlatform: item.jaratinfo ? parseInt(item.jaratinfo.FromBay) : null,
