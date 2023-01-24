@@ -21,7 +21,7 @@ const Runs: NextPage = (props: any) => {
     }, [query])
 
     return (<Container size="xs" p={0}>
-        <Card radius="lg" shadow="md" withBorder>
+        <Card radius="lg" shadow="xl" sx={(theme) => ({ backgroundColor: theme.colors.dark[7] })}>
             <Stack my="md" spacing='sm'>
                 <Stack px='md' mb='sm' spacing={0} justify="center" align="center">
                     <Text size={30} mb={-10}>{runs?.results.mezo ? `${runs?.results.mezo}/${runs?.results.jaratszam}` : runs?.results.vonalszam}</Text>
@@ -68,7 +68,10 @@ Runs.getInitialProps = async (ctx: any) => {
         date: ctx.query['d'],
         id: ctx.query['id'],
     }
-    return { runs: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/runs`, query), delay: await apiCall("POST", "/api/runsDelay", query), query: query }
+    return {
+        runs: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/runs`, query),
+        delay: await apiCall("POST", `${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/api/runsDelay`, query), query: query
+    }
 }
 
 export default Runs
