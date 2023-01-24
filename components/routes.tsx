@@ -86,7 +86,10 @@ export const RouteExposition = ({ exposition, options }: { exposition: Array<exp
                 <Group spacing={0} position="apart">
                     <Stack spacing={0}>
                         <Text>{item.station}</Text>
-                        <Text size="xl" my={-2}>{item.time}</Text>
+                        <Group spacing="xs" position="left">
+                            <Text size="xl" my={-2}>{item.time}</Text>
+                            {!item.departurePlatform ? <></> : <Avatar variant="outline" radius="xl" size={25}>{item.departurePlatform}</Avatar>}
+                        </Group>
                     </Stack>
                     {!item.runsData || options?.hideRunsButton ? <></> :
                         <Link href={`/runs?${new URLSearchParams({ id: item.runsData.runId, s: item.runsData.sls, e: item.runsData.sls, d: router.query['d'] as string || dateString(new Date()) }).toString()}`}>
