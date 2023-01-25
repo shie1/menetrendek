@@ -2,8 +2,8 @@ import type { NextPage } from "next"
 import { apiCall } from "../components/api"
 import { dateString, exposition, route } from "../client"
 import { PageHeading } from "../components/page"
-import { IconCalendarEvent, IconLine, IconShare } from "@tabler/icons"
-import { Accordion, ActionIcon, Group, Loader, Skeleton, Timeline } from "@mantine/core"
+import { IconCalendarEvent, IconClock, IconLine, IconShare } from "@tabler/icons"
+import { Accordion, ActionIcon, Group, Loader, Skeleton, Slider, Text, Timeline } from "@mantine/core"
 import { useMyAccordion } from "../components/styles"
 import { ActionBullet, RouteExposition, RouteSummary } from "../components/routes"
 import { useEffect, useState } from "react"
@@ -106,16 +106,61 @@ const Route = ({ route, index }: { route: route, index: any }) => {
     </>)
 }
 
+const marks = () => {
+    let m: any = []
+    for (let i = 0; i < 9; i++) {
+        m.push({ label: (i * 3).toString().padStart(2, '0'), value: i * 3 * 60 })
+    }
+    return m
+}
+
 const Routes: NextPage = (props: any) => {
     const { classes, theme } = useMyAccordion()
+    const [cookies] = useCookies(["use-route-limit", "route-limit"])
+    const [sliderVal, setSliderVal] = useState<number | undefined>()
+    const [time, setTime] = useState<number | undefined>()
+    const [display, setDisplay] = useState<any>([])
+    const router = useRouter()
+
+    useEffect(() => {
+        if (typeof time === "undefined" && !router.query.d) setTime((new Date()).getHours() * 60 + (new Date()).getMinutes())
+    }, [time])
+
+    useEffect(() => {
+        if (time) setSliderVal(time)
+    }, [time])
+
+    useEffect(() => {
+        if (cookies["use-route-limit"] === "true") {
+            let disp: any = []
+            setDisplay(props.routes.routes.map((item: route, i: any) => {
+                const start = item.departureTime.split(":").map((e: string) => Number(e))
+                const startmin = start[0] * 60 + start[1]
+                if (startmin <= time!) return
+                disp.push(i)
+            }))
+            setDisplay(disp)
+        } else {
+            setDisplay([...Array(100).keys()].map(e => e.toString()))
+        }
+    }, [time, cookies["use-route-limit"]])
+
     return (<>
         <PageHeading title="Járatok" subtitle={`Járatok ${props.routes.fromSettle} és ${props.routes.toSettle} között`} icon={IconLine} />
+        {cookies["use-route-limit"] !== 'true' ? <></> : <Slider my="sm" step={15} value={sliderVal || 0} onChange={setSliderVal} thumbChildren={<IconClock size={30} />} styles={{ thumb: { borderWidth: 0, padding: 0, height: 25, width: 25 } }} onChangeEnd={setTime} marks={marks()} min={0} max={1440} mb="xl" size="lg" label={(e) => `${Math.floor(e / 60).toString().padStart(2, '0')}:${(e % 60).toString().padStart(2, '0')}`} />}
         <Accordion classNames={classes}>
-            {props.routes.routes.map((route: any, i: any) => (
-                <Accordion.Item my="sm" key={i.toString()} value={i.toString()}>
-                    <Route index={i} route={route} />
-                </Accordion.Item>
-            ))}
+            {!display.length ? <Text size="sm" align="center" color="dimmed">A megadott idő után nem találtunk semmit.</Text> :
+                display.map((key: any, i: any) => {
+                    const item: route = props.routes.routes[key]
+                    if (!item) return <></>
+                    const start = item.departureTime.split(":").map((e: string) => Number(e))
+                    const startmin = start[0] * 60 + start[1]
+                    if (cookies["use-route-limit"] === "true" && startmin <= time! || i > Number(cookies["route-limit"])) return <div key={key} />
+                    return (<Accordion.Item my="sm" key={key} value={key.toString()}>
+                        <Route index={key} route={item} />
+                    </Accordion.Item>)
+                })
+            }
         </Accordion>
     </>)
 

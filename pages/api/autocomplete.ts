@@ -8,7 +8,8 @@ export default async function handler(
 ) {
     const { input } = req.body
     let cities: Array<any> = []
-    const results = await query('SELECT c.name as city, s.id as id, CONCAT(c.name, ", ", s.name) as stop_name, network FROM menetrendek_info.stops as s LEFT JOIN cities as c ON s.city=c.id WHERE CONCAT(c.name, ", ", s.name) LIKE ? LIMIT 50;', [input.replace(/\s$/g, '') + '%'])
+    let inp = input.replace(/\s$/g, '').replace(/,\s/g, ' ')
+    const results = await query('SELECT c.name as city, s.id as id, CONCAT(c.name, ", ", s.name) as stop_name, network FROM menetrendek_info.stops as s LEFT JOIN cities as c ON s.city=c.id WHERE CONCAT(c.name, " ", s.name) REGEXP ? LIMIT 50;', [inp])
     for (let result of results) {
         if (!cities.includes(result.city)) {
             cities.push(result.city)

@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const [pageLoading, setPageLoading] = useState(false)
   const mobileBreakpoint = useMediaQuery("(max-width: 600px)")
   const [[selection, setSelection], [input, setInput]] = [useState<Selection>({ to: undefined, from: undefined }), useState<Input>({ to: "", from: "" })]
-  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'calendar-service', 'install-declined'])
+  const [cookies, setCookie, removeCookie] = useCookies(['discount-percentage', 'calendar-service', 'install-declined', 'route-limit', 'use-route-limit'])
   const ua = useUserAgent()
   const [dlVisible, setDlVisible] = useState(false)
   const [prompt, setPropmt] = useState<Event & any | undefined>()
@@ -41,6 +41,8 @@ function MyApp({ Component, pageProps }: AppProps) {
     if (typeof cookies['discount-percentage'] === "undefined") setCookie('discount-percentage', 0, { path: '/', maxAge: 60 * 60 * 24 * 365 })
     if (typeof cookies['calendar-service'] === "undefined") setCookie('calendar-service', ua?.device.vendor === "Apple" ? '5' : '1', { path: '/', maxAge: 60 * 60 * 24 * 365 })
     if (typeof cookies['install-declined'] === "undefined") setCookie("install-declined", 'false', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    if (typeof cookies['use-route-limit'] === "undefined") setCookie("use-route-limit", 'true', { path: '/', maxAge: 60 * 60 * 24 * 365 })
+    if (typeof cookies['route-limit'] === "undefined") setCookie("route-limit", '15', { path: '/', maxAge: 60 * 60 * 365 })
   }, [cookies])
 
   useEffect(() => {
