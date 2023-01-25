@@ -49,7 +49,7 @@
     "react-icons": "^4.7.1",
     "sanitize-filename": "^1.6.3",
     "sharp": "^0.31.1",
-    "ua-parser-js": "^1.0.32"
+    "ua-parser-js": "^1.0.33"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.0",
