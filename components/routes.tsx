@@ -106,7 +106,7 @@ export const RouteExposition = ({ exposition, options }: { exposition: Array<exp
                 </Group>}
                 {!item.fare || !item.distance || !item.duration ? <></> :
                     <Group spacing={10}>
-                        {item.fare === -1 ? <></> : <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text>}
+                        {item.fare < 0 ? <></> : <Text suppressHydrationWarning size="sm">{currency.format(calcDisc(item.fare, cookies["discount-percentage"]))}</Text>}
                         <Text size="sm">{item.distance} km</Text>
                         <Text size="sm">{item.duration} perc</Text>
                     </Group>
