@@ -10,12 +10,13 @@ export default async function handler(
     const browser = await launch({ headless: true, args: ["--no-sandbox"] })
     const page = await browser.newPage();
     await page.setViewport({
-        width: 3000,
-        height: 3000,
+        width: 6000,
+        height: 6000,
+        deviceScaleFactor: 2,
     })
     res.setHeader("Content-Type", `image/jpg`)
     res.setHeader("Cache-Control", "public, max-age=604800, immutable")
     await page.goto(`${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/render?${(new URLSearchParams(req.query as any)).toString()}`, { waitUntil: "load" });
-    Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'jpeg', quality: 100, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)
+    Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'webp', quality: 90, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)
     browser.close()
 }
