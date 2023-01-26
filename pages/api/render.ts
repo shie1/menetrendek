@@ -14,7 +14,7 @@ export default async function handler(
         height: 6000,
         deviceScaleFactor: 2,
     })
-    res.setHeader("Content-Type", `image/jpg`)
+    res.setHeader("Content-Type", `image/webp`)
     res.setHeader("Cache-Control", "public, max-age=604800, immutable")
     await page.goto(`${process.env.NODE_ENV === "development" ? "http://localhost:3000" : "https://menetrendek.info"}/render?${(new URLSearchParams(req.query as any)).toString()}`, { waitUntil: "load" });
     Readable.from(await (await page.$("#renderBox"))?.screenshot({ type: 'webp', quality: 90, captureBeyondViewport: true, fromSurface: true }) as Buffer).pipe(res)
