@@ -43,7 +43,8 @@ const Route = ({ route, index }: { route: route, index: any }) => {
             let details: string[] = []
             for (let action of exposition) {
                 const fb = action.action === "felszállás" ? action.departurePlatform ? `\nKocsiállás: ${action.departurePlatform}` : '' : ''
-                const more = action.action === "felszállás" ? `${fb}\n${action.fare} Ft | ${action.duration} perc\n${action.stations}` : ''
+                const fare = action.action === "felszállás" && action.fare ? (action.fare < 0 ? '' : `${action.fare} Ft | `) : ''
+                const more = action.action === "felszállás" ? `${fb}\n${fare}${action.duration} perc | ${action.runId}\n${action.stations}` : ''
                 details.push(`- ${action.time} ${action.action} ${action.station}${more}\n`)
             }
             setBody({
