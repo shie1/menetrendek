@@ -1,7 +1,7 @@
 import { forwardRef, useCallback, useContext, useEffect, useState } from "react";
 import { Input, MenuHandler } from "../pages/_app";
 import { MdTram } from "react-icons/md"
-import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader, ActionIcon, Menu } from "@mantine/core/";
+import { Autocomplete, Box, Group, ScrollArea, SelectItemProps, Text, Loader, ActionIcon, Menu, ThemeIcon, MantineColor } from "@mantine/core/";
 import { IconMapPin, IconBus, IconTrain, IconEqual, IconShip, IconQuestionMark, IconArrowBarRight, IconArrowBarToRight, IconClearAll, IconDots, IconRefresh, IconX } from "@tabler/icons";
 import { apiCall } from "./api";
 import { useLocalStorage } from "@mantine/hooks";
@@ -24,7 +24,7 @@ const Dropdown = ({ children, ...props }: any) => {
     </ScrollArea>)
 }
 
-export const StopIcon = ({ network, size, ...props }: { network: number, size?: number }) => {
+export const StopIcon = ({ network, size, ...props }: { network: number, size?: number } & any) => {
     props = { ...props, size: size ? size : 24 }
     switch (network) {
         case 0: // City
@@ -42,7 +42,7 @@ export const StopIcon = ({ network, size, ...props }: { network: number, size?: 
                 <IconEqual style={style} {...props} size={(props as any).size * 10} />
                 <IconTrain style={style} {...props} size={(props as any).size} />
             </Box>
-        case 3:
+        case 3: // Ship
             return <IconShip {...props} />
         case 12: // Tram
         case 13: // Trolley
@@ -52,6 +52,44 @@ export const StopIcon = ({ network, size, ...props }: { network: number, size?: 
     }
 }
 
+export const ColoredStopIcon = (({ network, size, ...props }: { network: number, size?: number } & any) => {
+    let color: MantineColor | undefined = undefined
+    let mySize = size ? size : 24
+    switch (network) {
+        case 0: // City
+            color = "grape"
+            break
+        case 1: // Bus stop (távolsági)
+            color = "indigo"
+            break
+        case 10: // Bus stop (helyi)
+            color = "green"
+            break
+        case 24: // Bus stop (unknown)
+            break
+        case 25: // Train replacement
+            color = "red"
+            break
+        case 2: // Train station
+            color = "indigo"
+            break
+        case 14: // Metro
+            color = "indigo"
+            break
+        case 3: // Ship
+            color = "indigo"
+            break
+        case 12: // Tram
+            color = "indigo"
+            break
+        case 13: // Trolley
+            color = "indigo"
+            break
+        default:
+            break
+    }
+    return <ThemeIcon color={color || "dark"} sx={{ borderRadius: '100%' }} variant="light" size={mySize}><StopIcon stroke={props.stroke} network={network} size={(mySize / 7) * 6} /></ThemeIcon>
+})
 
 const AutoCompleteItem = forwardRef<HTMLDivElement, SelectItemProps & Stop>(
     ({ value, network, id, ...others }: SelectItemProps & Stop, ref) => (

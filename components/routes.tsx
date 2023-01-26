@@ -15,7 +15,7 @@ import { IconWalk, IconCheck, IconAlertTriangle, IconWifi, IconInfoCircle, IconA
 import Link from "next/link"
 import { useRouter } from "next/router"
 import useColors from "./colors"
-import { StopIcon } from "../components/stops"
+import { ColoredStopIcon, StopIcon } from "../components/stops"
 import { memo, useState } from "react";
 import { useCookies } from "react-cookie";
 import { dateString, exposition, route } from "../client";
@@ -50,7 +50,7 @@ export const RouteSummary = memo(({ item, options }: { item: route, options?: { 
     return (<Stack sx={{ position: 'relative' }} spacing={0}>
         {options?.hideNetworks ? <></> :
             <Group sx={(theme) => (breakPoint ? {} : { position: 'absolute', width: '100%', top: 0, left: 0 })} position="center">
-                {item.networks.filter(onlyUnique).map((network: number, i: any) => (<StopIcon key={i} network={network} />))}
+                {item.networks.filter(onlyUnique).map((network: number, i: any) => (<ColoredStopIcon size={28} key={i} network={network} />))}
             </Group>
         }
         <Grid>
@@ -100,7 +100,7 @@ export const RouteExposition = ({ exposition, options }: { exposition: Array<exp
                     }
                 </Group>
                 {!item.provider || !item.runId || !item.network ? <></> : <Group spacing="xs">
-                    <StopIcon network={item.network} />
+                    <ColoredStopIcon stroke={1.5} network={item.network} />
                     <Text size="sm">{item.provider}</Text>
                     <Text size="sm">{item.runId}</Text>
                 </Group>}
