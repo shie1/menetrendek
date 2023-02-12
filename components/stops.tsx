@@ -160,6 +160,7 @@ export const StopInput = ({ variant }: { variant: "from" | "to" }) => {
             }
         })}
         size="md"
+        autoComplete="off"
         limit={Infinity}
         sx={(theme) => ({ borderBottom: `2px solid ${theme.colors.gray[8]}` })}
         itemComponent={AutoCompleteItem}
