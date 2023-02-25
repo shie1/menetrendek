@@ -90,17 +90,6 @@ const Route = ({ route, index }: { route: route, index: any }) => {
                     <ActionIcon role="button" aria-label="Hozzáadás a naptárhoz" onClick={() => cal(Number(cookies["calendar-service"]), body)}>
                         <IconCalendarEvent />
                     </ActionIcon>
-                    {!file ? <Loader size={28} /> :
-                        <ActionIcon role="button" aria-label="Megosztás" onClick={() => {
-                            const params: any = {
-                                from: router.query.from,
-                                to: router.query.to,
-                                index: index,
-                            }
-                            navigator.share({ files: [file], url: `https://menetrendek.info/route?${(new URLSearchParams(params)).toString()}`, "title": body?.title })
-                        }}>
-                            <IconShare />
-                        </ActionIcon>}
                 </Group>
             </>}
         </Accordion.Panel>
